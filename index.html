@@ -4593,9 +4593,20 @@ function popupYTPlay(videoId, start, stop) {
   clipStopTimer = setInterval(() => {
     try {
       const t = popupYTPlayer.getCurrentTime ? popupYTPlayer.getCurrentTime() : 0;
-      if (t >= stop) { popupYTPlayer.pauseVideo(); clearInterval(clipStopTimer); clipStopTimer = null; }
+      if (t >= stop) popupOnActionEnded();
     } catch (e) {}
   }, 150);
+}
+
+// Al terminar una acción en el reproductor centrado: pasar sola a la siguiente
+// (encadena todo el listado). Si es la última, pausa.
+function popupOnActionEnded() {
+  if (clipStopTimer) { clearInterval(clipStopTimer); clipStopTimer = null; }
+  if (activePlayIdx >= 0 && activePlayIdx < activePlaylist.length - 1) {
+    playVideoClipAt(activePlayIdx + 1);
+  } else {
+    try { if (popupYTPlayer && popupYTPlayer.pauseVideo) popupYTPlayer.pauseVideo(); } catch (e) {}
+  }
 }
 
 // ═══════════════════════════════════════════════════════
