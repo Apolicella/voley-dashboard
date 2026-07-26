@@ -723,18 +723,38 @@
   }
 
   /* ── REPRODUCTOR DE VIDEO FLOTANTE ─────────────────────── */
+  .video-player-backdrop {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.66);
+    z-index: 590; backdrop-filter: blur(2px);
+  }
   .video-player-wrap {
     position: fixed;
-    bottom: 20px;
-    right: 20px;
-    width: 380px;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: min(720px, 94vw);
+    max-height: 92vh;
     background: var(--bg2);
     border: 1px solid var(--accent);
-    border-radius: 10px;
+    border-radius: 12px;
     overflow: hidden;
     z-index: 600;
-    box-shadow: 0 16px 50px rgba(0,0,0,0.6);
+    box-shadow: 0 24px 70px rgba(0,0,0,0.7);
+    display: flex; flex-direction: column;
   }
+  .video-player-wrap .video-player { aspect-ratio: 16 / 9; width: 100%; background:#000; }
+  .video-player-timing {
+    display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+    padding: 7px 12px; background: var(--bg2); border-bottom: 1px solid var(--border);
+    font-size: 12px; color: var(--text-dim);
+  }
+  .video-player-timing .vpt-lbl { font-weight: 700; }
+  .video-player-timing button {
+    width: 24px; height: 24px; border-radius: 6px; border: 1px solid var(--border);
+    background: var(--bg3); color: var(--text); cursor: pointer; font-weight: 700; font-size: 14px;
+    display: inline-flex; align-items: center; justify-content: center;
+  }
+  .video-player-timing button:hover { border-color: var(--accent); color: var(--accent); }
+  .video-player-timing .vpt-val { min-width: 26px; text-align: center; font-weight: 700; color: var(--text); }
   .video-player-header {
     display: flex;
     flex-direction: column;
@@ -2787,6 +2807,7 @@ function recCourtSVG(pk, list) {
 function openRecZonePopup(pk, zone) {
   const list = recListFor(pk).filter(r => r.serve_to === zone);
   if (!list.length) return;
+  return playPlaysDirect(list);
   const EVAL_SYM = { '#':'●','+':'✚','!':'○','-':'✖','=':'✗','/':'∅' };
   const EVAL_COL = { '#':'#3fb950','+':'#a0d080','!':'#8b949e','-':'#f0883e','=':'#f85149','/':'#8b949e' };
   const counts = {};
@@ -2970,6 +2991,7 @@ function atkCourtSVG(pk, list) {
 function openAtkZonePopup(pk, zone) {
   const list = atkListFor(pk).filter(a => a.atk_to === zone);
   if (!list.length) return;
+  return playPlaysDirect(list);
   const EVAL_SYM = { '#':'●','+':'✚','!':'○','-':'✖','=':'✗','/':'∅' };
   const EVAL_COL = { '#':'#3fb950','+':'#a0d080','!':'#8b949e','-':'#f0883e','=':'#f85149','/':'#f0883e' };
   const counts = {};
@@ -3878,6 +3900,33 @@ function updateNavLabel() {
   }
 }
 
+// Abre el reproductor centrado directamente con una lista de jugadas (sin listado intermedio)
+function playPlaysDirect(list) {
+  if (!list || !list.length) return;
+  activePlaylistAll = list;
+  activeEvalFilter  = null;
+  activePlaylist    = list;
+  const bl = document.getElementById('popup-before-lbl'); if (bl) bl.textContent = vrBefore + 's';
+  const al = document.getElementById('popup-after-lbl');  if (al) al.textContent = vrAfter + 's';
+  const ip = document.getElementById('video-inline-playlist'); if (ip) ip.style.display = 'none';
+  playVideoClipAt(0);
+}
+
+function closeFloatingPlayer() {
+  const w = document.getElementById('video-player-wrap'); if (w) w.style.display = 'none';
+  const b = document.getElementById('video-player-backdrop'); if (b) b.style.display = 'none';
+  stopVideoClip();
+}
+
+// Ajusta segundos antes/después en el reproductor centrado y re-reproduce
+function popupSetTiming(which, delta) {
+  if (which === 'before') vrBefore = Math.max(0, Math.min(30, vrBefore + delta));
+  else                    vrAfter  = Math.max(0, Math.min(30, vrAfter + delta));
+  const bl = document.getElementById('popup-before-lbl'); if (bl) bl.textContent = vrBefore + 's';
+  const al = document.getElementById('popup-after-lbl');  if (al) al.textContent = vrAfter + 's';
+  replayCurrentClip();
+}
+
 function playVideoClip(centerTime, youtubeId) {
   const wrap = document.getElementById('video-player-wrap');
   if (!wrap) return;
@@ -3886,6 +3935,7 @@ function playVideoClip(centerTime, youtubeId) {
     return;
   }
   wrap.style.display = 'block';
+  const bd = document.getElementById('video-player-backdrop'); if (bd) bd.style.display = 'block';
 
   const BEFORE = vrBefore, AFTER = vrAfter; // usa el mismo ajuste antes/después
   const start = Math.max(0, centerTime - BEFORE);
@@ -5253,6 +5303,9 @@ function openZonePopup(rot, zone) {
 
   if (filtered.length === 0) return;
 
+  // Clic en zona → abrir el reproductor centrado directamente con estos ataques
+  return playPlaysDirect(filtered);
+
   // Agrupar por jugador (y por zona si estamos viendo todas las zonas)
   const byPlayer = {};
   for (const d of filtered) {
@@ -5364,20 +5417,31 @@ if (firebaseConfigured()) {
 </div>
 
 <!-- REPRODUCTOR DE VIDEO FLOTANTE -->
+<div id="video-player-backdrop" class="video-player-backdrop" style="display:none" onclick="closeFloatingPlayer()"></div>
 <div id="video-player-wrap" class="video-player-wrap" style="display:none">
   <div class="video-player-header">
     <div class="video-player-header-text">
       <span>🎬 <span id="video-current-desc">Reproduciendo jugada</span></span>
       <span id="video-nav-label" style="color:var(--accent)"></span>
     </div>
-    <div style="display:flex;gap:8px">
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
       <button class="video-player-btn" onclick="navPlay(-1)" title="Jugada anterior">◀ Anterior</button>
       <button class="video-player-btn" onclick="toggleInlinePlaylist()" title="Ver todas las jugadas de esta selección">☰ Lista</button>
-      <button class="video-player-btn" onclick="replayCurrentClip()" title="Repetir desde 5s antes">↺ Repetir</button>
+      <button class="video-player-btn" onclick="replayCurrentClip()" title="Repetir desde el inicio de la acción">↺ Repetir</button>
       <button class="video-player-btn" onclick="navPlay(1)" title="Jugada siguiente">Siguiente ▶</button>
       <button class="video-player-btn" onclick="toggleVideoFullscreen()" title="Pantalla completa (con controles)">⛶ Ampliar</button>
-      <button class="video-player-btn" onclick="document.getElementById('video-player-wrap').style.display='none';stopVideoClip()">✕ Cerrar</button>
+      <button class="video-player-btn" onclick="closeFloatingPlayer()">✕ Cerrar</button>
     </div>
+  </div>
+  <div class="video-player-timing">
+    <span class="vpt-lbl">⏱ Antes</span>
+    <button onclick="popupSetTiming('before',-1)" title="Menos tiempo antes">−</button>
+    <span class="vpt-val" id="popup-before-lbl">3s</span>
+    <button onclick="popupSetTiming('before',1)" title="Más tiempo antes">+</button>
+    <span class="vpt-lbl" style="margin-left:10px">Después</span>
+    <button onclick="popupSetTiming('after',-1)" title="Menos tiempo después">−</button>
+    <span class="vpt-val" id="popup-after-lbl">3s</span>
+    <button onclick="popupSetTiming('after',1)" title="Más tiempo después">+</button>
   </div>
   <div id="video-inline-playlist" class="video-inline-playlist" style="display:none"></div>
   <div id="video-player" class="video-player"></div>
