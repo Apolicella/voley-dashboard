@@ -1830,6 +1830,32 @@
   .db-row .db-vid-status { font-size:11px; color:var(--text-dim); }
   .db-empty { color:var(--text-dim); text-align:center; padding:50px 0; }
   #section-video { max-width:900px; margin:0 auto; padding:24px 32px; }
+  /* ── Entrenamientos ── */
+  #section-training { max-width:1000px; margin:0 auto; padding:22px 32px 70px; }
+  .tr-intro { display:flex; justify-content:space-between; align-items:center; gap:16px; flex-wrap:wrap; margin-bottom:18px; }
+  .tr-intro p { color:var(--text-dim); font-size:13px; line-height:1.5; max-width:640px; margin:0; }
+  .tr-status { font-size:12px; color:var(--accent); white-space:nowrap; font-weight:600; }
+  .tr-weeks { display:flex; gap:8px; flex-wrap:wrap; align-items:center; border-bottom:2px solid var(--border); padding-bottom:12px; margin-bottom:20px; }
+  .tr-week-tab { display:inline-flex; align-items:center; gap:8px; background:var(--bg2); border:1.5px solid var(--border);
+    border-radius:11px; padding:9px 15px; font-size:14px; font-weight:700; color:var(--text-dim); cursor:pointer; transition:all .15s; }
+  .tr-week-tab:hover { color:var(--text); }
+  .tr-week-tab.active { background:#1f6f4322; border-color:var(--accent); color:var(--accent); }
+  .tr-week-del { font-size:12px; opacity:.5; border-radius:50%; width:18px; height:18px; display:inline-flex; align-items:center; justify-content:center; }
+  .tr-week-del:hover { opacity:1; background:#f8514933; color:var(--red); }
+  .tr-week-add { background:none; border:1.5px dashed var(--border); border-radius:11px; color:var(--text-dim);
+    padding:9px 14px; font-size:14px; font-weight:700; cursor:pointer; transition:all .15s; }
+  .tr-week-add:hover { border-color:var(--accent); color:var(--accent); }
+  .tr-cards { display:grid; grid-template-columns:repeat(auto-fill, minmax(320px,1fr)); gap:18px; }
+  .tr-card { background:var(--bg2); border:1px solid var(--border); border-radius:14px; padding:14px; display:flex; flex-direction:column; }
+  .tr-card-head { display:flex; gap:8px; align-items:center; margin-bottom:10px; }
+  .tr-title { flex:1; background:var(--bg3); border:1px solid var(--border); border-radius:9px; color:var(--text);
+    padding:9px 11px; font-size:15px; font-weight:700; }
+  .tr-title:focus, .tr-content:focus { outline:none; border-color:var(--accent); }
+  .tr-card-del { background:transparent; border:none; color:var(--text-dim); font-size:15px; cursor:pointer; padding:4px 7px; border-radius:6px; }
+  .tr-card-del:hover { background:#f8514922; color:var(--red); }
+  .tr-content { width:100%; box-sizing:border-box; background:var(--bg3); border:1px solid var(--border); border-radius:9px;
+    color:var(--text); padding:11px 12px; font-size:13.5px; line-height:1.55; font-family:inherit; resize:vertical; min-height:90px; }
+  .tr-empty { color:var(--text-dim); text-align:center; padding:44px 0; font-size:14px; }
 </style>
 </head>
 <body>
@@ -1887,6 +1913,10 @@
       <div class="hc-icon">🎬</div><div class="hc-name">Sala de Video</div>
       <div class="hc-desc">Mirá y filtrá todas las jugadas en video, sincronizadas con el scout.</div>
     </div>
+    <div class="home-card" onclick="goToSection('training')">
+      <div class="hc-icon">📅</div><div class="hc-name">Entrenamientos</div>
+      <div class="hc-desc">Planificá los entrenamientos de la semana. Editable por todos, sin necesidad de ingresar.</div>
+    </div>
   </div>
 </div>
 
@@ -1940,6 +1970,15 @@
   </div>
   <button class="btn primary" style="font-size:15px; padding:12px 24px" onclick="openVideoRoom()">🎬 Abrir Sala de Video</button>
   <p style="color:var(--text-dim); font-size:13px; margin-top:12px">Se abre con el equipo y los partidos seleccionados.</p>
+</div>
+
+<!-- SECCIÓN: ENTRENAMIENTOS (editable por todos, sin login) -->
+<div id="section-training" style="display:none">
+  <div class="tr-intro">
+    <p>Planificá los entrenamientos de la semana. Cada semana tiene sus entrenamientos; escribí y editá libremente. <b>Esta sección la puede editar cualquiera</b> (no hace falta ingresar) y se comparte con todos.</p>
+    <span class="tr-status" id="tr-status"></span>
+  </div>
+  <div id="training-body"></div>
 </div>
 
 <script>
@@ -3431,23 +3470,168 @@ function matchLabelWithDate(f) {
 
 // ── Navegación entre secciones ──
 let appView = 'home';
+// ═══════════════════════════════════════════════════════
+//  ENTRENAMIENTOS (planificación semanal, editable por TODOS)
+//  Se guarda en un nodo aparte de Firebase (escritura abierta) + localStorage.
+// ═══════════════════════════════════════════════════════
+const TRAINING_NODE = 'entrenamientos';
+let trainingData    = { weeks: [] };
+let trainingWeekIdx = 0;
+let trainingSuppress = null;
+let trainingSaveTimer = null;
+
+function trMakeId(p) { return p + Date.now().toString(36) + Math.random().toString(36).slice(2, 5); }
+
+function normalizeTraining(d) {
+  d = d || {};
+  const weeks = Array.isArray(d.weeks) ? d.weeks : [];
+  return { weeks: weeks.map(w => ({
+    id: w.id || trMakeId('w'),
+    name: w.name || 'Semana',
+    sessions: Array.isArray(w.sessions) ? w.sessions.map(s => ({
+      id: s.id || trMakeId('s'), name: s.name || '', content: s.content || ''
+    })) : []
+  })) };
+}
+
+function loadTrainingLocal() {
+  try { const raw = localStorage.getItem('entrenamientos_v1'); if (raw) trainingData = normalizeTraining(JSON.parse(raw)); } catch (e) {}
+}
+
+function setTrainingStatus(txt) { const el = document.getElementById('tr-status'); if (el) el.textContent = txt || ''; }
+
+// ── Sincronización propia (nodo separado, sin login) ──
+function initTrainingSync() {
+  if (!fbReady || !fbDb) return;
+  fbDb.ref(TRAINING_NODE).on('value', onTrainingSnapshot, e => console.warn('Entrenamientos: no se pudo leer', e));
+}
+function onTrainingSnapshot(snap) {
+  const raw = snap.val();
+  if (raw == null) return;
+  if (trainingSuppress && raw === trainingSuppress) { trainingSuppress = null; return; } // eco propio
+  let data;
+  try { data = (typeof raw === 'string') ? JSON.parse(raw) : raw; } catch (e) { return; }
+  trainingData = normalizeTraining(data);
+  try { localStorage.setItem('entrenamientos_v1', JSON.stringify(trainingData)); } catch (e) {}
+  // No pisar lo que se está escribiendo: solo re-render si no hay un campo con foco
+  const active = document.activeElement;
+  const typing = active && active.classList && active.classList.contains('tr-input');
+  if (appView === 'training' && !typing) renderTraining();
+}
+function markTrainingDirty() {
+  try { localStorage.setItem('entrenamientos_v1', JSON.stringify(trainingData)); } catch (e) {}
+  if (trainingSaveTimer) clearTimeout(trainingSaveTimer);
+  trainingSaveTimer = setTimeout(saveTraining, 700);
+  setTrainingStatus('Guardando…');
+}
+function saveTraining() {
+  if (!fbReady || !fbDb) { setTrainingStatus('Guardado en esta compu (sin nube)'); return; }
+  let payload;
+  try { payload = JSON.stringify(trainingData); } catch (e) { return; }
+  trainingSuppress = payload;
+  fbDb.ref(TRAINING_NODE).set(payload)
+    .then(() => setTrainingStatus('Guardado ✓ (compartido)'))
+    .catch(e => {
+      console.warn('Entrenamientos: no se pudo guardar en la nube', e);
+      setTrainingStatus('Guardado en esta compu — falta habilitar la regla "entrenamientos" en Firebase para compartir');
+    });
+}
+
+// ── Render ──
+function renderTraining() {
+  const wrap = document.getElementById('training-body');
+  if (!wrap) return;
+  const weeks = trainingData.weeks;
+  if (trainingWeekIdx >= weeks.length) trainingWeekIdx = Math.max(0, weeks.length - 1);
+
+  const weekTabs = weeks.map((w, i) => `
+    <button class="tr-week-tab ${i === trainingWeekIdx ? 'active' : ''}" onclick="trainingSelectWeek(${i})">
+      <span ondblclick="event.stopPropagation();trainingRenameWeek(${i})" title="Doble clic para renombrar">${escHtml(w.name)}</span>
+      <span class="tr-week-del" onclick="event.stopPropagation();trainingDeleteWeek(${i})" title="Borrar semana">✕</span>
+    </button>`).join('') + `<button class="tr-week-add" onclick="trainingAddWeek()" title="Agregar semana">+ Semana</button>`;
+
+  let body;
+  if (!weeks.length) {
+    body = '<div class="tr-empty">No hay semanas todavía. Tocá "+ Semana" para empezar a planificar.</div>';
+  } else {
+    const w = weeks[trainingWeekIdx];
+    const cards = w.sessions.map((s, si) => `
+      <div class="tr-card">
+        <div class="tr-card-head">
+          <input class="tr-input tr-title" value="${escHtml(s.name)}" placeholder="Nombre del entrenamiento (ej: Lunes · Técnica)"
+            oninput="trainingEdit(${si},'name',this.value)">
+          <button class="tr-card-del" onclick="trainingDeleteSession(${si})" title="Borrar entrenamiento">✕</button>
+        </div>
+        <textarea class="tr-input tr-content" placeholder="Planificá acá: objetivos, ejercicios, series, tiempos, materiales…"
+          oninput="trainingEdit(${si},'content',this.value); autoGrow(this)">${escHtml(s.content)}</textarea>
+      </div>`).join('');
+    body = `<div class="tr-cards">${cards || '<div class="tr-empty">Semana sin entrenamientos. Agregá el primero.</div>'}</div>
+      <button class="btn primary" onclick="trainingAddSession()" style="margin-top:16px">+ Agregar entrenamiento</button>`;
+  }
+  wrap.innerHTML = `<div class="tr-weeks">${weekTabs}</div><div class="tr-sessions">${body}</div>`;
+  wrap.querySelectorAll('.tr-content').forEach(autoGrow);
+}
+function autoGrow(el) { if (!el) return; el.style.height = 'auto'; el.style.height = Math.max(90, el.scrollHeight) + 'px'; }
+
+function trainingSelectWeek(i) { trainingWeekIdx = i; renderTraining(); }
+function trainingAddWeek() {
+  const n = trainingData.weeks.length + 1;
+  const name = prompt('Nombre de la semana (ej: Semana 1, o "18–24 mar"):', 'Semana ' + n);
+  if (name === null) return;
+  trainingData.weeks.push({ id: trMakeId('w'), name: name.trim() || ('Semana ' + n), sessions: [] });
+  trainingWeekIdx = trainingData.weeks.length - 1;
+  renderTraining(); markTrainingDirty();
+}
+function trainingRenameWeek(i) {
+  const w = trainingData.weeks[i]; if (!w) return;
+  const name = prompt('Nuevo nombre de la semana:', w.name);
+  if (name === null) return;
+  w.name = name.trim() || w.name;
+  renderTraining(); markTrainingDirty();
+}
+function trainingDeleteWeek(i) {
+  const w = trainingData.weeks[i]; if (!w) return;
+  if (!confirm('¿Borrar "' + w.name + '" y todos sus entrenamientos?')) return;
+  trainingData.weeks.splice(i, 1);
+  if (trainingWeekIdx >= trainingData.weeks.length) trainingWeekIdx = Math.max(0, trainingData.weeks.length - 1);
+  renderTraining(); markTrainingDirty();
+}
+function trainingAddSession() {
+  const w = trainingData.weeks[trainingWeekIdx]; if (!w) return;
+  w.sessions.push({ id: trMakeId('s'), name: '', content: '' });
+  renderTraining(); markTrainingDirty();
+}
+function trainingDeleteSession(si) {
+  const w = trainingData.weeks[trainingWeekIdx]; if (!w) return;
+  if (!confirm('¿Borrar este entrenamiento?')) return;
+  w.sessions.splice(si, 1);
+  renderTraining(); markTrainingDirty();
+}
+// Editar sin re-render (para no perder el foco/cursor del campo)
+function trainingEdit(si, field, val) {
+  const w = trainingData.weeks[trainingWeekIdx]; if (!w || !w.sessions[si]) return;
+  w.sessions[si][field] = val;
+  markTrainingDirty();
+}
+
 function goToSection(s) {
   appView = s;
   document.getElementById('home-screen').style.display = 'none';
   document.getElementById('section-bar').style.display = '';
-  const titles = { plan: '📋 Plan de Juego', database: '🗂️ Base de Datos', video: '🎬 Sala de Video' };
+  const titles = { plan: '📋 Plan de Juego', database: '🗂️ Base de Datos', video: '🎬 Sala de Video', training: '📅 Entrenamientos' };
   document.getElementById('section-title-txt').textContent = titles[s] || '';
-  ['plan', 'database', 'video'].forEach(v => { const el = document.getElementById('section-' + v); if (el) el.style.display = v === s ? '' : 'none'; });
+  ['plan', 'database', 'video', 'training'].forEach(v => { const el = document.getElementById('section-' + v); if (el) el.style.display = v === s ? '' : 'none'; });
   ensureSelectionValid();
   if (s === 'database') renderDatabase();
   if (s === 'plan') { renderSelectors(); render(); }
   if (s === 'video') renderSelectors();
+  if (s === 'training') renderTraining();
 }
 function goHome() {
   appView = 'home';
   document.getElementById('home-screen').style.display = '';
   document.getElementById('section-bar').style.display = 'none';
-  ['plan', 'database', 'video'].forEach(v => { const el = document.getElementById('section-' + v); if (el) el.style.display = 'none'; });
+  ['plan', 'database', 'video', 'training'].forEach(v => { const el = document.getElementById('section-' + v); if (el) el.style.display = 'none'; });
 }
 
 // ── Selección de equipo + partidos ──
@@ -4759,6 +4943,7 @@ function initFirebase() {
     fbReady = true;
     fbAuth.onAuthStateChanged(u => { fbUser = u; updateAuthUI(); });
     fbDb.ref(CLOUD_NODE).on('value', onRemoteSnapshot, err => console.warn('Error leyendo la nube:', err));
+    initTrainingSync(); // entrenamientos: nodo aparte, editable por todos
   } catch (e) {
     console.error('No se pudo iniciar Firebase:', e);
   }
@@ -5407,6 +5592,7 @@ function closeZonePopup() {
 //  INICIALIZACIÓN (al final: todas las constantes ya están declaradas)
 // ═══════════════════════════════════════════════════════
 loadPersistedState();                                  // arma planes desde localStorage (si hay)
+loadTrainingLocal();                                   // entrenamientos guardados en esta compu
 if (!planes.length && EMBEDDED_PROJECT) applyProject(EMBEDDED_PROJECT);
 if (!planes.length) { planes = [ makePlan('Plan 1') ]; activePlanIdx = 0; state = planes[0].data; }
 
