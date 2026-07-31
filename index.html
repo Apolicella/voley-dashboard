@@ -741,69 +741,61 @@
     box-shadow: 0 24px 70px rgba(0,0,0,0.7);
     display: flex; flex-direction: column;
   }
-  .video-player-wrap .video-player { aspect-ratio: 16 / 9; width: 100%; background:#000; }
-  .video-player-timing {
-    display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
-    padding: 7px 12px; background: var(--bg2); border-bottom: 1px solid var(--border);
-    font-size: 12px; color: var(--text-dim);
-  }
-  .video-player-timing .vpt-lbl { font-weight: 700; }
-  .video-player-timing button {
-    width: 24px; height: 24px; border-radius: 6px; border: 1px solid var(--border);
-    background: var(--bg3); color: var(--text); cursor: pointer; font-weight: 700; font-size: 14px;
-    display: inline-flex; align-items: center; justify-content: center;
-  }
-  .video-player-timing button:hover { border-color: var(--accent); color: var(--accent); }
-  .video-player-timing .vpt-val { min-width: 26px; text-align: center; font-weight: 700; color: var(--text); }
+  .video-player-wrap .video-player { aspect-ratio: 16 / 9; width: 100%; background:#000; max-height:none; }
   .video-player-header {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    padding: 8px 12px;
-    background: var(--bg3);
-    border-bottom: 1px solid var(--border);
-    font-family: 'Barlow Condensed', sans-serif;
-    font-size: 12px;
-    font-weight: 700;
-    letter-spacing: .5px;
-    color: var(--text);
+    display: flex; justify-content: space-between; align-items: center; gap: 10px;
+    padding: 11px 16px; background: var(--bg3); border-bottom: 1px solid var(--border);
+    font-size: 14px; font-weight: 700; color: var(--text);
   }
-  .video-player-header-text {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 10px;
-    overflow: hidden;
+  .video-player-header-text { display: flex; align-items: baseline; gap: 10px; overflow: hidden; }
+  .video-player-header-text > span:first-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  #video-nav-label { color: var(--accent); font-size: 12px; font-weight: 700; white-space: nowrap; }
+  .vp-x {
+    background: transparent; border: none; color: var(--text-dim); font-size: 18px; cursor: pointer;
+    line-height: 1; padding: 4px 6px; border-radius: 6px; transition: all .15s;
   }
-  .video-player-header-text span:first-child {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    flex: 1;
+  .vp-x:hover { background: #f8514922; color: var(--red); }
+  /* Controles ABAJO */
+  .video-player-controls {
+    display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap;
+    padding: 12px 16px; background: var(--bg2); border-top: 1px solid var(--border);
   }
-  .video-player-header > div:last-child {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
+  .vp-nav { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .vp-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 13px; font-weight: 700; background: var(--bg3);
+    border: 1px solid var(--border); border-radius: 10px; color: var(--text);
+    padding: 9px 15px; cursor: pointer; transition: all .15s;
   }
-  .video-player-btn {
-    font-family: 'Barlow Condensed', sans-serif;
-    font-size: 11px;
-    font-weight: 700;
-    background: var(--bg2);
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    color: var(--text-dim);
-    padding: 3px 8px;
-    cursor: pointer;
+  .vp-btn:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-1px); }
+  .vp-btn:active { transform: translateY(0); }
+  .vp-btn-accent { background: var(--accent); border-color: var(--accent); color: #0d1117; }
+  .vp-btn-accent:hover { filter: brightness(1.12); color: #0d1117; transform: translateY(-1px); }
+  .vp-timing {
+    display: flex; align-items: center; gap: 7px; flex-wrap: wrap;
+    background: var(--bg3); border: 1px solid var(--border); border-radius: 10px;
+    padding: 6px 11px; font-size: 12px; color: var(--text-dim);
+  }
+  .vp-timing .vpt-lbl { font-weight: 700; }
+  .vp-timing button {
+    width: 24px; height: 24px; border-radius: 7px; border: 1px solid var(--border);
+    background: var(--bg2); color: var(--text); cursor: pointer; font-weight: 700; font-size: 15px;
+    display: inline-flex; align-items: center; justify-content: center; transition: all .12s;
+  }
+  .vp-timing button:hover { border-color: var(--accent); color: var(--accent); }
+  .vp-timing .vpt-val { min-width: 26px; text-align: center; font-weight: 700; color: var(--text); }
+  /* boton "ver todas" al lado del nombre del jugador */
+  .rc-playall {
+    background: var(--accent); border: none; color: #0d1117; border-radius: 7px;
+    width: 24px; height: 24px; font-size: 11px; cursor: pointer; margin-right: 7px;
+    display: inline-flex; align-items: center; justify-content: center; vertical-align: middle;
     transition: all .15s;
   }
-  .video-player-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .rc-playall:hover { filter: brightness(1.15); transform: scale(1.08); }
   .video-player {
     width: 100%;
     display: block;
     background: #000;
-    max-height: 280px;
   }
 
   /* Lista desplegable de jugadas dentro del reproductor */
@@ -870,14 +862,14 @@
   }
 
   /* Cuando el wrapper completo entra en fullscreen del navegador,
-     mantenemos el header con los botones siempre visible */
+     el video ocupa el espacio y los controles de abajo quedan visibles */
   .video-player-wrap:fullscreen {
     width: 100vw;
     height: 100vh;
     display: flex;
     flex-direction: column;
-    bottom: auto;
-    right: auto;
+    top: auto; left: auto; transform: none;
+    max-height: none;
     border-radius: 0;
   }
   .video-player-wrap:fullscreen .video-player {
@@ -885,11 +877,26 @@
     max-height: none;
     width: 100%;
     height: 100%;
+    aspect-ratio: auto;
     object-fit: contain;
   }
-  .video-player-wrap:fullscreen .video-player-header {
-    flex-shrink: 0;
+  .video-player-wrap:fullscreen .video-player-header,
+  .video-player-wrap:fullscreen .video-player-controls { flex-shrink: 0; }
+
+  /* Botones del reproductor de la Sala de Video (se mantiene su estilo) */
+  .video-player-btn {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--text-dim);
+    padding: 3px 8px;
+    cursor: pointer;
+    transition: all .15s;
   }
+  .video-player-btn:hover { border-color: var(--accent); color: var(--accent); }
 
   @media print {
     .video-player-wrap, .playlist-modal-overlay { display: none !important; }
@@ -2725,6 +2732,12 @@ function recSetFilter(pk, field, val) {
   recFilters[pk][field] = val;
   renderRecGrid();
 }
+// Ver en video TODAS las recepciones seleccionadas del jugador (todas las zonas), ordenadas por tiempo
+function recPlayAll(pk) {
+  const list = recListFor(pk).filter(r => r.video_time != null)
+    .slice().sort((a, b) => (a.set_num - b.set_num) || (a.video_time - b.video_time));
+  playPlaysDirect(list);
+}
 
 function recBlankFilter() { return { from: 'ALL', type: 'ALL', res: [] }; }
 function recToggleRes(pk, val) { resToggle(recFilters, pk, val, recBlankFilter); renderRecGrid(); }
@@ -2752,7 +2765,10 @@ function renderRecGrid() {
     const opt = (v, cur, lbl) => `<option value="${v}" ${cur === v ? 'selected' : ''}>${lbl}</option>`;
     return `<div class="rc-card">
       <div class="rc-head">
-        <span class="rc-name">${escHtml(recPlayerName(pk))}</span>
+        <span class="rc-name">
+          <button class="rc-playall" onclick="recPlayAll('${escHtml(pk)}')" title="Ver en video todas las recepciones seleccionadas">▶</button>
+          ${escHtml(recPlayerName(pk))}
+        </span>
         <span class="rc-meta">${list.length} recep. <span class="rc-rm" onclick="recRemovePlayer('${escHtml(pk)}')" title="Quitar">✕</span></span>
       </div>
       <div class="rc-filters">
@@ -2899,6 +2915,12 @@ function atkSetFilter(pk, field, val) {
   atkFilters[pk][field] = val;
   renderAtkGrid();
 }
+// Ver en video TODOS los ataques seleccionados del jugador (todas las zonas), ordenados por tiempo
+function atkPlayAll(pk) {
+  const list = atkListFor(pk).filter(a => a.video_time != null)
+    .slice().sort((a, b) => (a.set_num - b.set_num) || (a.video_time - b.video_time));
+  playPlaysDirect(list);
+}
 
 function atkBlankFilter() { return { combo: 'ALL', res: [], phase: 'ALL' }; }
 function atkToggleRes(pk, val) { resToggle(atkFilters, pk, val, atkBlankFilter); renderAtkGrid(); }
@@ -2933,7 +2955,10 @@ function renderAtkGrid() {
     const effCol = eff >= 50 ? '#3fb950' : eff >= 30 ? '#f0b429' : '#f85149';
     return `<div class="rc-card">
       <div class="rc-head">
-        <span class="rc-name">${escHtml(atkPlayerName(pk))}</span>
+        <span class="rc-name">
+          <button class="rc-playall" onclick="atkPlayAll('${escHtml(pk)}')" title="Ver en video todos los ataques seleccionados">▶</button>
+          ${escHtml(atkPlayerName(pk))}
+        </span>
         <span class="rc-meta">${list.length} atq · <b style="color:${effCol}">${eff}%</b>
           <span class="rc-rm" onclick="atkRemovePlayer('${escHtml(pk)}')" title="Quitar">✕</span></span>
       </div>
@@ -5433,29 +5458,33 @@ if (firebaseConfigured()) {
   <div class="video-player-header">
     <div class="video-player-header-text">
       <span>🎬 <span id="video-current-desc">Reproduciendo jugada</span></span>
-      <span id="video-nav-label" style="color:var(--accent)"></span>
+      <span id="video-nav-label"></span>
     </div>
-    <div style="display:flex;gap:8px;flex-wrap:wrap">
-      <button class="video-player-btn" onclick="navPlay(-1)" title="Jugada anterior">◀ Anterior</button>
-      <button class="video-player-btn" onclick="toggleInlinePlaylist()" title="Ver todas las jugadas de esta selección">☰ Lista</button>
-      <button class="video-player-btn" onclick="replayCurrentClip()" title="Repetir desde el inicio de la acción">↺ Repetir</button>
-      <button class="video-player-btn" onclick="navPlay(1)" title="Jugada siguiente">Siguiente ▶</button>
-      <button class="video-player-btn" onclick="toggleVideoFullscreen()" title="Pantalla completa (con controles)">⛶ Ampliar</button>
-      <button class="video-player-btn" onclick="closeFloatingPlayer()">✕ Cerrar</button>
-    </div>
-  </div>
-  <div class="video-player-timing">
-    <span class="vpt-lbl">⏱ Antes</span>
-    <button onclick="popupSetTiming('before',-1)" title="Menos tiempo antes">−</button>
-    <span class="vpt-val" id="popup-before-lbl">3s</span>
-    <button onclick="popupSetTiming('before',1)" title="Más tiempo antes">+</button>
-    <span class="vpt-lbl" style="margin-left:10px">Después</span>
-    <button onclick="popupSetTiming('after',-1)" title="Menos tiempo después">−</button>
-    <span class="vpt-val" id="popup-after-lbl">3s</span>
-    <button onclick="popupSetTiming('after',1)" title="Más tiempo después">+</button>
+    <button class="vp-x" onclick="closeFloatingPlayer()" title="Cerrar">✕</button>
   </div>
   <div id="video-inline-playlist" class="video-inline-playlist" style="display:none"></div>
   <div id="video-player" class="video-player"></div>
+  <div class="video-player-controls">
+    <div class="vp-nav">
+      <button class="vp-btn" onclick="navPlay(-1)" title="Jugada anterior">◀ Anterior</button>
+      <button class="vp-btn vp-btn-accent" onclick="replayCurrentClip()" title="Repetir la acción">↺ Repetir</button>
+      <button class="vp-btn" onclick="navPlay(1)" title="Jugada siguiente">Siguiente ▶</button>
+    </div>
+    <div class="vp-nav">
+      <div class="vp-timing">
+        <span class="vpt-lbl">⏱ Antes</span>
+        <button onclick="popupSetTiming('before',-1)" title="Menos tiempo antes">−</button>
+        <span class="vpt-val" id="popup-before-lbl">3s</span>
+        <button onclick="popupSetTiming('before',1)" title="Más tiempo antes">+</button>
+        <span class="vpt-lbl">Después</span>
+        <button onclick="popupSetTiming('after',-1)" title="Menos tiempo después">−</button>
+        <span class="vpt-val" id="popup-after-lbl">3s</span>
+        <button onclick="popupSetTiming('after',1)" title="Más tiempo después">+</button>
+      </div>
+      <button class="vp-btn" onclick="toggleInlinePlaylist()" title="Ver todas las jugadas">☰ Lista</button>
+      <button class="vp-btn" onclick="toggleVideoFullscreen()" title="Pantalla completa">⛶ Ampliar</button>
+    </div>
+  </div>
 </div>
 
 <!-- SALA DE VIDEO — vista grande con filtros combinables -->
