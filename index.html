@@ -1862,39 +1862,38 @@
   .tr-sess-badges { display:flex; gap:8px; flex-wrap:wrap; }
   .tr-badge { font-size:12px; font-weight:700; background:var(--bg3); color:var(--text-dim); border-radius:20px; padding:4px 11px; }
   .tr-sess-open { font-size:12px; color:var(--accent); font-weight:800; }
-  /* Detalle de sesión */
-  .tr-back { background:var(--bg2); border:1px solid var(--border); color:var(--text); border-radius:10px;
-    padding:9px 15px; font-size:13px; font-weight:700; cursor:pointer; transition:all .15s; margin-bottom:16px; }
+  /* Detalle de sesión (compacto) */
+  .tr-back { background:var(--bg2); border:1px solid var(--border); color:var(--text); border-radius:9px;
+    padding:7px 13px; font-size:13px; font-weight:700; cursor:pointer; transition:all .15s; margin-bottom:12px; }
   .tr-back:hover { border-color:var(--accent); color:var(--accent); }
-  .tr-sess-headcard { background:var(--bg2); border:1px solid var(--border); border-radius:16px; padding:20px; margin-bottom:22px; }
-  .tr-headbar { display:flex; gap:12px; flex-wrap:wrap; align-items:flex-end; }
-  .tr-field { display:flex; flex-direction:column; gap:6px; }
-  .tr-field-lbl { font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:.05em; color:var(--text-dim); }
-  .tr-headbar .tr-field { flex:0 0 auto; }
-  /* Roster de jugadores de la sesión */
-  .tr-roster { margin-top:18px; border-top:1px solid var(--border); padding-top:16px; }
-  .tr-roster-head { display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; margin-bottom:12px; }
-  .tr-roster-head > span { font-size:13px; font-weight:800; text-transform:uppercase; letter-spacing:.05em; color:var(--text-dim); }
-  .tr-roster-chips { display:flex; flex-wrap:wrap; gap:9px; }
-  .tr-roster-chip { display:inline-flex; align-items:center; gap:9px; background:#1f6f4322; border:1px solid var(--accent);
-    color:var(--text); border-radius:22px; padding:7px 8px 7px 15px; font-size:14px; font-weight:600; }
-  .tr-roster-chip .tr-pl-role { color:var(--text-dim); font-size:11px; font-weight:600; }
-  .tr-roster-chip button { background:rgba(0,0,0,.25); border:none; color:var(--text-dim); width:22px; height:22px;
-    border-radius:50%; cursor:pointer; font-size:12px; display:inline-flex; align-items:center; justify-content:center; }
-  .tr-roster-chip button:hover { background:var(--red); color:#fff; }
-  .tr-add-pl { min-width:210px; cursor:pointer; }
-  /* Ejercicios */
-  .tr-ex-list { display:flex; flex-direction:column; gap:16px; }
-  .tr-ex { background:var(--bg2); border:1px solid var(--border); border-radius:16px; padding:18px; }
-  .tr-ex-head { display:flex; align-items:center; gap:12px; margin-bottom:16px; }
-  .tr-ex-num { flex-shrink:0; width:30px; height:30px; border-radius:50%; background:var(--accent); color:#0d1117;
-    font-weight:800; font-size:14px; display:flex; align-items:center; justify-content:center; }
-  .tr-ex-name { flex:1; font-weight:700; font-size:16px; padding:10px 13px; }
-  .tr-ex-grid { display:grid; grid-template-columns:1fr 200px; gap:13px; margin-bottom:14px; }
-  @media (max-width:560px){ .tr-ex-grid { grid-template-columns:1fr; } }
-  .tr-card-del { background:transparent; border:none; color:var(--text-dim); font-size:16px; cursor:pointer; padding:5px 8px; border-radius:7px; }
+  .tr-sess-bar { display:flex; align-items:center; gap:10px; flex-wrap:wrap; background:var(--bg2);
+    border:1px solid var(--border); border-radius:12px; padding:10px 14px; margin-bottom:10px; }
+  .tr-bar-day { min-width:120px; }
+  .tr-bar-date { min-width:150px; }
+  .tr-bar-sp { flex:1; }
+  .tr-stat { display:inline-flex; align-items:center; gap:5px; font-size:13px; color:var(--text-dim); background:var(--bg3);
+    border-radius:20px; padding:5px 12px; white-space:nowrap; }
+  .tr-stat b { color:var(--text); font-size:14px; }
+  .tr-roster-compact { display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:20px; }
+  .tr-add-pl { min-width:150px; cursor:pointer; padding:8px 11px; }
+  .tr-chips-sm { display:flex; flex-wrap:wrap; gap:6px; }
+  .tr-chip-sm { display:inline-flex; align-items:center; gap:6px; background:#1f6f4322; border:1px solid var(--accent);
+    color:var(--text); border-radius:16px; padding:4px 5px 4px 11px; font-size:12.5px; font-weight:600; }
+  .tr-chip-sm button { background:rgba(0,0,0,.25); border:none; color:var(--text-dim); width:18px; height:18px;
+    border-radius:50%; cursor:pointer; font-size:10px; display:inline-flex; align-items:center; justify-content:center; }
+  .tr-chip-sm button:hover { background:var(--red); color:#fff; }
+  /* Ejercicios (compactos) */
+  .tr-ex-list { display:flex; flex-direction:column; gap:12px; }
+  .tr-ex { background:var(--bg2); border:1px solid var(--border); border-radius:12px; padding:13px; }
+  .tr-ex-head { display:flex; align-items:center; gap:9px; margin-bottom:9px; }
+  .tr-ex-num { flex-shrink:0; width:26px; height:26px; border-radius:50%; background:var(--accent); color:#0d1117;
+    font-weight:800; font-size:13px; display:flex; align-items:center; justify-content:center; }
+  .tr-ex-name { flex:1; font-weight:700; font-size:15px; }
+  .tr-ex-dur { width:96px; flex-shrink:0; text-align:center; }
+  .tr-ex-obj { width:100%; box-sizing:border-box; margin-bottom:9px; }
+  .tr-card-del { background:transparent; border:none; color:var(--text-dim); font-size:15px; cursor:pointer; padding:4px 7px; border-radius:6px; }
   .tr-card-del:hover { background:#f8514922; color:var(--red); }
-  .tr-content { width:100%; box-sizing:border-box; min-height:80px; resize:vertical; line-height:1.55; }
+  .tr-content { width:100%; box-sizing:border-box; min-height:64px; resize:vertical; line-height:1.5; }
   /* Base de jugadores */
   .tr-players-panel { max-width:640px; }
   .tr-players-head { font-size:17px; font-weight:800; margin-bottom:16px; }
@@ -3551,6 +3550,34 @@ function trSessionLabel(s) {
   if (parts.length) return parts.join(' ');
   return s.name || 'Sesión sin fecha';
 }
+// Extrae minutos de un texto libre de duración: "15 min", "15", "1h", "1 h 30", "90m", "1:30"
+function trParseMinutes(str) {
+  if (!str) return 0;
+  const t = ('' + str).toLowerCase().trim();
+  // Formato reloj "1:30" → 1h30
+  const clock = t.match(/^(\d+)\s*:\s*(\d+)$/);
+  if (clock) return parseInt(clock[1], 10) * 60 + parseInt(clock[2], 10);
+  let mins = 0, matched = false;
+  const h = t.match(/(\d+)\s*h/);
+  if (h) { mins += parseInt(h[1], 10) * 60; matched = true; }
+  const m = t.match(/(\d+)\s*(?:m|min)/);
+  if (m) { mins += parseInt(m[1], 10); matched = true; }
+  else if (h) {
+    // minutos sueltos después de las horas: "1 h 30" → 30
+    const after = t.slice(t.indexOf(h[0]) + h[0].length).match(/(\d+)/);
+    if (after) mins += parseInt(after[1], 10);
+  }
+  if (!matched) { const n = t.match(/\d+/); if (n) mins += parseInt(n[0], 10); } // número suelto = minutos
+  return mins;
+}
+function trFmtMinutes(total) {
+  if (!total) return '0 min';
+  const h = Math.floor(total / 60), m = total % 60;
+  if (h && m) return `${h} h ${m} min`;
+  if (h) return `${h} h`;
+  return `${m} min`;
+}
+function trSessionTotalMin(s) { return (s.exercises || []).reduce((a, e) => a + trParseMinutes(e.duration), 0); }
 
 function trNormEx(e) {
   e = e || {};
@@ -3664,23 +3691,25 @@ function autoGrow(el) { if (!el) return; el.style.height = 'auto'; el.style.heig
 // Lista de sesiones de la semana activa
 function renderWeekSessions() {
   const w = trCurWeek(); if (!w) return '';
-  const cards = w.sessions.map(s => `
-    <div class="tr-sess-card" onclick="trainingOpenSession('${s.id}')">
+  const cards = w.sessions.map(s => {
+    const tot = trSessionTotalMin(s);
+    return `<div class="tr-sess-card" onclick="trainingOpenSession('${s.id}')">
       <div class="tr-sess-card-top">
         <span class="tr-sess-name">${escHtml(trSessionLabel(s))}</span>
         <button class="tr-card-del" onclick="event.stopPropagation();trainingDeleteSession('${s.id}')" title="Borrar sesión">✕</button>
       </div>
       <div class="tr-sess-badges">
-        <span class="tr-badge">${s.exercises.length} ejercicio${s.exercises.length === 1 ? '' : 's'}</span>
-        <span class="tr-badge">${s.players.length} jugador${s.players.length === 1 ? '' : 'es'}</span>
+        <span class="tr-badge">🏐 ${s.exercises.length}</span>
+        <span class="tr-badge">👥 ${s.players.length}</span>
+        ${tot ? `<span class="tr-badge">⏱ ${escHtml(trFmtMinutes(tot))}</span>` : ''}
       </div>
-      <div class="tr-sess-open">Abrir →</div>
-    </div>`).join('');
+    </div>`;
+  }).join('');
   return `<div class="tr-sess-grid">${cards || '<div class="tr-empty">Semana sin sesiones. Agregá la primera.</div>'}</div>
-    <button class="btn primary" onclick="trainingAddSession()" style="margin-top:18px">+ Agregar sesión de entrenamiento</button>`;
+    <button class="btn primary" onclick="trainingAddSession()" style="margin-top:16px">+ Agregar sesión de entrenamiento</button>`;
 }
 
-// Detalle de una sesión
+// Detalle de una sesión (vista compacta)
 function renderSessionDetail() {
   const w = trCurWeek(); if (!w) return '';
   const s = w.sessions.find(x => x.id === trainingOpenSessionId);
@@ -3689,42 +3718,41 @@ function renderSessionDetail() {
   const dayOpts = ['<option value="">Día…</option>']
     .concat(TR_DAYS.map(d => `<option ${s.day === d ? 'selected' : ''}>${d}</option>`)).join('');
 
-  // Roster: desplegable para agregar + chips de los agregados
+  // Roster: desplegable compacto para agregar + chips
   const inRoster = new Set(s.players);
   const available = trainingData.players.filter(p => !inRoster.has(p.id));
   const addMenu = trainingData.players.length
     ? (available.length
         ? `<select class="tr-input tr-add-pl" onchange="trainingAddSessionPlayer('${s.id}', this.value); this.value='';">
-             <option value="">+ Agregar jugador…</option>
+             <option value="">＋ Jugador…</option>
              ${available.map(p => `<option value="${p.id}">${escHtml(p.name || '(sin nombre)')}${p.role ? ' — ' + escHtml(p.role) : ''}</option>`).join('')}
            </select>`
-        : '<span class="tr-empty-sm">Ya están todos agregados</span>')
-    : '<span class="tr-empty-sm">Cargá jugadores en la pestaña 👥 Jugadores</span>';
+        : '<span class="tr-empty-sm">Todos agregados</span>')
+    : '<span class="tr-empty-sm">Cargá jugadores en 👥 Jugadores</span>';
   const chips = s.players.map(pid => {
     const p = trPlayerById(pid); if (!p) return '';
-    return `<span class="tr-roster-chip">${escHtml(p.name || '(sin nombre)')}${p.role ? ` <span class="tr-pl-role">${escHtml(p.role)}</span>` : ''}
-      <button onclick="trainingRemoveSessionPlayer('${s.id}','${pid}')" title="Quitar de la sesión">✕</button></span>`;
-  }).join('') || '<span class="tr-empty-sm">Todavía no agregaste jugadores a esta sesión.</span>';
+    return `<span class="tr-chip-sm">${escHtml(p.name || '(sin nombre)')}<button onclick="trainingRemoveSessionPlayer('${s.id}','${pid}')" title="Quitar">✕</button></span>`;
+  }).join('');
 
+  const totalMin = trSessionTotalMin(s);
   const exs = s.exercises.map((e, i) => exerciseCardHTML(s, e, i)).join('');
 
   return `
-    <button class="tr-back" onclick="trainingCloseSession()">← Volver a ${escHtml(w.name)}</button>
-    <div class="tr-sess-headcard">
-      <div class="tr-headbar">
-        <label class="tr-field"><span class="tr-field-lbl">📅 Día</span>
-          <select class="tr-input" onchange="trainingSetSessionMeta('${s.id}','day',this.value)">${dayOpts}</select></label>
-        <label class="tr-field"><span class="tr-field-lbl">🗓 Fecha</span>
-          <input type="date" class="tr-input" value="${escHtml(s.date)}" onchange="trainingSetSessionMeta('${s.id}','date',this.value)"></label>
-      </div>
-      <div class="tr-roster">
-        <div class="tr-roster-head"><span>Jugadores de la sesión</span>${addMenu}</div>
-        <div class="tr-roster-chips">${chips}</div>
-      </div>
+    <button class="tr-back" onclick="trainingCloseSession()">← ${escHtml(w.name)}</button>
+    <div class="tr-sess-bar">
+      <select class="tr-input tr-bar-day" onchange="trainingSetSessionMeta('${s.id}','day',this.value)">${dayOpts}</select>
+      <input type="date" class="tr-input tr-bar-date" value="${escHtml(s.date)}" onchange="trainingSetSessionMeta('${s.id}','date',this.value)">
+      <span class="tr-bar-sp"></span>
+      <span class="tr-stat" title="Jugadores participando">👥 <b>${s.players.length}</b></span>
+      <span class="tr-stat" title="Tiempo total (suma de las duraciones)">⏱ <b id="tr-total-min">${trFmtMinutes(totalMin)}</b></span>
+      <span class="tr-stat" title="Ejercicios">🏐 <b>${s.exercises.length}</b></span>
     </div>
-    <div class="tr-add-title">Ejercicios</div>
+    <div class="tr-roster-compact">
+      ${addMenu}
+      <div class="tr-chips-sm">${chips || '<span class="tr-empty-sm">Sin jugadores en la sesión.</span>'}</div>
+    </div>
     <div class="tr-ex-list">${exs || '<div class="tr-empty">Sin ejercicios todavía. Agregá el primero.</div>'}</div>
-    <button class="btn primary" onclick="trainingAddExercise('${s.id}')" style="margin-top:16px">+ Agregar ejercicio</button>
+    <button class="btn primary" onclick="trainingAddExercise('${s.id}')" style="margin-top:14px">+ Agregar ejercicio</button>
   `;
 }
 
@@ -3735,19 +3763,14 @@ function exerciseCardHTML(s, e, i) {
       <span class="tr-ex-num">${i + 1}</span>
       <input class="tr-input tr-ex-name" value="${escHtml(e.name)}" placeholder="Nombre del ejercicio"
         oninput="trainingEditEx('${s.id}','${e.id}','name',this.value)">
+      <input class="tr-input tr-ex-dur" value="${escHtml(e.duration)}" placeholder="⏱ min"
+        oninput="trainingEditEx('${s.id}','${e.id}','duration',this.value)">
       <button class="tr-card-del" onclick="trainingDeleteEx('${s.id}','${e.id}')" title="Borrar ejercicio">✕</button>
     </div>
-    <div class="tr-ex-grid">
-      <label class="tr-field"><span class="tr-field-lbl">🎯 Objetivo</span>
-        <input class="tr-input" value="${escHtml(e.objective)}" placeholder="Para qué sirve"
-          oninput="trainingEditEx('${s.id}','${e.id}','objective',this.value)"></label>
-      <label class="tr-field"><span class="tr-field-lbl">⏱ Duración</span>
-        <input class="tr-input" value="${escHtml(e.duration)}" placeholder="ej: 15 min"
-          oninput="trainingEditEx('${s.id}','${e.id}','duration',this.value)"></label>
-    </div>
-    <label class="tr-field"><span class="tr-field-lbl">📝 Explicación</span>
-      <textarea class="tr-input tr-content" placeholder="Cómo se hace el ejercicio…"
-        oninput="trainingEditEx('${s.id}','${e.id}','explanation',this.value); autoGrow(this)">${escHtml(e.explanation)}</textarea></label>
+    <input class="tr-input tr-ex-obj" value="${escHtml(e.objective)}" placeholder="🎯 Objetivo"
+      oninput="trainingEditEx('${s.id}','${e.id}','objective',this.value)">
+    <textarea class="tr-input tr-content" placeholder="📝 Explicación…"
+      oninput="trainingEditEx('${s.id}','${e.id}','explanation',this.value); autoGrow(this)">${escHtml(e.explanation)}</textarea>
   </div>`;
 }
 
@@ -3859,7 +3882,9 @@ function trainingDeleteEx(sid, eid) {
 function trainingEditEx(sid, eid, field, val) {
   const s = trSessionById(sid); if (!s) return;
   const e = s.exercises.find(x => x.id === eid); if (!e) return;
-  e[field] = val; markTrainingDirty(); // sin re-render (mantiene foco)
+  e[field] = val;
+  if (field === 'duration') { const el = document.getElementById('tr-total-min'); if (el) el.textContent = trFmtMinutes(trSessionTotalMin(s)); }
+  markTrainingDirty(); // sin re-render (mantiene foco)
 }
 
 // ── Jugadores (base de datos de la sección) ──
