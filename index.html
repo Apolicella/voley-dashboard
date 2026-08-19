@@ -1830,32 +1830,84 @@
   .db-row .db-vid-status { font-size:11px; color:var(--text-dim); }
   .db-empty { color:var(--text-dim); text-align:center; padding:50px 0; }
   #section-video { max-width:900px; margin:0 auto; padding:24px 32px; }
-  /* ── Entrenamientos ── */
-  #section-training { max-width:1000px; margin:0 auto; padding:22px 32px 70px; }
-  .tr-intro { display:flex; justify-content:space-between; align-items:center; gap:16px; flex-wrap:wrap; margin-bottom:18px; }
+  /* ═══════════ ENTRENAMIENTOS ═══════════ */
+  #section-training { max-width:1040px; margin:0 auto; padding:22px 32px 80px; }
+  .tr-intro { display:flex; justify-content:space-between; align-items:center; gap:16px; flex-wrap:wrap; margin-bottom:20px; }
   .tr-intro p { color:var(--text-dim); font-size:13px; line-height:1.5; max-width:640px; margin:0; }
-  .tr-status { font-size:12px; color:var(--accent); white-space:nowrap; font-weight:600; }
-  .tr-weeks { display:flex; gap:8px; flex-wrap:wrap; align-items:center; border-bottom:2px solid var(--border); padding-bottom:12px; margin-bottom:20px; }
-  .tr-week-tab { display:inline-flex; align-items:center; gap:8px; background:var(--bg2); border:1.5px solid var(--border);
-    border-radius:11px; padding:9px 15px; font-size:14px; font-weight:700; color:var(--text-dim); cursor:pointer; transition:all .15s; }
-  .tr-week-tab:hover { color:var(--text); }
-  .tr-week-tab.active { background:#1f6f4322; border-color:var(--accent); color:var(--accent); }
-  .tr-week-del { font-size:12px; opacity:.5; border-radius:50%; width:18px; height:18px; display:inline-flex; align-items:center; justify-content:center; }
-  .tr-week-del:hover { opacity:1; background:#f8514933; color:var(--red); }
-  .tr-week-add { background:none; border:1.5px dashed var(--border); border-radius:11px; color:var(--text-dim);
-    padding:9px 14px; font-size:14px; font-weight:700; cursor:pointer; transition:all .15s; }
+  .tr-status { font-size:12px; color:var(--accent); white-space:nowrap; font-weight:700; }
+  /* Pestañas de semana + Jugadores */
+  .tr-weeks { display:flex; gap:8px; flex-wrap:wrap; align-items:center; border-bottom:2px solid var(--border); padding-bottom:14px; margin-bottom:24px; }
+  .tr-week-tab { display:inline-flex; align-items:center; gap:9px; background:var(--bg2); border:1.5px solid var(--border);
+    border-radius:12px; padding:10px 17px; font-size:14px; font-weight:700; color:var(--text-dim); cursor:pointer; transition:all .15s; }
+  .tr-week-tab:hover { color:var(--text); border-color:var(--text-dim); }
+  .tr-week-tab.active { background:var(--accent); border-color:var(--accent); color:#0d1117; }
+  .tr-week-del { font-size:12px; opacity:.55; border-radius:50%; width:19px; height:19px; display:inline-flex; align-items:center; justify-content:center; }
+  .tr-week-del:hover { opacity:1; background:#f8514944; color:#fff; }
+  .tr-week-add { background:none; border:1.5px dashed var(--border); border-radius:12px; color:var(--text-dim);
+    padding:10px 15px; font-size:14px; font-weight:700; cursor:pointer; transition:all .15s; }
   .tr-week-add:hover { border-color:var(--accent); color:var(--accent); }
-  .tr-cards { display:grid; grid-template-columns:repeat(auto-fill, minmax(320px,1fr)); gap:18px; }
-  .tr-card { background:var(--bg2); border:1px solid var(--border); border-radius:14px; padding:14px; display:flex; flex-direction:column; }
-  .tr-card-head { display:flex; gap:8px; align-items:center; margin-bottom:10px; }
-  .tr-title { flex:1; background:var(--bg3); border:1px solid var(--border); border-radius:9px; color:var(--text);
-    padding:9px 11px; font-size:15px; font-weight:700; }
-  .tr-title:focus, .tr-content:focus { outline:none; border-color:var(--accent); }
-  .tr-card-del { background:transparent; border:none; color:var(--text-dim); font-size:15px; cursor:pointer; padding:4px 7px; border-radius:6px; }
+  .tr-tabs-spacer { flex:1; }
+  .tr-players-tab.active { background:#58a6ff; border-color:#58a6ff; color:#0d1117; }
+  .tr-empty { color:var(--text-dim); text-align:center; padding:50px 0; font-size:14px; }
+  .tr-empty-sm { color:var(--text-dim); font-size:12.5px; }
+  .tr-meta-sm { color:var(--text-dim); font-size:12px; font-weight:500; margin-left:8px; }
+  .tr-add-title { font-size:13px; font-weight:800; text-transform:uppercase; letter-spacing:.05em; color:var(--text-dim); margin-bottom:14px; }
+  /* Tarjetas de sesión (lista de la semana) */
+  .tr-sess-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(260px,1fr)); gap:16px; }
+  .tr-sess-card { background:var(--bg2); border:1px solid var(--border); border-left:4px solid var(--accent); border-radius:14px;
+    padding:18px; cursor:pointer; transition:all .15s; display:flex; flex-direction:column; gap:10px; }
+  .tr-sess-card:hover { transform:translateY(-2px); box-shadow:0 8px 24px #0006; border-left-color:var(--accent); }
+  .tr-sess-card-top { display:flex; justify-content:space-between; align-items:flex-start; gap:8px; }
+  .tr-sess-name { font-weight:800; font-size:17px; line-height:1.2; }
+  .tr-sess-badges { display:flex; gap:8px; flex-wrap:wrap; }
+  .tr-badge { font-size:12px; font-weight:700; background:var(--bg3); color:var(--text-dim); border-radius:20px; padding:4px 11px; }
+  .tr-sess-open { font-size:12px; color:var(--accent); font-weight:800; }
+  /* Detalle de sesión */
+  .tr-back { background:var(--bg2); border:1px solid var(--border); color:var(--text); border-radius:10px;
+    padding:9px 15px; font-size:13px; font-weight:700; cursor:pointer; transition:all .15s; margin-bottom:16px; }
+  .tr-back:hover { border-color:var(--accent); color:var(--accent); }
+  .tr-sess-headcard { background:var(--bg2); border:1px solid var(--border); border-radius:16px; padding:20px; margin-bottom:22px; }
+  .tr-headbar { display:flex; gap:12px; flex-wrap:wrap; align-items:flex-end; }
+  .tr-field { display:flex; flex-direction:column; gap:6px; }
+  .tr-field-lbl { font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:.05em; color:var(--text-dim); }
+  .tr-headbar .tr-field { flex:0 0 auto; }
+  /* Roster de jugadores de la sesión */
+  .tr-roster { margin-top:18px; border-top:1px solid var(--border); padding-top:16px; }
+  .tr-roster-head { display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; margin-bottom:12px; }
+  .tr-roster-head > span { font-size:13px; font-weight:800; text-transform:uppercase; letter-spacing:.05em; color:var(--text-dim); }
+  .tr-roster-chips { display:flex; flex-wrap:wrap; gap:9px; }
+  .tr-roster-chip { display:inline-flex; align-items:center; gap:9px; background:#1f6f4322; border:1px solid var(--accent);
+    color:var(--text); border-radius:22px; padding:7px 8px 7px 15px; font-size:14px; font-weight:600; }
+  .tr-roster-chip .tr-pl-role { color:var(--text-dim); font-size:11px; font-weight:600; }
+  .tr-roster-chip button { background:rgba(0,0,0,.25); border:none; color:var(--text-dim); width:22px; height:22px;
+    border-radius:50%; cursor:pointer; font-size:12px; display:inline-flex; align-items:center; justify-content:center; }
+  .tr-roster-chip button:hover { background:var(--red); color:#fff; }
+  .tr-add-pl { min-width:210px; cursor:pointer; }
+  /* Ejercicios */
+  .tr-ex-list { display:flex; flex-direction:column; gap:16px; }
+  .tr-ex { background:var(--bg2); border:1px solid var(--border); border-radius:16px; padding:18px; }
+  .tr-ex-head { display:flex; align-items:center; gap:12px; margin-bottom:16px; }
+  .tr-ex-num { flex-shrink:0; width:30px; height:30px; border-radius:50%; background:var(--accent); color:#0d1117;
+    font-weight:800; font-size:14px; display:flex; align-items:center; justify-content:center; }
+  .tr-ex-name { flex:1; font-weight:700; font-size:16px; padding:10px 13px; }
+  .tr-ex-grid { display:grid; grid-template-columns:1fr 200px; gap:13px; margin-bottom:14px; }
+  @media (max-width:560px){ .tr-ex-grid { grid-template-columns:1fr; } }
+  .tr-card-del { background:transparent; border:none; color:var(--text-dim); font-size:16px; cursor:pointer; padding:5px 8px; border-radius:7px; }
   .tr-card-del:hover { background:#f8514922; color:var(--red); }
-  .tr-content { width:100%; box-sizing:border-box; background:var(--bg3); border:1px solid var(--border); border-radius:9px;
-    color:var(--text); padding:11px 12px; font-size:13.5px; line-height:1.55; font-family:inherit; resize:vertical; min-height:90px; }
-  .tr-empty { color:var(--text-dim); text-align:center; padding:44px 0; font-size:14px; }
+  .tr-content { width:100%; box-sizing:border-box; min-height:80px; resize:vertical; line-height:1.55; }
+  /* Base de jugadores */
+  .tr-players-panel { max-width:640px; }
+  .tr-players-head { font-size:17px; font-weight:800; margin-bottom:16px; }
+  .tr-pl-list { display:flex; flex-direction:column; gap:10px; }
+  .tr-pl-row { display:flex; gap:10px; align-items:center; }
+  .tr-pl-row > .tr-input:first-child { flex:1; }
+  .tr-pl-select { min-width:180px; cursor:pointer; }
+  .tr-pl-role { color:var(--text-dim); font-size:11px; }
+  /* Inputs comunes de la sección */
+  .tr-input { background:var(--bg3); border:1px solid var(--border); border-radius:10px; color:var(--text);
+    padding:10px 12px; font-size:14px; font-family:inherit; box-sizing:border-box; }
+  .tr-input:focus { outline:none; border-color:var(--accent); box-shadow:0 0 0 3px #1f6f4322; }
+  select.tr-input { cursor:pointer; }
 </style>
 </head>
 <body>
@@ -3475,23 +3527,67 @@ let appView = 'home';
 //  Se guarda en un nodo aparte de Firebase (escritura abierta) + localStorage.
 // ═══════════════════════════════════════════════════════
 const TRAINING_NODE = 'entrenamientos';
-let trainingData    = { weeks: [] };
+let trainingData    = { players: [], weeks: [] };
 let trainingWeekIdx = 0;
+let trainingView    = 'week';        // 'week' | 'players'
+let trainingOpenSessionId = null;    // sesión abierta en detalle (o null = lista de sesiones)
 let trainingSuppress = null;
 let trainingSaveTimer = null;
 
+const TR_ROLES = ['Armador/a', 'Opuesto/a', 'Central', 'Punta / Receptor', 'Líbero', 'Entrenador/a', 'Otro'];
+const TR_DAYS  = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
+
 function trMakeId(p) { return p + Date.now().toString(36) + Math.random().toString(36).slice(2, 5); }
 
+function trFmtDate(d) {
+  if (!d) return '';
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(d);
+  return m ? `${m[3]}/${m[2]}/${m[1].slice(2)}` : d;
+}
+function trSessionLabel(s) {
+  const parts = [];
+  if (s.day) parts.push(s.day);
+  if (s.date) parts.push(trFmtDate(s.date));
+  if (parts.length) return parts.join(' ');
+  return s.name || 'Sesión sin fecha';
+}
+
+function trNormEx(e) {
+  e = e || {};
+  return {
+    id: e.id || trMakeId('e'),
+    name: e.name || '',
+    explanation: e.explanation || '',
+    objective: e.objective || '',
+    duration: e.duration || '',
+    players: Array.isArray(e.players) ? e.players.slice() : [] // legacy, se migra al roster de la sesión
+  };
+}
 function normalizeTraining(d) {
   d = d || {};
-  const weeks = Array.isArray(d.weeks) ? d.weeks : [];
-  return { weeks: weeks.map(w => ({
+  const players = Array.isArray(d.players)
+    ? d.players.map(p => ({ id: p.id || trMakeId('p'), name: p.name || '', role: p.role || '' }))
+    : [];
+  const weeks = Array.isArray(d.weeks) ? d.weeks.map(w => ({
     id: w.id || trMakeId('w'),
     name: w.name || 'Semana',
-    sessions: Array.isArray(w.sessions) ? w.sessions.map(s => ({
-      id: s.id || trMakeId('s'), name: s.name || '', content: s.content || ''
-    })) : []
-  })) };
+    sessions: Array.isArray(w.sessions) ? w.sessions.map(s => {
+      const exercises = Array.isArray(s.exercises) ? s.exercises.map(trNormEx)
+        : (s.content ? [ trNormEx({ explanation: s.content }) ] : []);
+      // roster de la sesión: lo guardado + (migración) la unión de los jugadores de los ejercicios
+      let roster = Array.isArray(s.players) ? s.players.slice() : [];
+      exercises.forEach(e => e.players.forEach(pid => { if (!roster.includes(pid)) roster.push(pid); }));
+      return {
+        id: s.id || trMakeId('s'),
+        day: s.day || '',
+        date: s.date || '',
+        name: s.name || '', // legado (por si no hay día/fecha)
+        players: roster,
+        exercises: exercises.map(e => ({ id: e.id, name: e.name, explanation: e.explanation, objective: e.objective, duration: e.duration }))
+      };
+    }) : []
+  })) : [];
+  return { players, weeks };
 }
 
 function loadTrainingLocal() {
@@ -3538,6 +3634,8 @@ function saveTraining() {
 }
 
 // ── Render ──
+function trCurWeek() { return trainingData.weeks[trainingWeekIdx] || null; }
+
 function renderTraining() {
   const wrap = document.getElementById('training-body');
   if (!wrap) return;
@@ -3545,40 +3643,148 @@ function renderTraining() {
   if (trainingWeekIdx >= weeks.length) trainingWeekIdx = Math.max(0, weeks.length - 1);
 
   const weekTabs = weeks.map((w, i) => `
-    <button class="tr-week-tab ${i === trainingWeekIdx ? 'active' : ''}" onclick="trainingSelectWeek(${i})">
+    <button class="tr-week-tab ${trainingView === 'week' && i === trainingWeekIdx ? 'active' : ''}" onclick="trainingSelectWeek(${i})">
       <span ondblclick="event.stopPropagation();trainingRenameWeek(${i})" title="Doble clic para renombrar">${escHtml(w.name)}</span>
       <span class="tr-week-del" onclick="event.stopPropagation();trainingDeleteWeek(${i})" title="Borrar semana">✕</span>
     </button>`).join('') + `<button class="tr-week-add" onclick="trainingAddWeek()" title="Agregar semana">+ Semana</button>`;
+  const playersTab = `<button class="tr-week-tab tr-players-tab ${trainingView === 'players' ? 'active' : ''}" onclick="trainingShowPlayers()">👥 Jugadores</button>`;
+  const tabsRow = `<div class="tr-weeks">${weekTabs}<span class="tr-tabs-spacer"></span>${playersTab}</div>`;
 
   let body;
-  if (!weeks.length) {
-    body = '<div class="tr-empty">No hay semanas todavía. Tocá "+ Semana" para empezar a planificar.</div>';
-  } else {
-    const w = weeks[trainingWeekIdx];
-    const cards = w.sessions.map((s, si) => `
-      <div class="tr-card">
-        <div class="tr-card-head">
-          <input class="tr-input tr-title" value="${escHtml(s.name)}" placeholder="Nombre del entrenamiento (ej: Lunes · Técnica)"
-            oninput="trainingEdit(${si},'name',this.value)">
-          <button class="tr-card-del" onclick="trainingDeleteSession(${si})" title="Borrar entrenamiento">✕</button>
-        </div>
-        <textarea class="tr-input tr-content" placeholder="Planificá acá: objetivos, ejercicios, series, tiempos, materiales…"
-          oninput="trainingEdit(${si},'content',this.value); autoGrow(this)">${escHtml(s.content)}</textarea>
-      </div>`).join('');
-    body = `<div class="tr-cards">${cards || '<div class="tr-empty">Semana sin entrenamientos. Agregá el primero.</div>'}</div>
-      <button class="btn primary" onclick="trainingAddSession()" style="margin-top:16px">+ Agregar entrenamiento</button>`;
-  }
-  wrap.innerHTML = `<div class="tr-weeks">${weekTabs}</div><div class="tr-sessions">${body}</div>`;
+  if (trainingView === 'players') body = renderTrainingPlayers();
+  else if (!weeks.length) body = '<div class="tr-empty">No hay semanas todavía. Tocá "+ Semana" para empezar a planificar.</div>';
+  else if (trainingOpenSessionId) body = renderSessionDetail();
+  else body = renderWeekSessions();
+
+  wrap.innerHTML = tabsRow + `<div class="tr-sessions">${body}</div>`;
   wrap.querySelectorAll('.tr-content').forEach(autoGrow);
 }
-function autoGrow(el) { if (!el) return; el.style.height = 'auto'; el.style.height = Math.max(90, el.scrollHeight) + 'px'; }
+function autoGrow(el) { if (!el) return; el.style.height = 'auto'; el.style.height = Math.max(80, el.scrollHeight) + 'px'; }
 
-function trainingSelectWeek(i) { trainingWeekIdx = i; renderTraining(); }
+// Lista de sesiones de la semana activa
+function renderWeekSessions() {
+  const w = trCurWeek(); if (!w) return '';
+  const cards = w.sessions.map(s => `
+    <div class="tr-sess-card" onclick="trainingOpenSession('${s.id}')">
+      <div class="tr-sess-card-top">
+        <span class="tr-sess-name">${escHtml(trSessionLabel(s))}</span>
+        <button class="tr-card-del" onclick="event.stopPropagation();trainingDeleteSession('${s.id}')" title="Borrar sesión">✕</button>
+      </div>
+      <div class="tr-sess-badges">
+        <span class="tr-badge">${s.exercises.length} ejercicio${s.exercises.length === 1 ? '' : 's'}</span>
+        <span class="tr-badge">${s.players.length} jugador${s.players.length === 1 ? '' : 'es'}</span>
+      </div>
+      <div class="tr-sess-open">Abrir →</div>
+    </div>`).join('');
+  return `<div class="tr-sess-grid">${cards || '<div class="tr-empty">Semana sin sesiones. Agregá la primera.</div>'}</div>
+    <button class="btn primary" onclick="trainingAddSession()" style="margin-top:18px">+ Agregar sesión de entrenamiento</button>`;
+}
+
+// Detalle de una sesión
+function renderSessionDetail() {
+  const w = trCurWeek(); if (!w) return '';
+  const s = w.sessions.find(x => x.id === trainingOpenSessionId);
+  if (!s) { trainingOpenSessionId = null; return renderWeekSessions(); }
+
+  const dayOpts = ['<option value="">Día…</option>']
+    .concat(TR_DAYS.map(d => `<option ${s.day === d ? 'selected' : ''}>${d}</option>`)).join('');
+
+  // Roster: desplegable para agregar + chips de los agregados
+  const inRoster = new Set(s.players);
+  const available = trainingData.players.filter(p => !inRoster.has(p.id));
+  const addMenu = trainingData.players.length
+    ? (available.length
+        ? `<select class="tr-input tr-add-pl" onchange="trainingAddSessionPlayer('${s.id}', this.value); this.value='';">
+             <option value="">+ Agregar jugador…</option>
+             ${available.map(p => `<option value="${p.id}">${escHtml(p.name || '(sin nombre)')}${p.role ? ' — ' + escHtml(p.role) : ''}</option>`).join('')}
+           </select>`
+        : '<span class="tr-empty-sm">Ya están todos agregados</span>')
+    : '<span class="tr-empty-sm">Cargá jugadores en la pestaña 👥 Jugadores</span>';
+  const chips = s.players.map(pid => {
+    const p = trPlayerById(pid); if (!p) return '';
+    return `<span class="tr-roster-chip">${escHtml(p.name || '(sin nombre)')}${p.role ? ` <span class="tr-pl-role">${escHtml(p.role)}</span>` : ''}
+      <button onclick="trainingRemoveSessionPlayer('${s.id}','${pid}')" title="Quitar de la sesión">✕</button></span>`;
+  }).join('') || '<span class="tr-empty-sm">Todavía no agregaste jugadores a esta sesión.</span>';
+
+  const exs = s.exercises.map((e, i) => exerciseCardHTML(s, e, i)).join('');
+
+  return `
+    <button class="tr-back" onclick="trainingCloseSession()">← Volver a ${escHtml(w.name)}</button>
+    <div class="tr-sess-headcard">
+      <div class="tr-headbar">
+        <label class="tr-field"><span class="tr-field-lbl">📅 Día</span>
+          <select class="tr-input" onchange="trainingSetSessionMeta('${s.id}','day',this.value)">${dayOpts}</select></label>
+        <label class="tr-field"><span class="tr-field-lbl">🗓 Fecha</span>
+          <input type="date" class="tr-input" value="${escHtml(s.date)}" onchange="trainingSetSessionMeta('${s.id}','date',this.value)"></label>
+      </div>
+      <div class="tr-roster">
+        <div class="tr-roster-head"><span>Jugadores de la sesión</span>${addMenu}</div>
+        <div class="tr-roster-chips">${chips}</div>
+      </div>
+    </div>
+    <div class="tr-add-title">Ejercicios</div>
+    <div class="tr-ex-list">${exs || '<div class="tr-empty">Sin ejercicios todavía. Agregá el primero.</div>'}</div>
+    <button class="btn primary" onclick="trainingAddExercise('${s.id}')" style="margin-top:16px">+ Agregar ejercicio</button>
+  `;
+}
+
+function exerciseCardHTML(s, e, i) {
+  return `
+  <div class="tr-ex">
+    <div class="tr-ex-head">
+      <span class="tr-ex-num">${i + 1}</span>
+      <input class="tr-input tr-ex-name" value="${escHtml(e.name)}" placeholder="Nombre del ejercicio"
+        oninput="trainingEditEx('${s.id}','${e.id}','name',this.value)">
+      <button class="tr-card-del" onclick="trainingDeleteEx('${s.id}','${e.id}')" title="Borrar ejercicio">✕</button>
+    </div>
+    <div class="tr-ex-grid">
+      <label class="tr-field"><span class="tr-field-lbl">🎯 Objetivo</span>
+        <input class="tr-input" value="${escHtml(e.objective)}" placeholder="Para qué sirve"
+          oninput="trainingEditEx('${s.id}','${e.id}','objective',this.value)"></label>
+      <label class="tr-field"><span class="tr-field-lbl">⏱ Duración</span>
+        <input class="tr-input" value="${escHtml(e.duration)}" placeholder="ej: 15 min"
+          oninput="trainingEditEx('${s.id}','${e.id}','duration',this.value)"></label>
+    </div>
+    <label class="tr-field"><span class="tr-field-lbl">📝 Explicación</span>
+      <textarea class="tr-input tr-content" placeholder="Cómo se hace el ejercicio…"
+        oninput="trainingEditEx('${s.id}','${e.id}','explanation',this.value); autoGrow(this)">${escHtml(e.explanation)}</textarea></label>
+  </div>`;
+}
+
+// Base de jugadores (propia de Entrenamientos)
+function renderTrainingPlayers() {
+  const rows = trainingData.players.map(p => {
+    const roleOpts = ['<option value="">Rol…</option>']
+      .concat(TR_ROLES.map(r => `<option ${p.role === r ? 'selected' : ''}>${r}</option>`))
+      .concat(p.role && !TR_ROLES.includes(p.role) ? [`<option selected>${escHtml(p.role)}</option>`] : [])
+      .join('');
+    return `<div class="tr-pl-row">
+      <input class="tr-input" value="${escHtml(p.name)}" placeholder="Nombre del jugador/a"
+        oninput="trainingEditPlayer('${p.id}','name',this.value)">
+      <select class="tr-input tr-pl-select" onchange="trainingEditPlayer('${p.id}','role',this.value)">${roleOpts}</select>
+      <button class="tr-card-del" onclick="trainingDeletePlayer('${p.id}')" title="Quitar jugador">✕</button>
+    </div>`;
+  }).join('');
+  return `<div class="tr-players-panel">
+      <div class="tr-players-head">Base de jugadores <span class="tr-meta-sm">Se usan para asignar a los ejercicios de cada sesión</span></div>
+      <div class="tr-pl-list">${rows || '<div class="tr-empty">Sin jugadores. Agregá el primero.</div>'}</div>
+      <button class="btn primary" onclick="trainingAddPlayer()" style="margin-top:14px">+ Agregar jugador</button>
+    </div>`;
+}
+
+// ── Navegación ──
+function trainingSelectWeek(i) { trainingView = 'week'; trainingOpenSessionId = null; trainingWeekIdx = i; renderTraining(); }
+function trainingShowPlayers() { trainingView = 'players'; renderTraining(); }
+function trainingOpenSession(sid) { trainingOpenSessionId = sid; renderTraining(); }
+function trainingCloseSession() { trainingOpenSessionId = null; renderTraining(); }
+
+// ── Semanas ──
 function trainingAddWeek() {
   const n = trainingData.weeks.length + 1;
   const name = prompt('Nombre de la semana (ej: Semana 1, o "18–24 mar"):', 'Semana ' + n);
   if (name === null) return;
   trainingData.weeks.push({ id: trMakeId('w'), name: name.trim() || ('Semana ' + n), sessions: [] });
+  trainingView = 'week'; trainingOpenSessionId = null;
   trainingWeekIdx = trainingData.weeks.length - 1;
   renderTraining(); markTrainingDirty();
 }
@@ -3591,27 +3797,89 @@ function trainingRenameWeek(i) {
 }
 function trainingDeleteWeek(i) {
   const w = trainingData.weeks[i]; if (!w) return;
-  if (!confirm('¿Borrar "' + w.name + '" y todos sus entrenamientos?')) return;
+  if (!confirm('¿Borrar "' + w.name + '" y todas sus sesiones?')) return;
   trainingData.weeks.splice(i, 1);
   if (trainingWeekIdx >= trainingData.weeks.length) trainingWeekIdx = Math.max(0, trainingData.weeks.length - 1);
+  trainingOpenSessionId = null;
   renderTraining(); markTrainingDirty();
 }
+
+// ── Sesiones ──
 function trainingAddSession() {
-  const w = trainingData.weeks[trainingWeekIdx]; if (!w) return;
-  w.sessions.push({ id: trMakeId('s'), name: '', content: '' });
+  const w = trCurWeek(); if (!w) return;
+  const s = { id: trMakeId('s'), day: '', date: '', name: '', players: [], exercises: [] };
+  w.sessions.push(s);
+  trainingOpenSessionId = s.id; // abrir la sesión nueva directamente
   renderTraining(); markTrainingDirty();
 }
-function trainingDeleteSession(si) {
-  const w = trainingData.weeks[trainingWeekIdx]; if (!w) return;
-  if (!confirm('¿Borrar este entrenamiento?')) return;
-  w.sessions.splice(si, 1);
+function trainingDeleteSession(sid) {
+  const w = trCurWeek(); if (!w) return;
+  if (!confirm('¿Borrar esta sesión y sus ejercicios?')) return;
+  w.sessions = w.sessions.filter(s => s.id !== sid);
+  if (trainingOpenSessionId === sid) trainingOpenSessionId = null;
   renderTraining(); markTrainingDirty();
 }
-// Editar sin re-render (para no perder el foco/cursor del campo)
-function trainingEdit(si, field, val) {
-  const w = trainingData.weeks[trainingWeekIdx]; if (!w || !w.sessions[si]) return;
-  w.sessions[si][field] = val;
-  markTrainingDirty();
+function trainingEditSession(sid, field, val) {
+  const w = trCurWeek(); if (!w) return;
+  const s = w.sessions.find(x => x.id === sid); if (!s) return;
+  s[field] = val; markTrainingDirty(); // sin re-render (mantiene foco)
+}
+// Día/fecha: sí re-renderiza (para actualizar la etiqueta de la sesión)
+function trainingSetSessionMeta(sid, field, val) {
+  const w = trCurWeek(); if (!w) return;
+  const s = w.sessions.find(x => x.id === sid); if (!s) return;
+  s[field] = val; renderTraining(); markTrainingDirty();
+}
+function trPlayerById(pid) { return trainingData.players.find(p => p.id === pid); }
+function trainingAddSessionPlayer(sid, pid) {
+  if (!pid) return;
+  const s = trSessionById(sid); if (!s) return;
+  if (!s.players.includes(pid)) s.players.push(pid);
+  renderTraining(); markTrainingDirty();
+}
+function trainingRemoveSessionPlayer(sid, pid) {
+  const s = trSessionById(sid); if (!s) return;
+  s.players = s.players.filter(x => x !== pid);
+  renderTraining(); markTrainingDirty();
+}
+
+// ── Ejercicios ──
+function trSessionById(sid) { const w = trCurWeek(); return w ? w.sessions.find(s => s.id === sid) : null; }
+function trainingAddExercise(sid) {
+  const s = trSessionById(sid); if (!s) return;
+  s.exercises.push(trNormEx({}));
+  renderTraining(); markTrainingDirty();
+}
+function trainingDeleteEx(sid, eid) {
+  const s = trSessionById(sid); if (!s) return;
+  if (!confirm('¿Borrar este ejercicio?')) return;
+  s.exercises = s.exercises.filter(e => e.id !== eid);
+  renderTraining(); markTrainingDirty();
+}
+function trainingEditEx(sid, eid, field, val) {
+  const s = trSessionById(sid); if (!s) return;
+  const e = s.exercises.find(x => x.id === eid); if (!e) return;
+  e[field] = val; markTrainingDirty(); // sin re-render (mantiene foco)
+}
+
+// ── Jugadores (base de datos de la sección) ──
+function trainingAddPlayer() {
+  trainingData.players.push({ id: trMakeId('p'), name: '', role: '' });
+  renderTraining(); markTrainingDirty();
+}
+function trainingDeletePlayer(pid) {
+  const p = trainingData.players.find(x => x.id === pid);
+  if (!confirm('¿Quitar a ' + ((p && p.name) || 'este jugador') + ' de la base? También se quita de las sesiones donde estaba.')) return;
+  trainingData.players = trainingData.players.filter(x => x.id !== pid);
+  // quitarlo del roster de todas las sesiones
+  trainingData.weeks.forEach(w => w.sessions.forEach(s => {
+    s.players = (s.players || []).filter(x => x !== pid);
+  }));
+  renderTraining(); markTrainingDirty();
+}
+function trainingEditPlayer(pid, field, val) {
+  const p = trainingData.players.find(x => x.id === pid); if (!p) return;
+  p[field] = val; markTrainingDirty(); // sin re-render (mantiene foco)
 }
 
 function goToSection(s) {
