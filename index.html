@@ -2081,6 +2081,10 @@
         <input id="pl-club-input" class="pl-club-input" placeholder="san lorenzo, casla" onchange="setClubMatch(this.value)">
         <span id="pl-club-info" class="pl-club-info"></span>
       </div>
+      <div class="pl-club-row" style="margin-top:10px">
+        <span class="pl-club-lbl">Scouts a analizar:</span>
+        <span id="pl-scout-dd"></span>
+      </div>
     </div>
   </div>
   <div id="players-body"></div>
@@ -4030,17 +4034,32 @@ function plFallbackStats(d, side, num) {
 }
 
 // Recorre la Base de Datos y agrega, por jugador del club, las stats por fundamento
+let playersSelFiles = null; // Set de nombres de scout seleccionados; null = todos los del club
+
+// Scouts de la Base de Datos en los que juega el club (ordenados por fecha desc)
+function clubFiles() {
+  return state.files.filter(f => {
+    const d = f.data; if (!d || !d.teams) return false;
+    return (d.teams.H && isClubTeam(d.teams.H.name)) || (d.teams.V && isClubTeam(d.teams.V.name));
+  }).slice().sort((a, b) => {
+    const da = a.matchDate || '', db2 = b.matchDate || '';
+    if (da && db2) return db2.localeCompare(da);
+    if (da) return -1; if (db2) return 1; return 0;
+  });
+}
+function plScoutSel(name) { return playersSelFiles === null || playersSelFiles.has(name); }
+
 function computePlayersDB() {
   const agg = {};   // normName -> { name, numbers:Set, files:Set, stats:{S,R,A,B,D,E} }
-  let clubScouts = 0;
-  const seenClub = new Set();
-  for (const f of state.files) {
-    const d = f.data; if (!d || !d.teams) continue;
+  const cf = clubFiles();
+  let usedScouts = 0;
+  for (const f of cf) {
+    if (!plScoutSel(f.name)) continue;
+    usedScouts++;
+    const d = f.data;
     const sides = [];
     if (d.teams.H && isClubTeam(d.teams.H.name)) sides.push('H');
     if (d.teams.V && isClubTeam(d.teams.V.name)) sides.push('V');
-    if (!sides.length) continue;
-    if (!seenClub.has(f.name)) { seenClub.add(f.name); clubScouts++; }
     for (const side of sides) {
       for (const key in d.players) {
         if (!key.startsWith(side + '_')) continue;
@@ -4059,7 +4078,51 @@ function computePlayersDB() {
       }
     }
   }
-  return { agg, clubScouts };
+  return { agg, clubScouts: usedScouts, totalClub: cf.length };
+}
+
+// ── Selector de scouts (desplegable con casillas) ──
+function plScoutLabel() {
+  const cf = clubFiles();
+  const total = cf.length;
+  if (!total) return 'Sin scouts del club';
+  const n = (playersSelFiles === null) ? total : cf.filter(f => playersSelFiles.has(f.name)).length;
+  if (n === total) return `Todos (${total})`;
+  return `${n} de ${total}`;
+}
+function renderPlayersScoutDD() {
+  const host = document.getElementById('pl-scout-dd');
+  if (!host) return;
+  const cf = clubFiles();
+  const items = cf.map(f =>
+    `<label class="ms-dd-item"><input type="checkbox" ${plScoutSel(f.name) ? 'checked' : ''} onchange="plToggleScout('${(f.name || '').replace(/'/g, "\\'")}')"><span>${escHtml(matchLabelWithDate(f))}</span></label>`
+  ).join('') || '<div style="padding:10px;color:var(--text-dim);font-size:13px">No hay scouts del club cargados.</div>';
+  const menu = items + (cf.length ? `<div class="ms-dd-actions"><button onclick="plSelectAllScouts()">Seleccionar todos</button></div>` : '');
+  host.innerHTML = `<div class="ms-dd">
+      <button class="ms-dd-btn" onclick="plScoutDDToggle(event,this)"><span class="ms-dd-lbl">${plScoutLabel()}</span><span class="ms-dd-chev">▾</span></button>
+      <div class="ms-dd-menu">${menu}</div>
+    </div>`;
+}
+function plScoutDDToggle(ev, btn) {
+  ev.stopPropagation();
+  const dd = btn.parentElement;
+  const wasOpen = dd.classList.contains('open');
+  document.querySelectorAll('.ms-dd.open').forEach(d => { if (d !== dd) d.classList.remove('open'); });
+  dd.classList.toggle('open', !wasOpen);
+}
+function plToggleScout(name) {
+  const cf = clubFiles();
+  if (playersSelFiles === null) playersSelFiles = new Set(cf.map(f => f.name));
+  if (playersSelFiles.has(name)) playersSelFiles.delete(name); else playersSelFiles.add(name);
+  const n = cf.filter(f => playersSelFiles.has(f.name)).length;
+  if (!n || n === cf.length) playersSelFiles = null;
+  // actualizar solo el contador y la grilla (no rebuild del menú → queda abierto)
+  const lbl = document.querySelector('#pl-scout-dd .ms-dd-lbl'); if (lbl) lbl.textContent = plScoutLabel();
+  renderPlayersGridOnly();
+}
+function plSelectAllScouts() {
+  playersSelFiles = null;
+  renderPlayers();
 }
 
 // ── Métricas derivadas por fundamento ──
@@ -4115,19 +4178,25 @@ function plHeadline(skill, st) {
 
 // ── Render ──
 function renderPlayers() {
-  const wrap = document.getElementById('players-body');
-  if (!wrap) return;
-  // input del club
   const ci = document.getElementById('pl-club-input');
   if (ci && document.activeElement !== ci) ci.value = state.clubMatch || '';
-
-  const { agg, clubScouts } = computePlayersDB();
+  renderPlayersScoutDD();
+  renderPlayersGridOnly();
+}
+// Refresca la grilla/detalle y el texto de info, sin tocar el desplegable (para no cerrarlo)
+function renderPlayersGridOnly() {
+  const wrap = document.getElementById('players-body');
+  if (!wrap) return;
+  const { agg, clubScouts, totalClub } = computePlayersDB();
   const names = Object.keys(agg).sort((a, b) => agg[a].name.localeCompare(agg[b].name, 'es'));
   const info = document.getElementById('pl-club-info');
-  if (info) info.textContent = clubScouts ? `${clubScouts} scout${clubScouts === 1 ? '' : 's'} de tu equipo · ${names.length} jugador${names.length === 1 ? '' : 'es'}` : 'No se encontraron scouts de tu equipo en la Base de Datos.';
+  if (info) {
+    if (!totalClub) info.textContent = 'No se encontraron scouts de tu equipo en la Base de Datos.';
+    else info.textContent = `${clubScouts} de ${totalClub} scout${totalClub === 1 ? '' : 's'} · ${names.length} jugador${names.length === 1 ? '' : 'es'}`;
+  }
 
   if (!names.length) {
-    wrap.innerHTML = `<div class="pl-empty">No hay jugadores para mostrar.<br><span>Cargá scouts de tu club en la Base de Datos (que el nombre del equipo coincida con lo de arriba) y las estadísticas aparecen solas.</span></div>`;
+    wrap.innerHTML = `<div class="pl-empty">No hay jugadores para mostrar.<br><span>Cargá scouts de tu club en la Base de Datos (que el nombre del equipo coincida con lo de arriba) y elegí arriba qué scouts analizar.</span></div>`;
     return;
   }
   if (playersOpenName && agg[playersOpenName]) { wrap.innerHTML = renderPlayerDetail(agg[playersOpenName]); return; }
