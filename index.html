@@ -1830,6 +1830,50 @@
   .db-row .db-vid-status { font-size:11px; color:var(--text-dim); }
   .db-empty { color:var(--text-dim); text-align:center; padding:50px 0; }
   #section-video { max-width:900px; margin:0 auto; padding:24px 32px; }
+  /* ═══════════ JUGADORES ═══════════ */
+  #section-players { max-width:1060px; margin:0 auto; padding:22px 32px 80px; }
+  .pl-intro { margin-bottom:22px; }
+  .pl-intro-txt { color:var(--text-dim); font-size:13px; line-height:1.5; max-width:680px; margin:0 0 12px; }
+  .pl-club-row { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+  .pl-club-lbl { font-size:12px; font-weight:800; text-transform:uppercase; letter-spacing:.05em; color:var(--text-dim); }
+  .pl-club-input { background:var(--bg3); border:1px solid var(--border); border-radius:9px; color:var(--text);
+    padding:8px 12px; font-size:13px; min-width:220px; }
+  .pl-club-input:focus { outline:none; border-color:var(--accent); }
+  .pl-club-info { font-size:12px; color:var(--accent); font-weight:700; }
+  .pl-empty { color:var(--text-dim); text-align:center; padding:60px 20px; font-size:15px; line-height:1.6; }
+  .pl-empty span { font-size:13px; }
+  .pl-empty-sm { color:var(--text-dim); font-size:12px; }
+  /* Grilla de tarjetas de jugador */
+  .pl-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(260px,1fr)); gap:16px; }
+  .pl-card { background:var(--bg2); border:1px solid var(--border); border-radius:16px; padding:16px; cursor:pointer;
+    transition:all .15s; display:flex; flex-direction:column; gap:12px; }
+  .pl-card:hover { transform:translateY(-3px); box-shadow:0 10px 28px #0006; border-color:var(--accent); }
+  .pl-card-head { display:flex; align-items:center; gap:11px; }
+  .pl-num { flex-shrink:0; min-width:32px; height:32px; padding:0 7px; border-radius:9px; background:var(--accent); color:#0d1117;
+    font-weight:800; font-size:16px; display:inline-flex; align-items:center; justify-content:center; }
+  .pl-name { font-weight:800; font-size:17px; line-height:1.15; }
+  .pl-chips { display:flex; flex-wrap:wrap; gap:7px; }
+  .pl-chip { display:inline-flex; align-items:center; gap:5px; background:color-mix(in srgb, var(--c) 15%, transparent);
+    border:1px solid var(--c); color:var(--text); border-radius:20px; padding:4px 11px; font-size:12px; }
+  .pl-chip-ico { font-size:12px; }
+  .pl-chip b { font-size:14px; }
+  .pl-chip-u { color:var(--text-dim); font-size:11px; }
+  .pl-card-foot { font-size:12px; color:var(--accent); font-weight:700; }
+  /* Detalle del jugador */
+  .pl-detail-head { display:flex; align-items:center; gap:14px; margin:6px 0 22px; }
+  .pl-num-big { min-width:46px; height:46px; font-size:22px; border-radius:12px; }
+  .pl-detail-name { font-size:24px; font-weight:800; line-height:1.1; }
+  .pl-detail-sub { font-size:13px; color:var(--text-dim); margin-top:3px; }
+  .pl-fund-list { display:grid; grid-template-columns:repeat(auto-fill, minmax(320px,1fr)); gap:16px; }
+  .pl-fund { background:var(--bg2); border:1px solid var(--border); border-left:5px solid var(--c); border-radius:14px; padding:16px; }
+  .pl-fund-head { display:flex; align-items:center; gap:9px; font-size:16px; font-weight:800; color:var(--c); margin-bottom:14px; }
+  .pl-fund-ico { font-size:18px; }
+  .pl-fund-grid { display:grid; grid-template-columns:repeat(3, 1fr); gap:10px; margin-bottom:14px; }
+  .pl-metric { background:var(--bg3); border-radius:10px; padding:10px 6px; text-align:center; }
+  .pl-metric-v { font-size:21px; font-weight:800; color:var(--text); line-height:1; }
+  .pl-metric-l { font-size:10.5px; color:var(--text-dim); text-transform:uppercase; letter-spacing:.03em; margin-top:5px; font-weight:700; }
+  .pl-evalbar { display:flex; height:9px; border-radius:6px; overflow:hidden; background:var(--bg3); }
+  .pl-evalseg { height:100%; }
   /* ═══════════ ENTRENAMIENTOS ═══════════ */
   #section-training { max-width:1040px; margin:0 auto; padding:22px 32px 80px; }
   .tr-intro { display:flex; justify-content:space-between; align-items:center; gap:16px; flex-wrap:wrap; margin-bottom:20px; }
@@ -1952,6 +1996,10 @@
   <div class="home-title">Análisis de Vóley</div>
   <div class="home-sub">Elegí una sección para trabajar.</div>
   <div class="home-cards">
+    <div class="home-card" onclick="goToSection('players')">
+      <div class="hc-icon">🏐</div><div class="hc-name">Jugadores</div>
+      <div class="hc-desc">Base de jugadores de tu club con estadísticas por fundamento, calculadas solas desde los scouts.</div>
+    </div>
     <div class="home-card" onclick="goToSection('database')">
       <div class="hc-icon">🗂️</div><div class="hc-name">Base de Datos</div>
       <div class="hc-desc">Cargá los scouts de cada partido y su video (link de YouTube o archivo local). Todo se guarda acá.</div>
@@ -2023,6 +2071,21 @@
   <p style="color:var(--text-dim); font-size:13px; margin-top:12px">Se abre con el equipo y los partidos seleccionados.</p>
 </div>
 
+<!-- SECCIÓN: JUGADORES (base del club + estadísticas automáticas) -->
+<div id="section-players" style="display:none">
+  <div class="pl-intro">
+    <div>
+      <p class="pl-intro-txt">Base de jugadores de tu club. Las estadísticas se calculan solas desde los scouts de la Base de Datos donde aparece tu equipo.</p>
+      <div class="pl-club-row">
+        <span class="pl-club-lbl">Equipo del club:</span>
+        <input id="pl-club-input" class="pl-club-input" placeholder="san lorenzo, casla" onchange="setClubMatch(this.value)">
+        <span id="pl-club-info" class="pl-club-info"></span>
+      </div>
+    </div>
+  </div>
+  <div id="players-body"></div>
+</div>
+
 <!-- SECCIÓN: ENTRENAMIENTOS (editable por todos, sin login) -->
 <div id="section-training" style="display:none">
   <div class="tr-intro">
@@ -2072,7 +2135,7 @@ let activePlanIdx = 0;
 let appSharedMode = false; // true = vista sin login (solo lectura), global a toda la app
 
 function blankPlanData() {
-  return { files: [], activeTeam: null, filter: 'quality', videoLinks: {}, playerOverrides: {}, comboVideos: {}, customLinks: [], scoutYoutube: {} };
+  return { files: [], activeTeam: null, filter: 'quality', videoLinks: {}, playerOverrides: {}, comboVideos: {}, customLinks: [], scoutYoutube: {}, clubMatch: '' };
 }
 function makePlanId() { return 'plan_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
 function makePlan(name, data) { return { id: makePlanId(), name: name || 'Plan', data: data || blankPlanData() }; }
@@ -2169,6 +2232,25 @@ function parseScoutLine(line) {
   return result;
 }
 
+// Estadísticas por jugador y por fundamento (para la sección Jugadores).
+// Skills DataVolley: S saque, R recepción, A ataque, B bloqueo, D defensa, E armado.
+// Cuenta por valoración: # + ! - / =
+const STAT_SKILLS = ['S', 'R', 'A', 'B', 'D', 'E'];
+function blankSkillStat() { return { total: 0, '#': 0, '+': 0, '!': 0, '-': 0, '/': 0, '=': 0 }; }
+function collectPlayerStats(scout) {
+  const res = {};
+  for (const a of scout) {
+    if (a.special || !a.skill || !a.player) continue;
+    if (!STAT_SKILLS.includes(a.skill)) continue;
+    const key = a.team + '_' + a.player;
+    if (!res[key]) { res[key] = {}; STAT_SKILLS.forEach(s => res[key][s] = blankSkillStat()); }
+    const st = res[key][a.skill];
+    st.total++;
+    if (a.eval_ && st[a.eval_] !== undefined) st[a.eval_]++;
+  }
+  return res;
+}
+
 function parseDVW(text) {
   const sections = {};
   let cur = null, lines = [];
@@ -2193,8 +2275,9 @@ function parseDVW(text) {
   const all_attacks = collectAllAttacks(scoutParsed);
   const all_serves  = collectAllServes(scoutParsed);
   const all_receptions = collectAllReceptions(scoutParsed);
+  const player_stats   = collectPlayerStats(scoutParsed);
 
-  return { teams, players, setter_distribution: dist, all_attacks, all_serves, all_receptions };
+  return { teams, players, setter_distribution: dist, all_attacks, all_serves, all_receptions, player_stats };
 }
 
 function collectAllReceptions(scout) {
@@ -3907,24 +3990,223 @@ function trainingEditPlayer(pid, field, val) {
   p[field] = val; markTrainingDirty(); // sin re-render (mantiene foco)
 }
 
+// ═══════════════════════════════════════════════════════
+//  JUGADORES — base del club + estadísticas automáticas desde los scouts
+// ═══════════════════════════════════════════════════════
+let playersOpenName = null; // jugador abierto en detalle (nombre normalizado)
+
+function plNorm(s) { return (s || '').toString().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s+/g, ' ').trim(); }
+
+// ¿El nombre de equipo es el del club? Configurable (state.clubMatch), con default San Lorenzo/CASLA
+function clubTerms() {
+  const raw = (state.clubMatch && state.clubMatch.trim()) ? state.clubMatch : 'san lorenzo, casla, s.l';
+  return raw.split(',').map(t => plNorm(t)).filter(Boolean);
+}
+function isClubTeam(name) {
+  const n = plNorm(name);
+  if (!n) return false;
+  return clubTerms().some(t => t && n.includes(t));
+}
+function setClubMatch(val) {
+  state.clubMatch = val || '';
+  markDirty();
+  renderPlayers();
+}
+
+// Suma las cuentas de un skill sobre otro acumulador
+function plAddSkill(acc, add) {
+  if (!add) return;
+  acc.total += add.total || 0;
+  ['#', '+', '!', '-', '/', '='].forEach(k => acc[k] += (add[k] || 0));
+}
+// Fallback para scouts viejos (sin player_stats): arma A/S/R desde las colecciones agregadas
+function plFallbackStats(d, side, num) {
+  const st = { A: blankSkillStat(), S: blankSkillStat(), R: blankSkillStat(), B: blankSkillStat(), D: blankSkillStat(), E: blankSkillStat() };
+  const bump = (o, ev) => { o.total++; if (ev && o[ev] !== undefined) o[ev]++; };
+  ((d.all_attacks || {})[side] || []).forEach(a => { if (a.player === num) bump(st.A, a.attack_result); });
+  ((d.all_serves || {})[side] || []).forEach(a => { if (a.player === num) bump(st.S, a.result); });
+  ((d.all_receptions || {})[side] || []).forEach(a => { if (a.player === num) bump(st.R, a.result); });
+  return st;
+}
+
+// Recorre la Base de Datos y agrega, por jugador del club, las stats por fundamento
+function computePlayersDB() {
+  const agg = {};   // normName -> { name, numbers:Set, files:Set, stats:{S,R,A,B,D,E} }
+  let clubScouts = 0;
+  const seenClub = new Set();
+  for (const f of state.files) {
+    const d = f.data; if (!d || !d.teams) continue;
+    const sides = [];
+    if (d.teams.H && isClubTeam(d.teams.H.name)) sides.push('H');
+    if (d.teams.V && isClubTeam(d.teams.V.name)) sides.push('V');
+    if (!sides.length) continue;
+    if (!seenClub.has(f.name)) { seenClub.add(f.name); clubScouts++; }
+    for (const side of sides) {
+      for (const key in d.players) {
+        if (!key.startsWith(side + '_')) continue;
+        const info = d.players[key];
+        const num = key.split('_')[1];
+        const st = (d.player_stats && d.player_stats[key]) ? d.player_stats[key] : plFallbackStats(d, side, num);
+        // ¿participó? (alguna acción en algún fundamento)
+        const any = STAT_SKILLS.some(s => st[s] && st[s].total > 0);
+        if (!any) continue;
+        const dispName = (info.full_name || info.last_name || ('#' + num)).trim();
+        const nm = plNorm(dispName) || key;
+        if (!agg[nm]) { agg[nm] = { name: dispName, numbers: new Set(), files: new Set(), stats: {} }; STAT_SKILLS.forEach(s => agg[nm].stats[s] = blankSkillStat()); }
+        if (info.number) agg[nm].numbers.add(info.number);
+        agg[nm].files.add(f.name);
+        STAT_SKILLS.forEach(s => plAddSkill(agg[nm].stats[s], st[s]));
+      }
+    }
+  }
+  return { agg, clubScouts };
+}
+
+// ── Métricas derivadas por fundamento ──
+function pct(n, d) { return d ? Math.round((n / d) * 100) : 0; }
+const PL_FUND = {
+  A: { icon: '⚡', name: 'Ataque',    color: '#f85149' },
+  B: { icon: '🧱', name: 'Bloqueo',   color: '#bc8cff' },
+  S: { icon: '🎯', name: 'Saque',     color: '#f0b429' },
+  R: { icon: '🛡️', name: 'Recepción', color: '#3fb950' },
+  D: { icon: '🤿', name: 'Defensa',   color: '#58a6ff' },
+  E: { icon: '🙌', name: 'Armado',    color: '#39d0d8' },
+};
+// Devuelve [{label, value}] con las métricas clave de cada fundamento
+function plFundMetrics(skill, st) {
+  const t = st.total;
+  if (skill === 'A') return [
+    { label: 'Ataques', value: t }, { label: 'Puntos', value: st['#'] },
+    { label: 'Errores', value: st['='] }, { label: 'Bloqueados', value: st['/'] },
+    { label: 'Efic.', value: pct(st['#'] - st['='] - st['/'], t) + '%' },
+    { label: 'Punto%', value: pct(st['#'], t) + '%' },
+  ];
+  if (skill === 'S') return [
+    { label: 'Saques', value: t }, { label: 'Aces', value: st['#'] },
+    { label: 'Errores', value: st['='] }, { label: 'Efic.', value: pct(st['#'] - st['='], t) + '%' },
+  ];
+  if (skill === 'R') return [
+    { label: 'Recep.', value: t }, { label: 'Perfectas', value: st['#'] },
+    { label: 'Positiva%', value: pct(st['#'] + st['+'], t) + '%' },
+    { label: 'Perfecta%', value: pct(st['#'], t) + '%' }, { label: 'Errores', value: st['='] + st['/'] },
+  ];
+  if (skill === 'B') return [
+    { label: 'Bloqueos', value: t }, { label: 'Puntos', value: st['#'] }, { label: 'Errores', value: st['='] },
+  ];
+  if (skill === 'D') return [
+    { label: 'Defensas', value: t }, { label: 'Buenas', value: st['#'] + st['+'] }, { label: 'Errores', value: st['='] },
+  ];
+  if (skill === 'E') return [
+    { label: 'Armados', value: t }, { label: 'Buenos', value: st['#'] + st['+'] }, { label: 'Errores', value: st['='] },
+  ];
+  return [{ label: 'Total', value: t }];
+}
+// Métrica destacada de cada fundamento (para la tarjeta resumen)
+function plHeadline(skill, st) {
+  if (!st.total) return null;
+  if (skill === 'A') return { big: st['#'], unit: 'pts', sub: pct(st['#'] - st['='] - st['/'], st.total) + '% efic' };
+  if (skill === 'B') return { big: st['#'], unit: 'pts', sub: st.total + ' bloq' };
+  if (skill === 'S') return { big: st['#'], unit: 'aces', sub: st.total + ' saques' };
+  if (skill === 'R') return { big: pct(st['#'] + st['+'], st.total) + '%', unit: 'pos', sub: st.total + ' recep' };
+  if (skill === 'D') return { big: st['#'] + st['+'], unit: 'ok', sub: st.total + ' def' };
+  if (skill === 'E') return { big: st.total, unit: 'arm', sub: '' };
+  return null;
+}
+
+// ── Render ──
+function renderPlayers() {
+  const wrap = document.getElementById('players-body');
+  if (!wrap) return;
+  // input del club
+  const ci = document.getElementById('pl-club-input');
+  if (ci && document.activeElement !== ci) ci.value = state.clubMatch || '';
+
+  const { agg, clubScouts } = computePlayersDB();
+  const names = Object.keys(agg).sort((a, b) => agg[a].name.localeCompare(agg[b].name, 'es'));
+  const info = document.getElementById('pl-club-info');
+  if (info) info.textContent = clubScouts ? `${clubScouts} scout${clubScouts === 1 ? '' : 's'} de tu equipo · ${names.length} jugador${names.length === 1 ? '' : 'es'}` : 'No se encontraron scouts de tu equipo en la Base de Datos.';
+
+  if (!names.length) {
+    wrap.innerHTML = `<div class="pl-empty">No hay jugadores para mostrar.<br><span>Cargá scouts de tu club en la Base de Datos (que el nombre del equipo coincida con lo de arriba) y las estadísticas aparecen solas.</span></div>`;
+    return;
+  }
+  if (playersOpenName && agg[playersOpenName]) { wrap.innerHTML = renderPlayerDetail(agg[playersOpenName]); return; }
+  playersOpenName = null;
+
+  wrap.innerHTML = `<div class="pl-grid">${names.map(nm => {
+    const p = agg[nm];
+    const num = [...p.numbers][0];
+    const heads = STAT_SKILLS.map(s => ({ s, h: plHeadline(s, p.stats[s]) })).filter(x => x.h);
+    const chips = heads.slice(0, 4).map(({ s, h }) =>
+      `<span class="pl-chip" style="--c:${PL_FUND[s].color}"><span class="pl-chip-ico">${PL_FUND[s].icon}</span><b>${h.big}</b> <span class="pl-chip-u">${h.unit}</span></span>`).join('');
+    return `<div class="pl-card" onclick="openPlayer('${nm.replace(/'/g, "\\'")}')">
+      <div class="pl-card-head">
+        ${num ? `<span class="pl-num">${escHtml(num)}</span>` : ''}
+        <span class="pl-name">${escHtml(p.name)}</span>
+      </div>
+      <div class="pl-chips">${chips || '<span class="pl-empty-sm">Sin acciones</span>'}</div>
+      <div class="pl-card-foot">${p.files.size} partido${p.files.size === 1 ? '' : 's'} · ver detalle →</div>
+    </div>`;
+  }).join('')}</div>`;
+}
+
+function renderPlayerDetail(p) {
+  const num = [...p.numbers][0];
+  const funds = STAT_SKILLS.filter(s => p.stats[s].total > 0);
+  const cards = funds.map(s => {
+    const st = p.stats[s];
+    const metrics = plFundMetrics(s, st);
+    return `<div class="pl-fund" style="--c:${PL_FUND[s].color}">
+      <div class="pl-fund-head"><span class="pl-fund-ico">${PL_FUND[s].icon}</span>${PL_FUND[s].name}</div>
+      <div class="pl-fund-grid">${metrics.map(m =>
+        `<div class="pl-metric"><div class="pl-metric-v">${m.value}</div><div class="pl-metric-l">${m.label}</div></div>`).join('')}</div>
+      <div class="pl-evalbar">${plEvalBar(st)}</div>
+    </div>`;
+  }).join('');
+  return `
+    <button class="tr-back" onclick="closePlayer()">← Volver a Jugadores</button>
+    <div class="pl-detail-head">
+      ${num ? `<span class="pl-num pl-num-big">${escHtml(num)}</span>` : ''}
+      <div>
+        <div class="pl-detail-name">${escHtml(p.name)}</div>
+        <div class="pl-detail-sub">${p.files.size} partido${p.files.size === 1 ? '' : 's'} · ${funds.length} fundamento${funds.length === 1 ? '' : 's'}</div>
+      </div>
+    </div>
+    <div class="pl-fund-list">${cards || '<div class="pl-empty">Sin acciones registradas.</div>'}</div>
+  `;
+}
+// Barra de distribución de valoraciones (# + ! - / =)
+function plEvalBar(st) {
+  const order = [['#', '#3fb950'], ['+', '#a0d080'], ['!', '#8b949e'], ['-', '#f0883e'], ['/', '#d29922'], ['=', '#f85149']];
+  const t = st.total || 1;
+  return order.map(([k, c]) => {
+    const n = st[k] || 0; if (!n) return '';
+    return `<span class="pl-evalseg" style="width:${(n / t) * 100}%;background:${c}" title="${k}: ${n}"></span>`;
+  }).join('');
+}
+
+function openPlayer(nm) { playersOpenName = nm; renderPlayers(); }
+function closePlayer() { playersOpenName = null; renderPlayers(); }
+
 function goToSection(s) {
   appView = s;
   document.getElementById('home-screen').style.display = 'none';
   document.getElementById('section-bar').style.display = '';
-  const titles = { plan: '📋 Plan de Juego', database: '🗂️ Base de Datos', video: '🎬 Sala de Video', training: '📅 Entrenamientos' };
+  const titles = { plan: '📋 Plan de Juego', database: '🗂️ Base de Datos', video: '🎬 Sala de Video', training: '📅 Entrenamientos', players: '🏐 Jugadores' };
   document.getElementById('section-title-txt').textContent = titles[s] || '';
-  ['plan', 'database', 'video', 'training'].forEach(v => { const el = document.getElementById('section-' + v); if (el) el.style.display = v === s ? '' : 'none'; });
+  ['plan', 'database', 'video', 'training', 'players'].forEach(v => { const el = document.getElementById('section-' + v); if (el) el.style.display = v === s ? '' : 'none'; });
   ensureSelectionValid();
   if (s === 'database') renderDatabase();
   if (s === 'plan') { renderSelectors(); render(); }
   if (s === 'video') renderSelectors();
   if (s === 'training') renderTraining();
+  if (s === 'players') renderPlayers();
 }
 function goHome() {
   appView = 'home';
   document.getElementById('home-screen').style.display = '';
   document.getElementById('section-bar').style.display = 'none';
-  ['plan', 'database', 'video', 'training'].forEach(v => { const el = document.getElementById('section-' + v); if (el) el.style.display = 'none'; });
+  ['plan', 'database', 'video', 'training', 'players'].forEach(v => { const el = document.getElementById('section-' + v); if (el) el.style.display = 'none'; });
 }
 
 // ── Selección de equipo + partidos ──
@@ -5134,6 +5416,7 @@ function buildPlanData(d) {
     customLinks:     d.customLinks,
     playerOverrides: d.playerOverrides,
     scoutYoutube:    d.scoutYoutube,
+    clubMatch:       d.clubMatch || '',
   };
 }
 
@@ -5158,6 +5441,7 @@ function planDataFromSaved(d) {
   pd.customLinks     = d.customLinks || [];
   pd.playerOverrides = d.playerOverrides || {};
   pd.scoutYoutube    = d.scoutYoutube || {};
+  pd.clubMatch       = d.clubMatch || '';
   pd.files.forEach(f => { if (f.youtubeId) pd.scoutYoutube[f.name] = f.youtubeId; });
   return pd;
 }
