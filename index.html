@@ -1874,6 +1874,45 @@
   .pl-metric-l { font-size:10.5px; color:var(--text-dim); text-transform:uppercase; letter-spacing:.03em; margin-top:5px; font-weight:700; }
   .pl-evalbar { display:flex; height:9px; border-radius:6px; overflow:hidden; background:var(--bg3); }
   .pl-evalseg { height:100%; }
+  /* ═══════════ CALENDARIO ═══════════ */
+  #section-calendar { max-width:1040px; margin:0 auto; padding:22px 32px 80px; }
+  .cal-bar { display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:16px; }
+  .cal-nav { width:36px; height:36px; border-radius:9px; border:1px solid var(--border); background:var(--bg2);
+    color:var(--text); font-size:16px; font-weight:800; cursor:pointer; transition:all .12s; }
+  .cal-nav:hover { border-color:var(--accent); color:var(--accent); }
+  .cal-title { font-size:19px; font-weight:800; min-width:180px; text-align:center; }
+  .cal-today { background:var(--bg3); border:1px solid var(--border); color:var(--text-dim); border-radius:8px;
+    padding:8px 13px; font-size:13px; font-weight:700; cursor:pointer; }
+  .cal-today:hover { border-color:var(--accent); color:var(--accent); }
+  .cal-tags { display:flex; flex-direction:column; gap:3px; margin-top:2px; overflow:hidden; }
+  .cal-tag { font-size:10.5px; font-weight:700; color:#0d1117; border-radius:5px; padding:2px 6px;
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis; cursor:pointer; }
+  .cal-tag-span { border-radius:0; margin-left:-9px; margin-right:-9px; padding-left:9px; padding-right:9px; }
+  .cal-tag-span.is-start { border-top-left-radius:5px; border-bottom-left-radius:5px; margin-left:0; padding-left:6px; }
+  .cal-tag-span.is-end { border-top-right-radius:5px; border-bottom-right-radius:5px; margin-right:0; padding-right:6px; }
+  .cal-today-cell { border-color:var(--accent) !important; box-shadow:inset 0 0 0 1px var(--accent); }
+  .cal-today-cell .tr-cal-num { color:var(--accent); }
+  .cal-list { margin-top:24px; }
+  .cal-list-title { font-size:15px; font-weight:800; margin-bottom:12px; color:var(--text); }
+  .cal-list-row { display:flex; align-items:center; gap:12px; padding:10px 12px; border:1px solid var(--border);
+    border-radius:10px; margin-bottom:8px; cursor:pointer; transition:all .12s; }
+  .cal-list-row:hover { border-color:var(--accent); background:var(--bg2); }
+  .cal-dot { width:11px; height:11px; border-radius:50%; flex-shrink:0; }
+  .cal-list-date { font-size:13px; color:var(--text-dim); font-weight:600; min-width:130px; }
+  .cal-list-name { font-size:14px; font-weight:700; flex:1; }
+  .cal-list-type { font-size:12px; font-weight:700; }
+  /* Editor modal */
+  .cal-editor-backdrop { position:fixed; inset:0; background:rgba(0,0,0,.6); z-index:700; display:flex; align-items:center; justify-content:center; padding:20px; }
+  .cal-editor { background:var(--bg2); border:1px solid var(--border); border-radius:16px; padding:22px; width:min(460px,94vw);
+    max-height:90vh; overflow:auto; box-shadow:0 24px 70px rgba(0,0,0,.7); display:flex; flex-direction:column; gap:13px; }
+  .cal-ed-head { font-size:18px; font-weight:800; }
+  .cal-ed-dates { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  .cal-editor .tr-field { display:flex; flex-direction:column; gap:6px; }
+  .cal-editor .tr-input { width:100%; box-sizing:border-box; }
+  .cal-editor textarea.tr-input { min-height:60px; resize:vertical; font-family:inherit; }
+  .cal-ed-actions { display:flex; justify-content:space-between; align-items:center; gap:10px; margin-top:6px; }
+  .cal-ed-actions > div { display:flex; gap:8px; }
+  .cal-ed-del { color:var(--red); font-size:13px; font-weight:700; }
   /* ═══════════ ENTRENAMIENTOS ═══════════ */
   /* Grilla mensual tipo calendario */
   .tr-cal-head { display:grid; grid-template-columns:repeat(7,1fr); gap:6px; margin-bottom:6px; }
@@ -2039,6 +2078,10 @@
       <div class="hc-icon">📅</div><div class="hc-name">Entrenamientos</div>
       <div class="hc-desc">Planificá los entrenamientos de la semana. Editable por todos, sin necesidad de ingresar.</div>
     </div>
+    <div class="home-card" onclick="goToSection('calendar')">
+      <div class="hc-icon">🗓️</div><div class="hc-name">Calendario</div>
+      <div class="hc-desc">Eventos, partidos y lapsos de fechas en un calendario. Editable por todos.</div>
+    </div>
   </div>
 </div>
 
@@ -2113,6 +2156,15 @@
   <div id="players-body"></div>
 </div>
 
+<!-- SECCIÓN: CALENDARIO (editable por todos, sin login) -->
+<div id="section-calendar" style="display:none">
+  <div class="tr-intro">
+    <p>Calendario del equipo: agregá partidos, eventos y lapsos de fechas (viajes, torneos, pretemporada). <b>Lo puede editar cualquiera</b> y se comparte con todos.</p>
+    <span class="tr-status" id="cal-status"></span>
+  </div>
+  <div id="calendar-body"></div>
+</div>
+
 <!-- SECCIÓN: ENTRENAMIENTOS (editable por todos, sin login) -->
 <div id="section-training" style="display:none">
   <div class="tr-intro">
@@ -2120,6 +2172,10 @@
     <span class="tr-status" id="tr-status"></span>
   </div>
   <div id="training-body"></div>
+</div>
+
+<div id="cal-editor-backdrop" class="cal-editor-backdrop" style="display:none" onclick="if(event.target===this)calCloseEditor()">
+  <div id="cal-editor" class="cal-editor"></div>
 </div>
 
 <script>
@@ -4077,6 +4133,201 @@ function trainingEditPlayer(pid, field, val) {
 }
 
 // ═══════════════════════════════════════════════════════
+//  CALENDARIO — eventos y lapsos de fechas (editable por todos)
+//  Nodo Firebase propio "calendario" + localStorage.
+// ═══════════════════════════════════════════════════════
+const CALENDAR_NODE = 'calendario';
+let calData = { events: [] };  // [{id, title, start:'YYYY-MM-DD', end:'YYYY-MM-DD'|'', type, note}]
+let calY = new Date().getFullYear();
+let calM = new Date().getMonth();
+let calSuppress = null, calSaveTimer = null;
+
+const CAL_TYPES = {
+  PARTIDO:  { label: 'Partido',      color: '#f85149' },
+  TORNEO:   { label: 'Torneo',       color: '#bc8cff' },
+  VIAJE:    { label: 'Viaje',        color: '#58a6ff' },
+  EVENTO:   { label: 'Evento',       color: '#f0b429' },
+  DESCANSO: { label: 'Descanso',     color: '#3fb950' },
+};
+
+function normalizeCalendar(d) {
+  d = d || {};
+  const events = Array.isArray(d.events) ? d.events.map(e => ({
+    id: e.id || trMakeId('ev'),
+    title: e.title || '',
+    start: e.start || '',
+    end: e.end || '',
+    type: e.type || 'EVENTO',
+    note: e.note || ''
+  })).filter(e => e.start) : [];
+  return { events };
+}
+function loadCalendarLocal() {
+  try { const raw = localStorage.getItem('calendario_v1'); if (raw) calData = normalizeCalendar(JSON.parse(raw)); } catch (e) {}
+}
+function setCalStatus(t) { const el = document.getElementById('cal-status'); if (el) el.textContent = t || ''; }
+function initCalendarSync() {
+  if (!fbReady || !fbDb) return;
+  fbDb.ref(CALENDAR_NODE).on('value', onCalendarSnapshot, e => console.warn('Calendario: no se pudo leer', e));
+}
+function onCalendarSnapshot(snap) {
+  const raw = snap.val();
+  if (raw == null) return;
+  if (calSuppress && raw === calSuppress) { calSuppress = null; return; }
+  let data; try { data = (typeof raw === 'string') ? JSON.parse(raw) : raw; } catch (e) { return; }
+  calData = normalizeCalendar(data);
+  try { localStorage.setItem('calendario_v1', JSON.stringify(calData)); } catch (e) {}
+  const active = document.activeElement;
+  const typing = active && active.classList && active.classList.contains('cal-input');
+  if (appView === 'calendar' && !typing) renderCalendar();
+}
+function markCalDirty() {
+  try { localStorage.setItem('calendario_v1', JSON.stringify(calData)); } catch (e) {}
+  if (calSaveTimer) clearTimeout(calSaveTimer);
+  calSaveTimer = setTimeout(saveCalendar, 700);
+  setCalStatus('Guardando…');
+}
+function saveCalendar() {
+  if (!fbReady || !fbDb) { setCalStatus('Guardado en esta compu (sin nube)'); return; }
+  let payload; try { payload = JSON.stringify(calData); } catch (e) { return; }
+  calSuppress = payload;
+  fbDb.ref(CALENDAR_NODE).set(payload)
+    .then(() => setCalStatus('Guardado ✓ (compartido)'))
+    .catch(e => { console.warn(e); setCalStatus('Guardado en esta compu — falta habilitar la regla "calendario" en Firebase para compartir'); });
+}
+
+// ¿La fecha (Date) cae dentro del evento?
+function calEventCoversDay(ev, dateStr) {
+  const s = ev.start, e = ev.end || ev.start;
+  return dateStr >= s && dateStr <= e;
+}
+function calEventsOfMonth() {
+  // eventos que tocan el mes visible
+  const first = trDateStr(calY, calM, 1);
+  const last = trDateStr(calY, calM, new Date(calY, calM + 1, 0).getDate());
+  return calData.events.filter(ev => (ev.end || ev.start) >= first && ev.start <= last);
+}
+
+function renderCalendar() {
+  const wrap = document.getElementById('calendar-body');
+  if (!wrap) return;
+  const monthEvents = calEventsOfMonth();
+  // barra: navegación de mes + agregar
+  const bar = `<div class="cal-bar">
+      <button class="cal-nav" onclick="calPrevMonth()">←</button>
+      <span class="cal-title">${TR_MONTHS[calM]} ${calY}</span>
+      <button class="cal-nav" onclick="calNextMonth()">→</button>
+      <button class="cal-today" onclick="calGoToday()">Hoy</button>
+      <span class="tr-tabs-spacer"></span>
+      <button class="btn primary" onclick="calAddEvent()">+ Agregar evento / lapso</button>
+    </div>`;
+
+  // grilla
+  const first = new Date(calY, calM, 1);
+  const offset = (first.getDay() + 6) % 7;
+  const daysIn = new Date(calY, calM + 1, 0).getDate();
+  const todayStr = trDateStr(new Date().getFullYear(), new Date().getMonth(), new Date().getDate());
+  const cells = [];
+  for (let i = 0; i < offset; i++) cells.push('<div class="tr-cal-cell tr-cal-empty"></div>');
+  for (let d = 1; d <= daysIn; d++) {
+    const date = trDateStr(calY, calM, d);
+    const evs = monthEvents.filter(ev => calEventCoversDay(ev, date));
+    const tags = evs.map(ev => {
+      const t = CAL_TYPES[ev.type] || CAL_TYPES.EVENTO;
+      const isStart = ev.start === date, isEnd = (ev.end || ev.start) === date;
+      const span = ev.end && ev.end !== ev.start;
+      const cls = span ? `cal-tag-span ${isStart ? 'is-start' : ''} ${isEnd ? 'is-end' : ''}` : '';
+      return `<div class="cal-tag ${cls}" style="background:${t.color}" onclick="event.stopPropagation();calEditEvent('${ev.id}')" title="${escHtml(ev.title || t.label)}">${(!span || isStart) ? escHtml(ev.title || t.label) : '&nbsp;'}</div>`;
+    }).join('');
+    cells.push(`<div class="tr-cal-cell ${date === todayStr ? 'cal-today-cell' : ''}" onclick="calAddEventOn('${date}')">
+      <div class="tr-cal-top"><span class="tr-cal-num">${d}</span></div>
+      <div class="cal-tags">${tags}</div>
+    </div>`);
+  }
+  while (cells.length % 7 !== 0) cells.push('<div class="tr-cal-cell tr-cal-empty"></div>');
+  const head = TR_WD.map(w => `<div class="tr-cal-wd">${w}</div>`).join('');
+
+  // lista de eventos del mes (debajo)
+  const sorted = monthEvents.slice().sort((a, b) => a.start.localeCompare(b.start));
+  const list = sorted.length ? `<div class="cal-list">
+      <div class="cal-list-title">Eventos de ${TR_MONTHS[calM]}</div>
+      ${sorted.map(ev => {
+        const t = CAL_TYPES[ev.type] || CAL_TYPES.EVENTO;
+        const range = ev.end && ev.end !== ev.start ? `${trFmtDate(ev.start)} → ${trFmtDate(ev.end)}` : trFmtDate(ev.start);
+        return `<div class="cal-list-row" onclick="calEditEvent('${ev.id}')">
+          <span class="cal-dot" style="background:${t.color}"></span>
+          <span class="cal-list-date">${range}</span>
+          <span class="cal-list-name">${escHtml(ev.title || t.label)}</span>
+          <span class="cal-list-type" style="color:${t.color}">${t.label}</span>
+        </div>`;
+      }).join('')}
+    </div>` : '';
+
+  wrap.innerHTML = bar + `<div class="tr-cal-head">${head}</div><div class="tr-cal-grid">${cells.join('')}</div>` + list;
+}
+
+function calPrevMonth() { calM--; if (calM < 0) { calM = 11; calY--; } renderCalendar(); }
+function calNextMonth() { calM++; if (calM > 11) { calM = 0; calY++; } renderCalendar(); }
+function calGoToday() { const n = new Date(); calY = n.getFullYear(); calM = n.getMonth(); renderCalendar(); }
+
+function calAddEventOn(date) { calOpenEditor(null, date); }
+function calAddEvent() { calOpenEditor(null, trDateStr(calY, calM, 1)); }
+function calEditEvent(id) { calOpenEditor(id, null); }
+
+// Editor de evento (modal simple)
+function calOpenEditor(id, presetDate) {
+  const ev = id ? calData.events.find(e => e.id === id) : null;
+  const cur = ev || { id: '', title: '', start: presetDate || '', end: '', type: 'EVENTO', note: '' };
+  const typeOpts = Object.entries(CAL_TYPES).map(([k, v]) => `<option value="${k}" ${cur.type === k ? 'selected' : ''}>${v.label}</option>`).join('');
+  const back = document.getElementById('cal-editor-backdrop');
+  const box = document.getElementById('cal-editor');
+  box.innerHTML = `
+    <div class="cal-ed-head">${ev ? 'Editar evento' : 'Nuevo evento / lapso'}</div>
+    <label class="tr-field"><span class="tr-field-lbl">Título</span>
+      <input id="cal-ed-title" class="tr-input cal-input" value="${escHtml(cur.title)}" placeholder="ej: vs River, Torneo Apertura, Viaje a Mendoza"></label>
+    <label class="tr-field"><span class="tr-field-lbl">Tipo</span>
+      <select id="cal-ed-type" class="tr-input cal-input">${typeOpts}</select></label>
+    <div class="cal-ed-dates">
+      <label class="tr-field"><span class="tr-field-lbl">Desde</span>
+        <input id="cal-ed-start" type="date" class="tr-input cal-input" value="${escHtml(cur.start)}"></label>
+      <label class="tr-field"><span class="tr-field-lbl">Hasta (opcional)</span>
+        <input id="cal-ed-end" type="date" class="tr-input cal-input" value="${escHtml(cur.end)}"></label>
+    </div>
+    <label class="tr-field"><span class="tr-field-lbl">Nota (opcional)</span>
+      <textarea id="cal-ed-note" class="tr-input cal-input" placeholder="Detalles…">${escHtml(cur.note)}</textarea></label>
+    <div class="cal-ed-actions">
+      ${ev ? `<button class="tr-card-del cal-ed-del" onclick="calDeleteEvent('${ev.id}')">🗑 Borrar</button>` : '<span></span>'}
+      <div>
+        <button class="btn" onclick="calCloseEditor()">Cancelar</button>
+        <button class="btn primary" onclick="calSaveEvent('${ev ? ev.id : ''}')">Guardar</button>
+      </div>
+    </div>`;
+  back.style.display = 'flex';
+}
+function calCloseEditor() { const b = document.getElementById('cal-editor-backdrop'); if (b) b.style.display = 'none'; }
+function calSaveEvent(id) {
+  const title = document.getElementById('cal-ed-title').value.trim();
+  const type = document.getElementById('cal-ed-type').value;
+  const start = document.getElementById('cal-ed-start').value;
+  let end = document.getElementById('cal-ed-end').value;
+  const note = document.getElementById('cal-ed-note').value;
+  if (!start) { alert('Poné al menos la fecha "Desde".'); return; }
+  if (end && end < start) { const t = end; end = start; document.getElementById('cal-ed-start').value = end; } // swap si invirtió
+  if (id) {
+    const ev = calData.events.find(e => e.id === id); if (!ev) return;
+    Object.assign(ev, { title, type, start, end: end || '', note });
+  } else {
+    calData.events.push({ id: trMakeId('ev'), title, type, start, end: end || '', note });
+  }
+  calCloseEditor(); renderCalendar(); markCalDirty();
+}
+function calDeleteEvent(id) {
+  if (!confirm('¿Borrar este evento?')) return;
+  calData.events = calData.events.filter(e => e.id !== id);
+  calCloseEditor(); renderCalendar(); markCalDirty();
+}
+
+// ═══════════════════════════════════════════════════════
 //  JUGADORES — base del club + estadísticas automáticas desde los scouts
 // ═══════════════════════════════════════════════════════
 let playersOpenName = null; // jugador abierto en detalle (nombre normalizado)
@@ -4343,21 +4594,22 @@ function goToSection(s) {
   appView = s;
   document.getElementById('home-screen').style.display = 'none';
   document.getElementById('section-bar').style.display = '';
-  const titles = { plan: '📋 Plan de Juego', database: '🗂️ Base de Datos', video: '🎬 Sala de Video', training: '📅 Entrenamientos', players: '🏐 Jugadores' };
+  const titles = { plan: '📋 Plan de Juego', database: '🗂️ Base de Datos', video: '🎬 Sala de Video', training: '📅 Entrenamientos', players: '🏐 Jugadores', calendar: '🗓️ Calendario' };
   document.getElementById('section-title-txt').textContent = titles[s] || '';
-  ['plan', 'database', 'video', 'training', 'players'].forEach(v => { const el = document.getElementById('section-' + v); if (el) el.style.display = v === s ? '' : 'none'; });
+  ['plan', 'database', 'video', 'training', 'players', 'calendar'].forEach(v => { const el = document.getElementById('section-' + v); if (el) el.style.display = v === s ? '' : 'none'; });
   ensureSelectionValid();
   if (s === 'database') renderDatabase();
   if (s === 'plan') { renderSelectors(); render(); }
   if (s === 'video') renderSelectors();
   if (s === 'training') renderTraining();
   if (s === 'players') renderPlayers();
+  if (s === 'calendar') renderCalendar();
 }
 function goHome() {
   appView = 'home';
   document.getElementById('home-screen').style.display = '';
   document.getElementById('section-bar').style.display = 'none';
-  ['plan', 'database', 'video', 'training', 'players'].forEach(v => { const el = document.getElementById('section-' + v); if (el) el.style.display = 'none'; });
+  ['plan', 'database', 'video', 'training', 'players', 'calendar'].forEach(v => { const el = document.getElementById('section-' + v); if (el) el.style.display = 'none'; });
 }
 
 // ── Selección de equipo + partidos ──
@@ -5672,6 +5924,7 @@ function initFirebase() {
     fbAuth.onAuthStateChanged(u => { fbUser = u; updateAuthUI(); });
     fbDb.ref(CLOUD_NODE).on('value', onRemoteSnapshot, err => console.warn('Error leyendo la nube:', err));
     initTrainingSync(); // entrenamientos: nodo aparte, editable por todos
+    initCalendarSync(); // calendario: nodo aparte, editable por todos
   } catch (e) {
     console.error('No se pudo iniciar Firebase:', e);
   }
@@ -6321,6 +6574,7 @@ function closeZonePopup() {
 // ═══════════════════════════════════════════════════════
 loadPersistedState();                                  // arma planes desde localStorage (si hay)
 loadTrainingLocal();                                   // entrenamientos guardados en esta compu
+loadCalendarLocal();                                   // calendario guardado en esta compu
 if (!planes.length && EMBEDDED_PROJECT) applyProject(EMBEDDED_PROJECT);
 if (!planes.length) { planes = [ makePlan('Plan 1') ]; activePlanIdx = 0; state = planes[0].data; }
 
