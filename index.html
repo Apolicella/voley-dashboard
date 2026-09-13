@@ -1875,6 +1875,29 @@
   .pl-evalbar { display:flex; height:9px; border-radius:6px; overflow:hidden; background:var(--bg3); }
   .pl-evalseg { height:100%; }
   /* ═══════════ ENTRENAMIENTOS ═══════════ */
+  /* Grilla mensual tipo calendario */
+  .tr-cal-head { display:grid; grid-template-columns:repeat(7,1fr); gap:6px; margin-bottom:6px; }
+  .tr-cal-wd { text-align:center; font-size:12px; font-weight:800; text-transform:uppercase; letter-spacing:.04em; color:var(--text-dim); padding:4px 0; }
+  .tr-cal-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:6px; }
+  .tr-cal-cell { min-height:96px; background:var(--bg2); border:1px solid var(--border); border-radius:10px; padding:7px 8px;
+    display:flex; flex-direction:column; gap:4px; cursor:pointer; transition:all .12s; overflow:hidden; }
+  .tr-cal-cell:hover { border-color:var(--accent); }
+  .tr-cal-empty { background:transparent; border:1px dashed var(--border); cursor:default; opacity:.4; }
+  .tr-cal-empty:hover { border-color:var(--border); }
+  .tr-cal-has { border-left:4px solid var(--tc); }
+  .tr-cal-top { display:flex; align-items:center; justify-content:space-between; gap:4px; }
+  .tr-cal-num { font-size:14px; font-weight:800; color:var(--text-dim); }
+  .tr-cal-type { font-size:9px; font-weight:800; text-transform:uppercase; letter-spacing:.03em; color:#0d1117; border-radius:5px; padding:1px 5px; }
+  .tr-cal-prev { font-size:12px; font-weight:600; line-height:1.25; color:var(--text);
+    display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+  .tr-cal-foot { font-size:10px; color:var(--text-dim); margin-top:auto; }
+  .tr-cal-add { font-size:20px; color:var(--border); text-align:center; margin:auto; font-weight:300; }
+  .tr-cal-cell:hover .tr-cal-add { color:var(--accent); }
+  @media (max-width:720px){ .tr-cal-cell { min-height:74px; padding:5px; } .tr-cal-prev { -webkit-line-clamp:1; } .tr-cal-wd { font-size:10px; } }
+  /* Barra del detalle del día */
+  .tr-day-label { font-size:14px; font-weight:800; color:var(--accent); white-space:nowrap; }
+  .tr-type-sel { min-width:150px; }
+  .tr-sess-nameinput { flex:1; min-width:140px; }
   #section-training { max-width:1040px; margin:0 auto; padding:22px 32px 80px; }
   .tr-intro { display:flex; justify-content:space-between; align-items:center; gap:16px; flex-wrap:wrap; margin-bottom:20px; }
   .tr-intro p { color:var(--text-dim); font-size:13px; line-height:1.5; max-width:640px; margin:0; }
@@ -3613,15 +3636,22 @@ let appView = 'home';
 //  Se guarda en un nodo aparte de Firebase (escritura abierta) + localStorage.
 // ═══════════════════════════════════════════════════════
 const TRAINING_NODE = 'entrenamientos';
-let trainingData    = { players: [], weeks: [] };
-let trainingWeekIdx = 0;
-let trainingView    = 'week';        // 'week' | 'players'
-let trainingOpenSessionId = null;    // sesión abierta en detalle (o null = lista de sesiones)
+let trainingData    = { players: [], months: [] };
+let trainingMonthIdx = 0;
+let trainingView    = 'month';       // 'month' | 'players'
+let trainingOpenSessionId = null;    // sesión (día) abierta en detalle
 let trainingSuppress = null;
 let trainingSaveTimer = null;
 
-const TR_ROLES = ['Armador/a', 'Opuesto/a', 'Central', 'Punta / Receptor', 'Líbero', 'Entrenador/a', 'Otro'];
-const TR_DAYS  = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
+const TR_ROLES  = ['Armador/a', 'Opuesto/a', 'Central', 'Punta / Receptor', 'Líbero', 'Entrenador/a', 'Otro'];
+const TR_DAYS   = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
+const TR_MONTHS = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+const TR_WD     = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
+const TR_TYPES  = {
+  ENTRENAMIENTO: { label: 'Entrenamiento', color: '#3fb950' },
+  PARTIDO:       { label: 'Partido',       color: '#f85149' },
+  LIBRE:         { label: 'Libre',         color: '#8b949e' },
+};
 
 function trMakeId(p) { return p + Date.now().toString(36) + Math.random().toString(36).slice(2, 5); }
 
@@ -3677,31 +3707,64 @@ function trNormEx(e) {
     players: Array.isArray(e.players) ? e.players.slice() : [] // legacy, se migra al roster de la sesión
   };
 }
+function trPad(n) { return ('' + n).padStart(2, '0'); }
+function trDateStr(y, m0, d) { return `${y}-${trPad(m0 + 1)}-${trPad(d)}`; }
+
+function trNormSession(s) {
+  s = s || {};
+  const exercises = Array.isArray(s.exercises) ? s.exercises.map(trNormEx)
+    : (s.content ? [ trNormEx({ explanation: s.content }) ] : []);
+  let roster = Array.isArray(s.players) ? s.players.slice() : [];
+  exercises.forEach(e => (e.players || []).forEach(pid => { if (!roster.includes(pid)) roster.push(pid); }));
+  let type = s.type || '';
+  if (!type && exercises.length) type = 'ENTRENAMIENTO';
+  return {
+    id: s.id || trMakeId('s'),
+    date: s.date || '',
+    type,
+    name: s.name || '',
+    players: roster,
+    exercises: exercises.map(e => ({ id: e.id, name: e.name, explanation: e.explanation, objective: e.objective, duration: e.duration }))
+  };
+}
+function trNormMonth(mo) {
+  mo = mo || {};
+  return {
+    id: mo.id || trMakeId('mo'),
+    y: parseInt(mo.y, 10) || new Date().getFullYear(),
+    m: (mo.m != null ? parseInt(mo.m, 10) : new Date().getMonth()),
+    sessions: Array.isArray(mo.sessions) ? mo.sessions.map(trNormSession) : []
+  };
+}
+// Migra el modelo viejo (semanas con sesiones) a meses, ubicando por fecha
+function trMigrateWeeks(weeks) {
+  const bucket = {};
+  const ensure = (y, m) => { const k = y + '-' + m; if (!bucket[k]) bucket[k] = { id: trMakeId('mo'), y, m, sessions: [] }; return bucket[k]; };
+  const pending = [];
+  (weeks || []).forEach(w => (w.sessions || []).forEach(s => {
+    const ns = trNormSession(s);
+    const dm = /^(\d{4})-(\d{2})-(\d{2})$/.exec(ns.date);
+    if (dm) ensure(+dm[1], +dm[2] - 1).sessions.push(ns);
+    else pending.push(ns);
+  }));
+  if (pending.length) {
+    const now = new Date(); const mo = ensure(now.getFullYear(), now.getMonth());
+    let day = 1;
+    pending.forEach(ns => { ns.date = trDateStr(mo.y, mo.m, day++); mo.sessions.push(ns); });
+  }
+  return Object.values(bucket);
+}
 function normalizeTraining(d) {
   d = d || {};
   const players = Array.isArray(d.players)
     ? d.players.map(p => ({ id: p.id || trMakeId('p'), name: p.name || '', role: p.role || '' }))
     : [];
-  const weeks = Array.isArray(d.weeks) ? d.weeks.map(w => ({
-    id: w.id || trMakeId('w'),
-    name: w.name || 'Semana',
-    sessions: Array.isArray(w.sessions) ? w.sessions.map(s => {
-      const exercises = Array.isArray(s.exercises) ? s.exercises.map(trNormEx)
-        : (s.content ? [ trNormEx({ explanation: s.content }) ] : []);
-      // roster de la sesión: lo guardado + (migración) la unión de los jugadores de los ejercicios
-      let roster = Array.isArray(s.players) ? s.players.slice() : [];
-      exercises.forEach(e => e.players.forEach(pid => { if (!roster.includes(pid)) roster.push(pid); }));
-      return {
-        id: s.id || trMakeId('s'),
-        day: s.day || '',
-        date: s.date || '',
-        name: s.name || '', // legado (por si no hay día/fecha)
-        players: roster,
-        exercises: exercises.map(e => ({ id: e.id, name: e.name, explanation: e.explanation, objective: e.objective, duration: e.duration }))
-      };
-    }) : []
-  })) : [];
-  return { players, weeks };
+  let months;
+  if (Array.isArray(d.months)) months = d.months.map(trNormMonth);
+  else if (Array.isArray(d.weeks)) months = trMigrateWeeks(d.weeks);
+  else months = [];
+  months.sort((a, b) => (a.y - b.y) || (a.m - b.m));
+  return { players, months };
 }
 
 function loadTrainingLocal() {
@@ -3748,64 +3811,88 @@ function saveTraining() {
 }
 
 // ── Render ──
-function trCurWeek() { return trainingData.weeks[trainingWeekIdx] || null; }
+function trCurMonth() { return trainingData.months[trainingMonthIdx] || null; }
+function trMonthLabel(mo) { return TR_MONTHS[mo.m] + ' ' + mo.y; }
+function trSessionByDate(mo, date) { return mo.sessions.find(s => s.date === date) || null; }
 
 function renderTraining() {
   const wrap = document.getElementById('training-body');
   if (!wrap) return;
-  const weeks = trainingData.weeks;
-  if (trainingWeekIdx >= weeks.length) trainingWeekIdx = Math.max(0, weeks.length - 1);
+  const months = trainingData.months;
+  if (trainingMonthIdx >= months.length) trainingMonthIdx = Math.max(0, months.length - 1);
 
-  const weekTabs = weeks.map((w, i) => `
-    <button class="tr-week-tab ${trainingView === 'week' && i === trainingWeekIdx ? 'active' : ''}" onclick="trainingSelectWeek(${i})">
-      <span ondblclick="event.stopPropagation();trainingRenameWeek(${i})" title="Doble clic para renombrar">${escHtml(w.name)}</span>
-      <span class="tr-week-del" onclick="event.stopPropagation();trainingDeleteWeek(${i})" title="Borrar semana">✕</span>
-    </button>`).join('') + `<button class="tr-week-add" onclick="trainingAddWeek()" title="Agregar semana">+ Semana</button>`;
+  const monthTabs = months.map((mo, i) => `
+    <button class="tr-week-tab ${trainingView === 'month' && i === trainingMonthIdx ? 'active' : ''}" onclick="trainingSelectMonth(${i})">
+      <span>${escHtml(trMonthLabel(mo))}</span>
+      <span class="tr-week-del" onclick="event.stopPropagation();trainingDeleteMonth(${i})" title="Borrar mes">✕</span>
+    </button>`).join('') + `<button class="tr-week-add" onclick="trainingAddMonth()" title="Agregar mes">+ Mes</button>`;
   const playersTab = `<button class="tr-week-tab tr-players-tab ${trainingView === 'players' ? 'active' : ''}" onclick="trainingShowPlayers()">👥 Jugadores</button>`;
-  const tabsRow = `<div class="tr-weeks">${weekTabs}<span class="tr-tabs-spacer"></span>${playersTab}</div>`;
+  const tabsRow = `<div class="tr-weeks">${monthTabs}<span class="tr-tabs-spacer"></span>${playersTab}</div>`;
 
   let body;
   if (trainingView === 'players') body = renderTrainingPlayers();
-  else if (!weeks.length) body = '<div class="tr-empty">No hay semanas todavía. Tocá "+ Semana" para empezar a planificar.</div>';
+  else if (!months.length) body = '<div class="tr-empty">No hay meses todavía. Tocá "+ Mes" para empezar a planificar.</div>';
   else if (trainingOpenSessionId) body = renderSessionDetail();
-  else body = renderWeekSessions();
+  else body = renderMonthGrid();
 
   wrap.innerHTML = tabsRow + `<div class="tr-sessions">${body}</div>`;
   wrap.querySelectorAll('.tr-content').forEach(autoGrow);
 }
 function autoGrow(el) { if (!el) return; el.style.height = 'auto'; el.style.height = Math.max(80, el.scrollHeight) + 'px'; }
 
-// Lista de sesiones de la semana activa
-function renderWeekSessions() {
-  const w = trCurWeek(); if (!w) return '';
-  const cards = w.sessions.map(s => {
-    const tot = trSessionTotalMin(s);
-    return `<div class="tr-sess-card" onclick="trainingOpenSession('${s.id}')">
-      <div class="tr-sess-card-top">
-        <span class="tr-sess-name">${escHtml(trSessionLabel(s))}</span>
-        <button class="tr-card-del" onclick="event.stopPropagation();trainingDeleteSession('${s.id}')" title="Borrar sesión">✕</button>
-      </div>
-      <div class="tr-sess-badges">
-        <span class="tr-badge">🏐 ${s.exercises.length}</span>
-        <span class="tr-badge">👥 ${s.players.length}</span>
-        ${tot ? `<span class="tr-badge">⏱ ${escHtml(trFmtMinutes(tot))}</span>` : ''}
-      </div>
-    </div>`;
-  }).join('');
-  return `<div class="tr-sess-grid">${cards || '<div class="tr-empty">Semana sin sesiones. Agregá la primera.</div>'}</div>
-    <button class="btn primary" onclick="trainingAddSession()" style="margin-top:16px">+ Agregar sesión de entrenamiento</button>`;
+// Grilla mensual tipo calendario (Lun–Dom), un entrenamiento por día
+function renderMonthGrid() {
+  const mo = trCurMonth(); if (!mo) return '';
+  const first = new Date(mo.y, mo.m, 1);
+  const offset = (first.getDay() + 6) % 7;         // Lun=0
+  const daysIn = new Date(mo.y, mo.m + 1, 0).getDate();
+  const cells = [];
+  for (let i = 0; i < offset; i++) cells.push('<div class="tr-cal-cell tr-cal-empty"></div>');
+  for (let d = 1; d <= daysIn; d++) {
+    const date = trDateStr(mo.y, mo.m, d);
+    const s = trSessionByDate(mo, date);
+    if (s) {
+      const ty = TR_TYPES[s.type];
+      const tot = trSessionTotalMin(s);
+      const preview = s.type === 'PARTIDO'
+        ? (s.name || 'Partido')
+        : (s.exercises.map(e => e.name).filter(Boolean)[0] || s.name || (s.exercises.length ? s.exercises.length + ' ejercicios' : 'Entrenamiento'));
+      cells.push(`<div class="tr-cal-cell tr-cal-has" style="--tc:${ty ? ty.color : 'var(--border)'}" onclick="trainingOpenSession('${s.id}')">
+        <div class="tr-cal-top"><span class="tr-cal-num">${d}</span>${ty ? `<span class="tr-cal-type" style="background:${ty.color}">${ty.label}</span>` : ''}</div>
+        <div class="tr-cal-prev">${escHtml(preview)}</div>
+        <div class="tr-cal-foot">${s.exercises.length ? '🏐' + s.exercises.length : ''} ${tot ? '· ⏱' + trFmtMinutes(tot) : ''} ${s.players.length ? '· 👥' + s.players.length : ''}</div>
+      </div>`);
+    } else {
+      cells.push(`<div class="tr-cal-cell" onclick="trainingDayClick('${date}')">
+        <div class="tr-cal-top"><span class="tr-cal-num">${d}</span></div>
+        <div class="tr-cal-add">+</div>
+      </div>`);
+    }
+  }
+  while (cells.length % 7 !== 0) cells.push('<div class="tr-cal-cell tr-cal-empty"></div>');
+  const head = TR_WD.map(w => `<div class="tr-cal-wd">${w}</div>`).join('');
+  return `<div class="tr-cal-head">${head}</div><div class="tr-cal-grid">${cells.join('')}</div>`;
 }
 
-// Detalle de una sesión (vista compacta)
+// Clic en un día vacío → crea la sesión de ese día y la abre
+function trainingDayClick(date) {
+  const mo = trCurMonth(); if (!mo) return;
+  let s = trSessionByDate(mo, date);
+  if (!s) { s = { id: trMakeId('s'), date, type: 'ENTRENAMIENTO', name: '', players: [], exercises: [] }; mo.sessions.push(s); markTrainingDirty(); }
+  trainingOpenSessionId = s.id;
+  renderTraining();
+}
+
+// Detalle de una sesión (día)
 function renderSessionDetail() {
-  const w = trCurWeek(); if (!w) return '';
-  const s = w.sessions.find(x => x.id === trainingOpenSessionId);
-  if (!s) { trainingOpenSessionId = null; return renderWeekSessions(); }
+  const mo = trCurMonth(); if (!mo) return '';
+  const s = mo.sessions.find(x => x.id === trainingOpenSessionId);
+  if (!s) { trainingOpenSessionId = null; return renderMonthGrid(); }
 
-  const dayOpts = ['<option value="">Día…</option>']
-    .concat(TR_DAYS.map(d => `<option ${s.day === d ? 'selected' : ''}>${d}</option>`)).join('');
+  const typeOpts = Object.entries(TR_TYPES).map(([k, v]) => `<option value="${k}" ${s.type === k ? 'selected' : ''}>${v.label}</option>`).join('');
+  const dLbl = (() => { const dm = /^(\d{4})-(\d{2})-(\d{2})$/.exec(s.date); if (!dm) return ''; const dt = new Date(+dm[1], +dm[2] - 1, +dm[3]); return TR_DAYS[(dt.getDay() + 6) % 7] + ' ' + dm[3] + '/' + dm[2]; })();
 
-  // Roster: desplegable compacto para agregar + chips
+  // Roster
   const inRoster = new Set(s.players);
   const available = trainingData.players.filter(p => !inRoster.has(p.id));
   const addMenu = trainingData.players.length
@@ -3823,23 +3910,29 @@ function renderSessionDetail() {
 
   const totalMin = trSessionTotalMin(s);
   const exs = s.exercises.map((e, i) => exerciseCardHTML(s, e, i)).join('');
+  const isMatch = s.type === 'PARTIDO', isFree = s.type === 'LIBRE';
 
   return `
-    <button class="tr-back" onclick="trainingCloseSession()">← ${escHtml(w.name)}</button>
+    <button class="tr-back" onclick="trainingCloseSession()">← ${escHtml(trMonthLabel(mo))}</button>
     <div class="tr-sess-bar">
-      <select class="tr-input tr-bar-day" onchange="trainingSetSessionMeta('${s.id}','day',this.value)">${dayOpts}</select>
-      <input type="date" class="tr-input tr-bar-date" value="${escHtml(s.date)}" onchange="trainingSetSessionMeta('${s.id}','date',this.value)">
+      <span class="tr-day-label">${escHtml(dLbl)}</span>
+      <select class="tr-input tr-type-sel" onchange="trainingSetSessionMeta('${s.id}','type',this.value)">${typeOpts}</select>
+      <input class="tr-input tr-sess-nameinput" value="${escHtml(s.name)}" placeholder="${isMatch ? 'Rival / nombre del partido' : 'Título (opcional)'}"
+        oninput="trainingEditSession('${s.id}','name',this.value)">
       <span class="tr-bar-sp"></span>
-      <span class="tr-stat" title="Jugadores participando">👥 <b>${s.players.length}</b></span>
-      <span class="tr-stat" title="Tiempo total (suma de las duraciones)">⏱ <b id="tr-total-min">${trFmtMinutes(totalMin)}</b></span>
-      <span class="tr-stat" title="Ejercicios">🏐 <b>${s.exercises.length}</b></span>
+      ${!isFree ? `<span class="tr-stat" title="Jugadores">👥 <b>${s.players.length}</b></span>
+      <span class="tr-stat" title="Tiempo total">⏱ <b id="tr-total-min">${trFmtMinutes(totalMin)}</b></span>
+      <span class="tr-stat" title="Ejercicios">🏐 <b>${s.exercises.length}</b></span>` : ''}
+      <button class="tr-card-del" onclick="trainingDeleteSession('${s.id}')" title="Borrar el día">✕</button>
     </div>
+    ${isFree ? '<div class="tr-empty">Día libre.</div>' : `
     <div class="tr-roster-compact">
       ${addMenu}
       <div class="tr-chips-sm">${chips || '<span class="tr-empty-sm">Sin jugadores en la sesión.</span>'}</div>
     </div>
     <div class="tr-ex-list">${exs || '<div class="tr-empty">Sin ejercicios todavía. Agregá el primero.</div>'}</div>
     <button class="btn primary" onclick="trainingAddExercise('${s.id}')" style="margin-top:14px">+ Agregar ejercicio</button>
+    `}
   `;
 }
 
@@ -3883,61 +3976,54 @@ function renderTrainingPlayers() {
 }
 
 // ── Navegación ──
-function trainingSelectWeek(i) { trainingView = 'week'; trainingOpenSessionId = null; trainingWeekIdx = i; renderTraining(); }
+function trainingSelectMonth(i) { trainingView = 'month'; trainingOpenSessionId = null; trainingMonthIdx = i; renderTraining(); }
 function trainingShowPlayers() { trainingView = 'players'; renderTraining(); }
 function trainingOpenSession(sid) { trainingOpenSessionId = sid; renderTraining(); }
 function trainingCloseSession() { trainingOpenSessionId = null; renderTraining(); }
 
-// ── Semanas ──
-function trainingAddWeek() {
-  const n = trainingData.weeks.length + 1;
-  const name = prompt('Nombre de la semana (ej: Semana 1, o "18–24 mar"):', 'Semana ' + n);
-  if (name === null) return;
-  trainingData.weeks.push({ id: trMakeId('w'), name: name.trim() || ('Semana ' + n), sessions: [] });
-  trainingView = 'week'; trainingOpenSessionId = null;
-  trainingWeekIdx = trainingData.weeks.length - 1;
+// ── Meses ──
+function trainingAddMonth() {
+  const last = trainingData.months[trainingData.months.length - 1];
+  let defY, defM;
+  if (last) { defM = last.m + 1; defY = last.y; if (defM > 11) { defM = 0; defY++; } }
+  else { const now = new Date(); defY = now.getFullYear(); defM = now.getMonth(); }
+  const val = prompt('Mes y año (MM/AAAA):', trPad(defM + 1) + '/' + defY);
+  if (val === null) return;
+  const mm = /^(\d{1,2})\s*\/\s*(\d{4})$/.exec(val.trim());
+  if (!mm) { alert('Formato: MM/AAAA (ej: 09/2025)'); return; }
+  const m = Math.min(12, Math.max(1, parseInt(mm[1], 10))) - 1;
+  const y = parseInt(mm[2], 10);
+  if (trainingData.months.find(x => x.y === y && x.m === m)) { alert('Ese mes ya existe.'); return; }
+  trainingData.months.push({ id: trMakeId('mo'), y, m, sessions: [] });
+  trainingData.months.sort((a, b) => (a.y - b.y) || (a.m - b.m));
+  trainingView = 'month'; trainingOpenSessionId = null;
+  trainingMonthIdx = trainingData.months.findIndex(x => x.y === y && x.m === m);
   renderTraining(); markTrainingDirty();
 }
-function trainingRenameWeek(i) {
-  const w = trainingData.weeks[i]; if (!w) return;
-  const name = prompt('Nuevo nombre de la semana:', w.name);
-  if (name === null) return;
-  w.name = name.trim() || w.name;
-  renderTraining(); markTrainingDirty();
-}
-function trainingDeleteWeek(i) {
-  const w = trainingData.weeks[i]; if (!w) return;
-  if (!confirm('¿Borrar "' + w.name + '" y todas sus sesiones?')) return;
-  trainingData.weeks.splice(i, 1);
-  if (trainingWeekIdx >= trainingData.weeks.length) trainingWeekIdx = Math.max(0, trainingData.weeks.length - 1);
+function trainingDeleteMonth(i) {
+  const mo = trainingData.months[i]; if (!mo) return;
+  if (!confirm('¿Borrar ' + trMonthLabel(mo) + ' y todos sus entrenamientos?')) return;
+  trainingData.months.splice(i, 1);
+  if (trainingMonthIdx >= trainingData.months.length) trainingMonthIdx = Math.max(0, trainingData.months.length - 1);
   trainingOpenSessionId = null;
   renderTraining(); markTrainingDirty();
 }
 
-// ── Sesiones ──
-function trainingAddSession() {
-  const w = trCurWeek(); if (!w) return;
-  const s = { id: trMakeId('s'), day: '', date: '', name: '', players: [], exercises: [] };
-  w.sessions.push(s);
-  trainingOpenSessionId = s.id; // abrir la sesión nueva directamente
-  renderTraining(); markTrainingDirty();
-}
+// ── Sesiones (días) ──
+function trSessionById(sid) { const mo = trCurMonth(); return mo ? mo.sessions.find(s => s.id === sid) : null; }
 function trainingDeleteSession(sid) {
-  const w = trCurWeek(); if (!w) return;
-  if (!confirm('¿Borrar esta sesión y sus ejercicios?')) return;
-  w.sessions = w.sessions.filter(s => s.id !== sid);
+  const mo = trCurMonth(); if (!mo) return;
+  if (!confirm('¿Borrar este día y todo su contenido?')) return;
+  mo.sessions = mo.sessions.filter(s => s.id !== sid);
   if (trainingOpenSessionId === sid) trainingOpenSessionId = null;
   renderTraining(); markTrainingDirty();
 }
 function trainingEditSession(sid, field, val) {
-  const w = trCurWeek(); if (!w) return;
-  const s = w.sessions.find(x => x.id === sid); if (!s) return;
+  const s = trSessionById(sid); if (!s) return;
   s[field] = val; markTrainingDirty(); // sin re-render (mantiene foco)
 }
-// Día/fecha: sí re-renderiza (para actualizar la etiqueta de la sesión)
 function trainingSetSessionMeta(sid, field, val) {
-  const w = trCurWeek(); if (!w) return;
-  const s = w.sessions.find(x => x.id === sid); if (!s) return;
+  const s = trSessionById(sid); if (!s) return;
   s[field] = val; renderTraining(); markTrainingDirty();
 }
 function trPlayerById(pid) { return trainingData.players.find(p => p.id === pid); }
@@ -3954,7 +4040,6 @@ function trainingRemoveSessionPlayer(sid, pid) {
 }
 
 // ── Ejercicios ──
-function trSessionById(sid) { const w = trCurWeek(); return w ? w.sessions.find(s => s.id === sid) : null; }
 function trainingAddExercise(sid) {
   const s = trSessionById(sid); if (!s) return;
   s.exercises.push(trNormEx({}));
@@ -3983,10 +4068,7 @@ function trainingDeletePlayer(pid) {
   const p = trainingData.players.find(x => x.id === pid);
   if (!confirm('¿Quitar a ' + ((p && p.name) || 'este jugador') + ' de la base? También se quita de las sesiones donde estaba.')) return;
   trainingData.players = trainingData.players.filter(x => x.id !== pid);
-  // quitarlo del roster de todas las sesiones
-  trainingData.weeks.forEach(w => w.sessions.forEach(s => {
-    s.players = (s.players || []).filter(x => x !== pid);
-  }));
+  trainingData.months.forEach(mo => mo.sessions.forEach(s => { s.players = (s.players || []).filter(x => x !== pid); }));
   renderTraining(); markTrainingDirty();
 }
 function trainingEditPlayer(pid, field, val) {
