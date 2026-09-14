@@ -151,6 +151,40 @@
   }
   body.shared-mode .shared-badge { display: inline-block; }
   body.shared-mode .editor-only { display: none !important; }
+  /* Bloqueo/edición por sección (config del coach) */
+  .lock-training #section-training :is(input,textarea,select),
+  .lock-calendar #section-calendar :is(input,textarea,select),
+  .lock-periodization #section-periodization :is(input,textarea,select) { pointer-events:none; opacity:.9; }
+  .lock-training #section-training .edit-action,
+  .lock-calendar #section-calendar .edit-action,
+  .lock-periodization #section-periodization .edit-action,
+  .lock-training #section-training .peri-load,
+  .lock-periodization #section-periodization .peri-load,
+  .lock-periodization #section-periodization .peri-mark,
+  .lock-training #section-training .tr-cal-add { pointer-events:none; }
+  .lock-training #section-training .edit-action,
+  .lock-calendar #section-calendar .edit-action,
+  .lock-periodization #section-periodization .edit-action { display:none !important; }
+  /* Reactivar secciones de análisis para invitados si el coach las hizo editables */
+  body.shared-mode.edit-database #section-database .editor-only,
+  body.shared-mode.edit-players #section-players .editor-only,
+  body.shared-mode.edit-video #section-video .editor-only,
+  body.shared-mode.edit-plan #section-plan .editor-only { display:revert !important; }
+  body.shared-mode.edit-plan #section-plan input,
+  body.shared-mode.edit-plan #section-plan textarea { pointer-events:auto; opacity:1; }
+  /* Tarjeta de sección oculta (visible atenuada solo para el coach) */
+  .home-card.hcard-hidden { opacity:.45; }
+  .home-card.hcard-hidden::after { content:'oculta'; position:absolute; top:10px; right:12px; font-size:10px; font-weight:800;
+    text-transform:uppercase; color:var(--red); background:#f8514922; border-radius:20px; padding:2px 8px; }
+  .home-card { position:relative; }
+  /* Panel de configuración de secciones (en el inicio, solo logueado) */
+  .section-config { max-width:620px; margin:28px auto 0; background:var(--bg2); border:1px solid var(--border); border-radius:14px; padding:18px; }
+  .sc-head { font-size:15px; font-weight:800; margin-bottom:14px; }
+  .sc-note { font-size:12px; font-weight:500; color:var(--text-dim); }
+  .sc-row { display:flex; align-items:center; gap:16px; padding:9px 0; border-top:1px solid var(--border); flex-wrap:wrap; }
+  .sc-name { flex:1; font-weight:700; font-size:14px; min-width:150px; }
+  .sc-toggle { display:inline-flex; align-items:center; gap:7px; font-size:13px; color:var(--text-dim); cursor:pointer; font-weight:600; }
+  .sc-toggle input { width:16px; height:16px; accent-color:var(--accent); cursor:pointer; }
 
   .cloud-status {
     font-size: 11px;
@@ -1901,7 +1935,9 @@
   .peri-week-num { font-size:15px; font-weight:800; color:var(--accent); }
   .peri-inp { background:var(--bg3); border:1px solid var(--border); border-radius:8px; color:var(--text); padding:7px 9px; font-size:13px; font-family:inherit; box-sizing:border-box; width:100%; }
   .peri-inp:focus { outline:none; border-color:var(--accent); }
-  .peri-carga { cursor:pointer; text-align:center; }
+  .peri-carga-auto { border-radius:8px; padding:8px 9px; text-align:center; border:1px solid var(--border); }
+  .peri-carga-lbl { display:block; font-size:9px; font-weight:700; text-transform:uppercase; letter-spacing:.04em; opacity:.8; }
+  .peri-carga-val { display:block; font-size:14px; font-weight:800; margin-top:2px; }
   .peri-week-main { display:flex; flex-direction:column; gap:10px; min-width:0; }
   .peri-days-row { display:grid; grid-template-columns:70px repeat(7,1fr); gap:5px; }
   .peri-rowlbl { display:flex; flex-direction:column; justify-content:flex-end; gap:0; font-size:10px; font-weight:700; color:var(--text-dim); text-align:right; padding-right:4px; }
@@ -2103,34 +2139,38 @@
   <div class="home-title">Análisis de Vóley</div>
   <div class="home-sub">Elegí una sección para trabajar.</div>
   <div class="home-cards">
-    <div class="home-card" onclick="goToSection('players')">
+    <div class="home-card" id="hcard-players" onclick="goToSection('players')">
       <div class="hc-icon">🏐</div><div class="hc-name">Jugadores</div>
       <div class="hc-desc">Base de jugadores de tu club con estadísticas por fundamento, calculadas solas desde los scouts.</div>
     </div>
-    <div class="home-card" onclick="goToSection('database')">
+    <div class="home-card" id="hcard-database" onclick="goToSection('database')">
       <div class="hc-icon">🗂️</div><div class="hc-name">Base de Datos</div>
       <div class="hc-desc">Cargá los scouts de cada partido y su video (link de YouTube o archivo local). Todo se guarda acá.</div>
     </div>
-    <div class="home-card" onclick="goToSection('plan')">
+    <div class="home-card" id="hcard-plan" onclick="goToSection('plan')">
       <div class="hc-icon">📋</div><div class="hc-name">Plan de Juego</div>
       <div class="hc-desc">Distribución del armador y direcciones de ataque. Elegí equipo y partidos; clickeable al video.</div>
     </div>
-    <div class="home-card" onclick="goToSection('video')">
+    <div class="home-card" id="hcard-video" onclick="goToSection('video')">
       <div class="hc-icon">🎬</div><div class="hc-name">Sala de Video</div>
       <div class="hc-desc">Mirá y filtrá todas las jugadas en video, sincronizadas con el scout.</div>
     </div>
-    <div class="home-card" onclick="goToSection('training')">
+    <div class="home-card" id="hcard-training" onclick="goToSection('training')">
       <div class="hc-icon">📅</div><div class="hc-name">Entrenamientos</div>
       <div class="hc-desc">Planificá los entrenamientos de la semana. Editable por todos, sin necesidad de ingresar.</div>
     </div>
-    <div class="home-card" onclick="goToSection('calendar')">
+    <div class="home-card" id="hcard-calendar" onclick="goToSection('calendar')">
       <div class="hc-icon">🗓️</div><div class="hc-name">Calendario</div>
       <div class="hc-desc">Eventos, partidos y lapsos de fechas en un calendario. Editable por todos.</div>
     </div>
-    <div class="home-card" onclick="goToSection('periodization')">
+    <div class="home-card" id="hcard-periodization" onclick="goToSection('periodization')">
       <div class="hc-icon">📊</div><div class="hc-name">Periodización</div>
       <div class="hc-desc">Planilla de cargas por día y semana (vóley y pesas), fases y foco. Conectada con los entrenamientos.</div>
     </div>
+  </div>
+  <div id="section-config" class="section-config editor-only" style="display:none">
+    <div class="sc-head">⚙️ Secciones — visibilidad y edición <span class="sc-note">(solo vos, logueado, podés cambiar esto)</span></div>
+    <div id="sc-rows"></div>
   </div>
 </div>
 
@@ -2282,7 +2322,7 @@ let activePlanIdx = 0;
 let appSharedMode = false; // true = vista sin login (solo lectura), global a toda la app
 
 function blankPlanData() {
-  return { files: [], activeTeam: null, filter: 'quality', videoLinks: {}, playerOverrides: {}, comboVideos: {}, customLinks: [], scoutYoutube: {}, clubMatch: '', databases: [{ id: 'db_general', name: 'General' }], activeDbId: 'db_general' };
+  return { files: [], activeTeam: null, filter: 'quality', videoLinks: {}, playerOverrides: {}, comboVideos: {}, customLinks: [], scoutYoutube: {}, clubMatch: '', databases: [{ id: 'db_general', name: 'General' }], activeDbId: 'db_general', sectionConfig: null };
 }
 function makePlanId() { return 'plan_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
 function makePlan(name, data) { return { id: makePlanId(), name: name || 'Plan', data: data || blankPlanData() }; }
@@ -4011,8 +4051,8 @@ function renderTraining() {
   const monthTabs = months.map((mo, i) => `
     <button class="tr-week-tab ${trainingView === 'month' && i === trainingMonthIdx ? 'active' : ''}" onclick="trainingSelectMonth(${i})">
       <span>${escHtml(trMonthLabel(mo))}</span>
-      <span class="tr-week-del" onclick="event.stopPropagation();trainingDeleteMonth(${i})" title="Borrar mes">✕</span>
-    </button>`).join('') + `<button class="tr-week-add" onclick="trainingAddMonth()" title="Agregar mes">+ Mes</button>`;
+      <span class="tr-week-del edit-action" onclick="event.stopPropagation();trainingDeleteMonth(${i})" title="Borrar mes">✕</span>
+    </button>`).join('') + `<button class="tr-week-add edit-action" onclick="trainingAddMonth()" title="Agregar mes">+ Mes</button>`;
   const playersTab = `<button class="tr-week-tab tr-players-tab ${trainingView === 'players' ? 'active' : ''}" onclick="trainingShowPlayers()">👥 Jugadores</button>`;
   const tabsRow = `<div class="tr-weeks">${monthTabs}<span class="tr-tabs-spacer"></span>${playersTab}</div>`;
 
@@ -4063,6 +4103,7 @@ function renderMonthGrid() {
 
 // Clic en un día vacío → crea la sesión de ese día y la abre
 function trainingDayClick(date) {
+  if (!canEditSection('training')) { const mo0=trCurMonth(); const s0=mo0&&mo0.sessions.find(x=>x.date===date); if(s0){trainingOpenSessionId=s0.id;renderTraining();} return; }
   const mo = trCurMonth(); if (!mo) return;
   let s = trSessionByDate(mo, date);
   if (!s) { s = { id: trMakeId('s'), date, type: 'ENTRENAMIENTO', name: '', players: [], exercises: [] }; mo.sessions.push(s); markTrainingDirty(); }
@@ -4110,7 +4151,7 @@ function renderSessionDetail() {
       ${!isFree ? `<span class="tr-stat" title="Jugadores">👥 <b>${s.players.length}</b></span>
       <span class="tr-stat" title="Tiempo total">⏱ <b id="tr-total-min">${trFmtMinutes(totalMin)}</b></span>
       <span class="tr-stat" title="Ejercicios">🏐 <b>${s.exercises.length}</b></span>` : ''}
-      <button class="tr-card-del" onclick="trainingDeleteSession('${s.id}')" title="Borrar el día">✕</button>
+      <button class="tr-card-del edit-action" onclick="trainingDeleteSession('${s.id}')" title="Borrar el día">✕</button>
     </div>
     ${isFree ? '<div class="tr-empty">Día libre.</div>' : `
     <div class="tr-roster-compact">
@@ -4118,7 +4159,7 @@ function renderSessionDetail() {
       <div class="tr-chips-sm">${chips || '<span class="tr-empty-sm">Sin jugadores en la sesión.</span>'}</div>
     </div>
     <div class="tr-ex-list">${exs || '<div class="tr-empty">Sin ejercicios todavía. Agregá el primero.</div>'}</div>
-    <button class="btn primary" onclick="trainingAddExercise('${s.id}')" style="margin-top:14px">+ Agregar ejercicio</button>
+    <button class="btn primary edit-action" onclick="trainingAddExercise('${s.id}')" style="margin-top:14px">+ Agregar ejercicio</button>
     `}
   `;
 }
@@ -4132,7 +4173,7 @@ function exerciseCardHTML(s, e, i) {
         oninput="trainingEditEx('${s.id}','${e.id}','name',this.value)">
       <input class="tr-input tr-ex-dur" value="${escHtml(e.duration)}" placeholder="⏱ min"
         oninput="trainingEditEx('${s.id}','${e.id}','duration',this.value)">
-      <button class="tr-card-del" onclick="trainingDeleteEx('${s.id}','${e.id}')" title="Borrar ejercicio">✕</button>
+      <button class="tr-card-del edit-action" onclick="trainingDeleteEx('${s.id}','${e.id}')" title="Borrar ejercicio">✕</button>
     </div>
     <input class="tr-input tr-ex-obj" value="${escHtml(e.objective)}" placeholder="🎯 Objetivo"
       oninput="trainingEditEx('${s.id}','${e.id}','objective',this.value)">
@@ -4152,13 +4193,13 @@ function renderTrainingPlayers() {
       <input class="tr-input" value="${escHtml(p.name)}" placeholder="Nombre del jugador/a"
         oninput="trainingEditPlayer('${p.id}','name',this.value)">
       <select class="tr-input tr-pl-select" onchange="trainingEditPlayer('${p.id}','role',this.value)">${roleOpts}</select>
-      <button class="tr-card-del" onclick="trainingDeletePlayer('${p.id}')" title="Quitar jugador">✕</button>
+      <button class="tr-card-del edit-action" onclick="trainingDeletePlayer('${p.id}')" title="Quitar jugador">✕</button>
     </div>`;
   }).join('');
   return `<div class="tr-players-panel">
       <div class="tr-players-head">Base de jugadores <span class="tr-meta-sm">Se usan para asignar a los ejercicios de cada sesión</span></div>
       <div class="tr-pl-list">${rows || '<div class="tr-empty">Sin jugadores. Agregá el primero.</div>'}</div>
-      <button class="btn primary" onclick="trainingAddPlayer()" style="margin-top:14px">+ Agregar jugador</button>
+      <button class="btn primary edit-action" onclick="trainingAddPlayer()" style="margin-top:14px">+ Agregar jugador</button>
     </div>`;
 }
 
@@ -4170,6 +4211,7 @@ function trainingCloseSession() { trainingOpenSessionId = null; renderTraining()
 
 // ── Meses ──
 function trainingAddMonth() {
+  if (!canEditSection('training')) return;
   const last = trainingData.months[trainingData.months.length - 1];
   let defY, defM;
   if (last) { defM = last.m + 1; defY = last.y; if (defM > 11) { defM = 0; defY++; } }
@@ -4188,6 +4230,7 @@ function trainingAddMonth() {
   renderTraining(); markTrainingDirty();
 }
 function trainingDeleteMonth(i) {
+  if (!canEditSection('training')) return;
   const mo = trainingData.months[i]; if (!mo) return;
   if (!confirm('¿Borrar ' + trMonthLabel(mo) + ' y todos sus entrenamientos?')) return;
   trainingData.months.splice(i, 1);
@@ -4199,6 +4242,7 @@ function trainingDeleteMonth(i) {
 // ── Sesiones (días) ──
 function trSessionById(sid) { const mo = trCurMonth(); return mo ? mo.sessions.find(s => s.id === sid) : null; }
 function trainingDeleteSession(sid) {
+  if (!canEditSection('training')) return;
   const mo = trCurMonth(); if (!mo) return;
   if (!confirm('¿Borrar este día y todo su contenido?')) return;
   mo.sessions = mo.sessions.filter(s => s.id !== sid);
@@ -4206,21 +4250,25 @@ function trainingDeleteSession(sid) {
   renderTraining(); markTrainingDirty();
 }
 function trainingEditSession(sid, field, val) {
+  if (!canEditSection('training')) return;
   const s = trSessionById(sid); if (!s) return;
   s[field] = val; markTrainingDirty(); // sin re-render (mantiene foco)
 }
 function trainingSetSessionMeta(sid, field, val) {
+  if (!canEditSection('training')) return;
   const s = trSessionById(sid); if (!s) return;
   s[field] = val; renderTraining(); markTrainingDirty();
 }
 function trPlayerById(pid) { return trainingData.players.find(p => p.id === pid); }
 function trainingAddSessionPlayer(sid, pid) {
+  if (!canEditSection('training')) return;
   if (!pid) return;
   const s = trSessionById(sid); if (!s) return;
   if (!s.players.includes(pid)) s.players.push(pid);
   renderTraining(); markTrainingDirty();
 }
 function trainingRemoveSessionPlayer(sid, pid) {
+  if (!canEditSection('training')) return;
   const s = trSessionById(sid); if (!s) return;
   s.players = s.players.filter(x => x !== pid);
   renderTraining(); markTrainingDirty();
@@ -4228,17 +4276,20 @@ function trainingRemoveSessionPlayer(sid, pid) {
 
 // ── Ejercicios ──
 function trainingAddExercise(sid) {
+  if (!canEditSection('training')) return;
   const s = trSessionById(sid); if (!s) return;
   s.exercises.push(trNormEx({}));
   renderTraining(); markTrainingDirty();
 }
 function trainingDeleteEx(sid, eid) {
+  if (!canEditSection('training')) return;
   const s = trSessionById(sid); if (!s) return;
   if (!confirm('¿Borrar este ejercicio?')) return;
   s.exercises = s.exercises.filter(e => e.id !== eid);
   renderTraining(); markTrainingDirty();
 }
 function trainingEditEx(sid, eid, field, val) {
+  if (!canEditSection('training')) return;
   const s = trSessionById(sid); if (!s) return;
   const e = s.exercises.find(x => x.id === eid); if (!e) return;
   e[field] = val;
@@ -4248,10 +4299,12 @@ function trainingEditEx(sid, eid, field, val) {
 
 // ── Jugadores (base de datos de la sección) ──
 function trainingAddPlayer() {
+  if (!canEditSection('training')) return;
   trainingData.players.push({ id: trMakeId('p'), name: '', role: '' });
   renderTraining(); markTrainingDirty();
 }
 function trainingDeletePlayer(pid) {
+  if (!canEditSection('training')) return;
   const p = trainingData.players.find(x => x.id === pid);
   if (!confirm('¿Quitar a ' + ((p && p.name) || 'este jugador') + ' de la base? También se quita de las sesiones donde estaba.')) return;
   trainingData.players = trainingData.players.filter(x => x.id !== pid);
@@ -4259,6 +4312,7 @@ function trainingDeletePlayer(pid) {
   renderTraining(); markTrainingDirty();
 }
 function trainingEditPlayer(pid, field, val) {
+  if (!canEditSection('training')) return;
   const p = trainingData.players.find(x => x.id === pid); if (!p) return;
   p[field] = val; markTrainingDirty(); // sin re-render (mantiene foco)
 }
@@ -4269,12 +4323,11 @@ function trainingEditPlayer(pid, field, val) {
 // ═══════════════════════════════════════════════════════
 let periMonthIdx = 0;
 const LOAD_SCALE = {
-  DIF:   { label: 'Diferenciada', color: '#8fd694' },
-  BAJA:  { label: 'Baja',         color: '#f3df8a' },
-  MEDIA: { label: 'Media',        color: '#f2b264' },
-  ALTA:  { label: 'Alta',         color: '#e2685f' },
+  BAJA:  { label: 'Baja',  color: '#f3df8a', val: 1 },
+  MEDIA: { label: 'Media', color: '#f2b264', val: 2 },
+  ALTA:  { label: 'Alta',  color: '#e2685f', val: 3 },
 };
-const LOAD_CYCLE = ['', 'DIF', 'BAJA', 'MEDIA', 'ALTA'];
+const LOAD_CYCLE = ['', 'BAJA', 'MEDIA', 'ALTA'];
 const WEEK_LOADS = {
   'BAJA':       '#f3df8a',
   'MEDIA-BAJA': '#f0cf7a',
@@ -4282,6 +4335,21 @@ const WEEK_LOADS = {
   'MEDIA-ALTA': '#ea9464',
   'ALTA':       '#e2685f',
 };
+// Carga semanal automática: promedio de las cargas diarias de vóley cargadas en la semana
+function periWeekLoad(days) {
+  const vals = [];
+  days.forEach(d => {
+    const s = trSessionForDate(periDateStr(d), false);
+    if (s && LOAD_SCALE[s.loadV]) vals.push(LOAD_SCALE[s.loadV].val);
+  });
+  if (!vals.length) return '';
+  const avg = vals.reduce((a, b) => a + b, 0) / vals.length;
+  if (avg < 1.34) return 'BAJA';
+  if (avg < 1.67) return 'MEDIA-BAJA';
+  if (avg < 2.34) return 'MEDIA';
+  if (avg < 2.67) return 'MEDIA-ALTA';
+  return 'ALTA';
+}
 
 function periCurMonth() { return trainingData.months[periMonthIdx] || null; }
 
@@ -4321,7 +4389,7 @@ function renderPeriodization() {
 
   const tabs = months.map((mo, i) =>
     `<button class="tr-week-tab ${i === periMonthIdx ? 'active' : ''}" onclick="periSelectMonth(${i})">${escHtml(trMonthLabel(mo))}</button>`
-  ).join('') + `<button class="tr-week-add" onclick="periAddMonth()" title="Agregar mes">+ Mes</button>`;
+  ).join('') + `<button class="tr-week-add edit-action" onclick="periAddMonth()" title="Agregar mes">+ Mes</button>`;
   const legend = `<div class="peri-legend">${Object.entries(LOAD_SCALE).map(([k, v]) => `<span class="peri-leg"><span class="peri-leg-sw" style="background:${v.color}"></span>${v.label}</span>`).join('')}</div>`;
   const tabsRow = `<div class="tr-weeks">${tabs}<span class="tr-tabs-spacer"></span>${legend}</div>`;
 
@@ -4334,9 +4402,8 @@ function renderPeriodization() {
   const weeksHTML = weeks.map((days, wi) => {
     const monday = periDateStr(days[0]);
     const meta = mo.weekMeta[monday] || { fase: '', carga: '', foco: '' };
-    const cargaColor = WEEK_LOADS[meta.carga] || 'transparent';
-    const cargaOpts = ['<option value="">Carga semanal…</option>']
-      .concat(Object.keys(WEEK_LOADS).map(k => `<option ${meta.carga === k ? 'selected' : ''}>${k}</option>`)).join('');
+    const autoCarga = periWeekLoad(days);   // carga semanal = promedio de las cargas diarias
+    const cargaColor = WEEK_LOADS[autoCarga] || 'transparent';
 
     const dayCols = days.map(d => {
       const ds = periDateStr(d);
@@ -4360,7 +4427,10 @@ function renderPeriodization() {
       <div class="peri-week-side">
         <div class="peri-week-num">Semana ${wi + 1}</div>
         <input class="peri-fase peri-inp" value="${escHtml(meta.fase)}" placeholder="Fase" oninput="periSetWeek('${monday}','fase',this.value)">
-        <select class="peri-carga peri-inp" style="background:${cargaColor};${meta.carga ? 'color:#0d1117;font-weight:800' : ''}" onchange="periSetWeekCarga('${monday}',this.value)">${cargaOpts}</select>
+        <div class="peri-carga-auto" style="background:${cargaColor};${autoCarga ? 'color:#0d1117' : 'color:var(--text-dim)'}" title="Se calcula solo con el promedio de las cargas diarias de vóley">
+          <span class="peri-carga-lbl">Carga semanal</span>
+          <span class="peri-carga-val">${autoCarga ? autoCarga.replace('-', ' - ') : '—'}</span>
+        </div>
       </div>
       <div class="peri-week-main">
         <div class="peri-days-row">
@@ -4378,28 +4448,28 @@ function renderPeriodization() {
 
 function periSelectMonth(i) { periMonthIdx = i; renderPeriodization(); }
 function periAddMonth() {
+  if (!canEditSection('periodization')) return;
   // Reutiliza el alta de meses de Entrenamientos
   const before = trainingData.months.length;
   trainingAddMonth();
   if (trainingData.months.length > before) { periMonthIdx = trainingMonthIdx; renderPeriodization(); }
 }
 function periSetWeek(monday, field, val) {
+  if (!canEditSection('periodization')) return;
   const mo = periCurMonth(); if (!mo) return;
   if (!mo.weekMeta[monday]) mo.weekMeta[monday] = { fase: '', carga: '', foco: '' };
   mo.weekMeta[monday][field] = val;
   markTrainingDirty(); // sin re-render (mantiene foco)
 }
-function periSetWeekCarga(monday, val) {
-  periSetWeek(monday, 'carga', val);
-  renderPeriodization(); // re-render para recolorear
-}
 function periCycleLoad(ds, field) {
+  if (!canEditSection('periodization')) return;
   const s = trSessionForDate(ds, true);
   const i = LOAD_CYCLE.indexOf(s[field] || '');
   s[field] = LOAD_CYCLE[(i + 1) % LOAD_CYCLE.length];
   renderPeriodization(); markTrainingDirty();
 }
 function periToggle(ds, what) {
+  if (!canEditSection('periodization')) return;
   const s = trSessionForDate(ds, true);
   if (what === 'partido') s.type = (s.type === 'PARTIDO') ? '' : 'PARTIDO';
   else s.viaje = !s.viaje;
@@ -4493,7 +4563,7 @@ function renderCalendar() {
       <button class="cal-nav" onclick="calNextMonth()">→</button>
       <button class="cal-today" onclick="calGoToday()">Hoy</button>
       <span class="tr-tabs-spacer"></span>
-      <button class="btn primary" onclick="calAddEvent()">+ Agregar evento / lapso</button>
+      <button class="btn primary edit-action" onclick="calAddEvent()">+ Agregar evento / lapso</button>
     </div>`;
 
   // grilla
@@ -4550,6 +4620,7 @@ function calEditEvent(id) { calOpenEditor(id, null); }
 
 // Editor de evento (modal simple)
 function calOpenEditor(id, presetDate) {
+  if (!canEditSection('calendar')) return;
   const ev = id ? calData.events.find(e => e.id === id) : null;
   const cur = ev || { id: '', title: '', start: presetDate || '', end: '', type: 'EVENTO', note: '' };
   const typeOpts = Object.entries(CAL_TYPES).map(([k, v]) => `<option value="${k}" ${cur.type === k ? 'selected' : ''}>${v.label}</option>`).join('');
@@ -4580,6 +4651,7 @@ function calOpenEditor(id, presetDate) {
 }
 function calCloseEditor() { const b = document.getElementById('cal-editor-backdrop'); if (b) b.style.display = 'none'; }
 function calSaveEvent(id) {
+  if (!canEditSection('calendar')) return;
   const title = document.getElementById('cal-ed-title').value.trim();
   const type = document.getElementById('cal-ed-type').value;
   const start = document.getElementById('cal-ed-start').value;
@@ -4596,6 +4668,7 @@ function calSaveEvent(id) {
   calCloseEditor(); renderCalendar(); markCalDirty();
 }
 function calDeleteEvent(id) {
+  if (!canEditSection('calendar')) return;
   if (!confirm('¿Borrar este evento?')) return;
   calData.events = calData.events.filter(e => e.id !== id);
   calCloseEditor(); renderCalendar(); markCalDirty();
@@ -4866,6 +4939,7 @@ function openPlayer(nm) { playersOpenName = nm; renderPlayers(); }
 function closePlayer() { playersOpenName = null; renderPlayers(); }
 
 function goToSection(s) {
+  if (!fbUser && !isSectionVisible(s)) { goHome(); return; } // sección oculta para invitados
   appView = s;
   document.getElementById('home-screen').style.display = 'none';
   document.getElementById('section-bar').style.display = '';
@@ -4886,6 +4960,71 @@ function goHome() {
   document.getElementById('home-screen').style.display = '';
   document.getElementById('section-bar').style.display = 'none';
   ['plan', 'database', 'video', 'training', 'players', 'calendar', 'periodization'].forEach(v => { const el = document.getElementById('section-' + v); if (el) el.style.display = 'none'; });
+  renderHomeConfig();
+}
+
+// ── Configuración de secciones (visibilidad / edición) — solo el coach logueado la cambia ──
+const SECTIONS = [
+  { id: 'players', name: 'Jugadores', icon: '🏐' },
+  { id: 'database', name: 'Base de Datos', icon: '🗂️' },
+  { id: 'plan', name: 'Plan de Juego', icon: '📋' },
+  { id: 'video', name: 'Sala de Video', icon: '🎬' },
+  { id: 'training', name: 'Entrenamientos', icon: '📅' },
+  { id: 'calendar', name: 'Calendario', icon: '🗓️' },
+  { id: 'periodization', name: 'Periodización', icon: '📊' },
+];
+const DEFAULT_EDITABLE = { training: true, calendar: true, periodization: true };
+function defaultSectionConfig() { const o = {}; SECTIONS.forEach(s => o[s.id] = { visible: true, editable: !!DEFAULT_EDITABLE[s.id] }); return o; }
+function ensureSectionConfig() {
+  if (!state.sectionConfig) state.sectionConfig = defaultSectionConfig();
+  SECTIONS.forEach(s => { if (!state.sectionConfig[s.id]) state.sectionConfig[s.id] = { visible: true, editable: !!DEFAULT_EDITABLE[s.id] }; });
+}
+function secCfg(id) { ensureSectionConfig(); return state.sectionConfig[id]; }
+function canEditSection(id) { return !!fbUser || secCfg(id).editable; }
+function isSectionVisible(id) { return secCfg(id).visible; }
+// Aplica clases al body para bloquear/desbloquear cada sección según login + config
+function applySectionLocks() {
+  ensureSectionConfig();
+  SECTIONS.forEach(s => {
+    const can = canEditSection(s.id);
+    document.body.classList.toggle('lock-' + s.id, !can);
+    document.body.classList.toggle('edit-' + s.id, can);
+  });
+}
+
+// Aplica visibilidad de las tarjetas del inicio + dibuja el panel de config (si está logueado)
+function renderHomeConfig() {
+  ensureSectionConfig();
+  const logged = !!fbUser;
+  SECTIONS.forEach(s => {
+    const card = document.getElementById('hcard-' + s.id);
+    if (!card) return;
+    const vis = isSectionVisible(s.id);
+    // ocultar del todo para invitados; al coach se la mostramos atenuada para poder reactivarla
+    card.style.display = (vis || logged) ? '' : 'none';
+    card.classList.toggle('hcard-hidden', !vis);
+  });
+  const panel = document.getElementById('section-config');
+  const rows = document.getElementById('sc-rows');
+  if (panel) panel.style.display = logged ? '' : 'none';
+  if (logged && rows) {
+    rows.innerHTML = SECTIONS.map(s => {
+      const c = secCfg(s.id);
+      return `<div class="sc-row">
+        <span class="sc-name">${s.icon} ${s.name}</span>
+        <label class="sc-toggle"><input type="checkbox" ${c.visible ? 'checked' : ''} onchange="setSectionCfg('${s.id}','visible',this.checked)"> Visible</label>
+        <label class="sc-toggle"><input type="checkbox" ${c.editable ? 'checked' : ''} onchange="setSectionCfg('${s.id}','editable',this.checked)"> Editable sin login</label>
+      </div>`;
+    }).join('');
+  }
+  applySectionLocks();
+}
+function setSectionCfg(id, field, val) {
+  if (!fbUser) return; // solo el coach logueado
+  ensureSectionConfig();
+  state.sectionConfig[id][field] = !!val;
+  markDirty();
+  renderHomeConfig();
 }
 
 // ── Bases de datos múltiples ──
@@ -6161,6 +6300,7 @@ function buildPlanData(d) {
     files: (d.files || []).map(f => ({ name: f.name, data: f.data, youtubeId: f.youtubeId || '', matchLabel: f.matchLabel || '', matchDate: f.matchDate || '', dbId: f.dbId || 'db_general' })),
     databases:       d.databases && d.databases.length ? d.databases : [{ id: 'db_general', name: 'General' }],
     activeDbId:      d.activeDbId || 'db_general',
+    sectionConfig:   d.sectionConfig || null,
     activeTeam:      d.activeTeam,
     filter:          d.filter,
     videoLinks:      d.videoLinks,
@@ -6188,6 +6328,7 @@ function planDataFromSaved(d) {
   pd.files = (d.files || []).map(f => ({ name: f.name, data: f.data, videoURL: null, videoName: null, youtubeId: f.youtubeId || '', matchLabel: f.matchLabel || f.name, matchDate: f.matchDate || '', dbId: f.dbId || 'db_general' }));
   pd.databases       = (d.databases && d.databases.length) ? d.databases.map(x => ({ id: x.id, name: x.name })) : [{ id: 'db_general', name: 'General' }];
   pd.activeDbId      = d.activeDbId || (pd.databases[0] ? pd.databases[0].id : 'db_general');
+  pd.sectionConfig   = d.sectionConfig || null;
   pd.activeTeam      = d.activeTeam || null;
   pd.filter          = d.filter || 'quality';
   pd.videoLinks      = d.videoLinks || {};
@@ -6375,6 +6516,7 @@ function updateAuthUI() {
   if (loginBtn)  loginBtn.style.display  = editing ? 'none' : '';
   if (logoutBtn) logoutBtn.style.display = editing ? '' : 'none';
   setCloudStatus(editing ? 'Modo edición — los cambios se sincronizan solos' : '');
+  renderHomeConfig();
   renderPlanTabs();
   render();
   renderFileChips();
