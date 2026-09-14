@@ -1829,6 +1829,22 @@
   .db-row .db-video-row { display:flex; gap:6px; align-items:center; }
   .db-row .db-vid-status { font-size:11px; color:var(--text-dim); }
   .db-empty { color:var(--text-dim); text-align:center; padding:50px 0; }
+  /* Pestañas de bases de datos */
+  .db-tabs { display:flex; gap:8px; flex-wrap:wrap; align-items:center; border-bottom:2px solid var(--border); padding-bottom:14px; margin-bottom:20px; }
+  .db-tab { display:inline-flex; align-items:center; gap:8px; background:var(--bg2); border:1.5px solid var(--border);
+    border-radius:12px; padding:9px 15px; font-size:14px; font-weight:700; color:var(--text-dim); cursor:pointer; transition:all .15s; }
+  .db-tab:hover { color:var(--text); border-color:var(--text-dim); }
+  .db-tab.active { background:var(--accent); border-color:var(--accent); color:#0d1117; }
+  .db-tab-count { font-size:11px; font-weight:800; background:rgba(0,0,0,.18); border-radius:20px; padding:1px 8px; }
+  .db-tab.active .db-tab-count { background:rgba(0,0,0,.25); }
+  .db-tab-del { font-size:12px; opacity:.6; border-radius:50%; width:18px; height:18px; display:inline-flex; align-items:center; justify-content:center; }
+  .db-tab-del:hover { opacity:1; background:#f8514966; color:#fff; }
+  .db-tab-add { background:none; border:1.5px dashed var(--border); border-radius:12px; color:var(--text-dim);
+    padding:9px 14px; font-size:14px; font-weight:700; cursor:pointer; transition:all .15s; }
+  .db-tab-add:hover { border-color:var(--accent); color:var(--accent); }
+  .db-row-actions { display:flex; flex-direction:column; gap:8px; align-items:flex-end; }
+  .db-move { background:var(--bg3); border:1px solid var(--border); color:var(--text-dim); border-radius:7px; padding:5px 8px; font-size:12px; cursor:pointer; }
+  .db-move:hover { border-color:var(--accent); color:var(--accent); }
   #section-video { max-width:900px; margin:0 auto; padding:24px 32px; }
   /* ═══════════ JUGADORES ═══════════ */
   #section-players { max-width:1060px; margin:0 auto; padding:22px 32px 80px; }
@@ -1874,6 +1890,35 @@
   .pl-metric-l { font-size:10.5px; color:var(--text-dim); text-transform:uppercase; letter-spacing:.03em; margin-top:5px; font-weight:700; }
   .pl-evalbar { display:flex; height:9px; border-radius:6px; overflow:hidden; background:var(--bg3); }
   .pl-evalseg { height:100%; }
+  /* ═══════════ PERIODIZACIÓN ═══════════ */
+  #section-periodization { max-width:1100px; margin:0 auto; padding:22px 32px 80px; }
+  .peri-legend { display:flex; gap:14px; flex-wrap:wrap; }
+  .peri-leg { display:inline-flex; align-items:center; gap:6px; font-size:12px; color:var(--text-dim); font-weight:600; }
+  .peri-leg-sw { width:14px; height:14px; border-radius:4px; display:inline-block; }
+  .peri-month { display:flex; flex-direction:column; gap:14px; }
+  .peri-week { display:grid; grid-template-columns:180px 1fr; gap:14px; background:var(--bg2); border:1px solid var(--border); border-radius:14px; padding:14px; }
+  .peri-week-side { display:flex; flex-direction:column; gap:8px; }
+  .peri-week-num { font-size:15px; font-weight:800; color:var(--accent); }
+  .peri-inp { background:var(--bg3); border:1px solid var(--border); border-radius:8px; color:var(--text); padding:7px 9px; font-size:13px; font-family:inherit; box-sizing:border-box; width:100%; }
+  .peri-inp:focus { outline:none; border-color:var(--accent); }
+  .peri-carga { cursor:pointer; text-align:center; }
+  .peri-week-main { display:flex; flex-direction:column; gap:10px; min-width:0; }
+  .peri-days-row { display:grid; grid-template-columns:70px repeat(7,1fr); gap:5px; }
+  .peri-rowlbl { display:flex; flex-direction:column; justify-content:flex-end; gap:0; font-size:10px; font-weight:700; color:var(--text-dim); text-align:right; padding-right:4px; }
+  .peri-rowlbl span { height:26px; display:flex; align-items:center; justify-content:flex-end; }
+  .peri-day { display:flex; flex-direction:column; gap:3px; align-items:stretch; text-align:center; }
+  .peri-out { opacity:.4; }
+  .peri-dnum { font-size:13px; font-weight:800; }
+  .peri-dwd { font-size:10px; color:var(--text-dim); font-weight:700; margin-top:-3px; }
+  .peri-mark { height:26px; border-radius:6px; background:var(--bg3); cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:13px; border:1px solid var(--border); }
+  .peri-mark:hover { border-color:var(--accent); }
+  .peri-mark.on-part { background:#8b7fd6; }
+  .peri-mark.on-viaje { background:#58a6ff; }
+  .peri-load { height:26px; border-radius:6px; background:var(--bg3); border:1px solid var(--border); cursor:pointer;
+    display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:800; color:var(--text-dim); user-select:none; }
+  .peri-load:hover { border-color:var(--accent); }
+  .peri-foco { min-height:52px; resize:vertical; line-height:1.5; }
+  @media (max-width:760px){ .peri-week { grid-template-columns:1fr; } .peri-days-row { grid-template-columns:52px repeat(7,1fr); } .peri-rowlbl { font-size:9px; } }
   /* ═══════════ CALENDARIO ═══════════ */
   #section-calendar { max-width:1040px; margin:0 auto; padding:22px 32px 80px; }
   .cal-bar { display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:16px; }
@@ -2082,12 +2127,17 @@
       <div class="hc-icon">🗓️</div><div class="hc-name">Calendario</div>
       <div class="hc-desc">Eventos, partidos y lapsos de fechas en un calendario. Editable por todos.</div>
     </div>
+    <div class="home-card" onclick="goToSection('periodization')">
+      <div class="hc-icon">📊</div><div class="hc-name">Periodización</div>
+      <div class="hc-desc">Planilla de cargas por día y semana (vóley y pesas), fases y foco. Conectada con los entrenamientos.</div>
+    </div>
   </div>
 </div>
 
 <!-- SECCIÓN: PLAN DE JUEGO -->
 <div id="section-plan" style="display:none">
   <div class="selector-bar">
+    <div class="sel-group"><div class="sel-lbl">Base de datos</div><div id="db-switcher"></div></div>
     <div class="sel-group"><div class="sel-lbl">Equipo a analizar</div><div class="header-meta" id="team-switcher"></div></div>
     <div class="sel-group"><div class="sel-lbl">Partidos a usar</div><div class="sel-chips" id="match-chips"></div></div>
   </div>
@@ -2130,6 +2180,7 @@
 <!-- SECCIÓN: SALA DE VIDEO -->
 <div id="section-video" style="display:none">
   <div class="selector-bar" style="border:1px solid var(--border); border-radius:12px; margin-bottom:20px;">
+    <div class="sel-group"><div class="sel-lbl">Base de datos</div><div id="video-db-switcher"></div></div>
     <div class="sel-group"><div class="sel-lbl">Equipo a analizar</div><div class="header-meta" id="video-team-switcher"></div></div>
     <div class="sel-group"><div class="sel-lbl">Partidos a usar</div><div class="sel-chips" id="video-match-chips"></div></div>
   </div>
@@ -2147,6 +2198,10 @@
         <input id="pl-club-input" class="pl-club-input" placeholder="san lorenzo, casla" onchange="setClubMatch(this.value)">
         <span id="pl-club-info" class="pl-club-info"></span>
       </div>
+      <div class="pl-club-row sel-group" style="margin-top:10px">
+        <span class="pl-club-lbl">Base de datos:</span>
+        <span id="pl-db-switcher"></span>
+      </div>
       <div class="pl-club-row" style="margin-top:10px">
         <span class="pl-club-lbl">Scouts a analizar:</span>
         <span id="pl-scout-dd"></span>
@@ -2154,6 +2209,15 @@
     </div>
   </div>
   <div id="players-body"></div>
+</div>
+
+<!-- SECCIÓN: PERIODIZACIÓN (cargas, fases y foco; conectada con Entrenamientos) -->
+<div id="section-periodization" style="display:none">
+  <div class="tr-intro">
+    <p>Planilla de periodización: carga diaria de vóley y pesas, carga y fase por semana, y el foco de cada semana. Se conecta por fecha con los Entrenamientos. <b>Editable por todos.</b></p>
+    <span class="tr-status" id="peri-status"></span>
+  </div>
+  <div id="periodization-body"></div>
 </div>
 
 <!-- SECCIÓN: CALENDARIO (editable por todos, sin login) -->
@@ -2218,7 +2282,7 @@ let activePlanIdx = 0;
 let appSharedMode = false; // true = vista sin login (solo lectura), global a toda la app
 
 function blankPlanData() {
-  return { files: [], activeTeam: null, filter: 'quality', videoLinks: {}, playerOverrides: {}, comboVideos: {}, customLinks: [], scoutYoutube: {}, clubMatch: '' };
+  return { files: [], activeTeam: null, filter: 'quality', videoLinks: {}, playerOverrides: {}, comboVideos: {}, customLinks: [], scoutYoutube: {}, clubMatch: '', databases: [{ id: 'db_general', name: 'General' }], activeDbId: 'db_general' };
 }
 function makePlanId() { return 'plan_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
 function makePlan(name, data) { return { id: makePlanId(), name: name || 'Plan', data: data || blankPlanData() }; }
@@ -3584,7 +3648,7 @@ document.getElementById('file-input').addEventListener('change', async function(
     const text = await file.text();
     const data = parseDVW(text);
     const savedYt = (state.scoutYoutube && state.scoutYoutube[file.name]) || '';
-    state.files.push({ name: file.name, data, videoURL: null, videoName: null, youtubeId: savedYt, matchLabel: file.name.replace(/\.dvw$/i, '') });
+    state.files.push({ name: file.name, data, videoURL: null, videoName: null, youtubeId: savedYt, matchLabel: file.name.replace(/\.dvw$/i, ''), dbId: state.activeDbId || 'db_general' });
   }
   e.target.value = '';
   renderFileChips();
@@ -3606,17 +3670,33 @@ function renderFileChips() {
   renderSelectors();
 }
 
-// Lista de partidos en la Base de Datos, agrupada por equipo
+// Lista de partidos en la Base de Datos, con pestañas de base y agrupada por equipo
 function renderDatabase() {
   const el = document.getElementById('db-list');
   if (!el) return;
-  if (!state.files.length) {
-    el.innerHTML = '<div class="db-empty">No hay scouts todavía. Tocá "+ Agregar Scout DVW" para empezar tu base de datos.</div>';
+  ensureDatabases();
+
+  // Pestañas de bases de datos
+  const tabs = state.databases.map(db => {
+    const count = state.files.filter(f => (f.dbId || 'db_general') === db.id).length;
+    return `<button class="db-tab ${db.id === state.activeDbId ? 'active' : ''}" onclick="setActiveDb('${db.id}')">
+      <span ondblclick="event.stopPropagation();renameDb('${db.id}')" title="Doble clic para renombrar">${escHtml(db.name)}</span>
+      <span class="db-tab-count">${count}</span>
+      ${state.databases.length > 1 ? `<span class="db-tab-del" onclick="event.stopPropagation();deleteDb('${db.id}')" title="Borrar base">✕</span>` : ''}
+    </button>`;
+  }).join('') + `<button class="db-tab-add" onclick="addDb()" title="Nueva base de datos">+ Base</button>`;
+  const tabsBar = `<div class="db-tabs">${tabs}</div>`;
+
+  // Scouts de la base activa
+  const files = state.files.filter(f => (f.dbId || 'db_general') === state.activeDbId);
+  if (!files.length) {
+    el.innerHTML = tabsBar + `<div class="db-empty">La base "${escHtml(dbName(state.activeDbId))}" está vacía. Tocá "+ Agregar Scout DVW" para cargar partidos acá.</div>`;
     return;
   }
-  // Agrupar por equipo: cada partido aparece bajo los dos equipos que contiene
+  // Agrupar por equipo
   const groups = {};
-  state.files.forEach((f, idx) => {
+  files.forEach(f => {
+    const idx = state.files.indexOf(f);
     const th = (f.data && f.data.teams) ? f.data.teams : {};
     const names = [th.H && th.H.name, th.V && th.V.name].filter(Boolean);
     const uniq = [...new Set(names.length ? names : ['(sin equipo)'])];
@@ -3624,7 +3704,7 @@ function renderDatabase() {
   });
   const teamNames = Object.keys(groups).sort((a, b) => a.localeCompare(b, 'es'));
 
-  el.innerHTML = teamNames.map(tn => {
+  el.innerHTML = tabsBar + teamNames.map(tn => {
     const rows = groups[tn].map(idx => rowHTML(state.files[idx], idx, tn)).join('');
     return `<div class="db-group">
       <div class="db-group-head">🏐 ${escHtml(tn)} <span class="db-group-count">${groups[tn].length} partido${groups[tn].length === 1 ? '' : 's'}</span></div>
@@ -3635,6 +3715,8 @@ function renderDatabase() {
   function rowHTML(f, idx, groupTeam) {
     const th = (f.data && f.data.teams) ? f.data.teams : {};
     const rival = [th.H && th.H.name, th.V && th.V.name].filter(n => n && n !== groupTeam).join(', ');
+    const moveOpts = state.databases.filter(db => db.id !== (f.dbId || 'db_general'))
+      .map(db => `<option value="${db.id}">${escHtml(db.name)}</option>`).join('');
     return `<div class="db-row">
       <div class="db-match">
         <input type="text" value="${escHtml(f.matchLabel || f.name)}" onchange="setMatchLabel(${idx}, this.value)" title="Nombre del partido">
@@ -3652,9 +3734,50 @@ function renderDatabase() {
           <span class="db-vid-status">${f.videoURL ? escHtml(f.videoName || 'cargado') + ' (solo en esta compu)' : 'sin video local'}</span>
         </div>
       </div>
-      <div><span class="rm" style="cursor:pointer;color:var(--red);font-weight:700" onclick="removeFile('${(f.name || '').replace(/'/g, "\\'")}')" title="Quitar de la base">✕ Quitar</span></div>
+      <div class="db-row-actions">
+        ${moveOpts ? `<select class="db-move" onchange="moveScoutToDb(${idx}, this.value); this.value='';" title="Mover a otra base">
+          <option value="">Mover a…</option>${moveOpts}</select>` : ''}
+        <span class="rm" style="cursor:pointer;color:var(--red);font-weight:700" onclick="removeFile('${(f.name || '').replace(/'/g, "\\'")}')" title="Quitar de la base">✕ Quitar</span>
+      </div>
     </div>`;
   }
+}
+
+// ── Gestión de bases de datos ──
+function setActiveDb(id) { state.activeDbId = id; renderDatabase(); markDirty(); }
+function addDb() {
+  const name = prompt('Nombre de la nueva base de datos (ej: Liga 2025/26, Torneo Apertura):', '');
+  if (name === null) return;
+  const nm = name.trim(); if (!nm) return;
+  const id = 'db_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 5);
+  state.databases.push({ id, name: nm });
+  state.activeDbId = id;
+  renderDatabase(); markDirty();
+}
+function renameDb(id) {
+  const db = state.databases.find(d => d.id === id); if (!db) return;
+  const name = prompt('Nuevo nombre de la base:', db.name);
+  if (name === null) return;
+  db.name = name.trim() || db.name;
+  renderDatabase(); renderSelectors(); markDirty();
+}
+function deleteDb(id) {
+  if (state.databases.length <= 1) { alert('Tiene que quedar al menos una base.'); return; }
+  const db = state.databases.find(d => d.id === id); if (!db) return;
+  const n = state.files.filter(f => (f.dbId || 'db_general') === id).length;
+  const other = state.databases.find(d => d.id !== id);
+  if (!confirm(`¿Borrar la base "${db.name}"?` + (n ? `\nSus ${n} scout(s) se moverán a "${other.name}".` : ''))) return;
+  state.files.forEach(f => { if ((f.dbId || 'db_general') === id) f.dbId = other.id; });
+  state.databases = state.databases.filter(d => d.id !== id);
+  if (state.activeDbId === id) state.activeDbId = other.id;
+  if (analysisDbs) analysisDbs.delete(id);
+  renderDatabase(); renderSelectors(); markDirty();
+}
+function moveScoutToDb(idx, dbId) {
+  if (!dbId) return;
+  const f = state.files[idx]; if (!f) return;
+  f.dbId = dbId;
+  renderDatabase(); markDirty();
 }
 
 function setMatchLabel(idx, val) {
@@ -3779,23 +3902,31 @@ function trNormSession(s) {
     date: s.date || '',
     type,
     name: s.name || '',
+    loadV: s.loadV || '',   // carga diaria vóley: ''|DIF|BAJA|MEDIA|ALTA
+    loadG: s.loadG || '',   // carga diaria pesas
+    viaje: !!s.viaje,
     players: roster,
     exercises: exercises.map(e => ({ id: e.id, name: e.name, explanation: e.explanation, objective: e.objective, duration: e.duration }))
   };
 }
 function trNormMonth(mo) {
   mo = mo || {};
+  const wm = {};
+  if (mo.weekMeta && typeof mo.weekMeta === 'object') {
+    for (const k in mo.weekMeta) { const w = mo.weekMeta[k] || {}; wm[k] = { fase: w.fase || '', carga: w.carga || '', foco: w.foco || '' }; }
+  }
   return {
     id: mo.id || trMakeId('mo'),
     y: parseInt(mo.y, 10) || new Date().getFullYear(),
     m: (mo.m != null ? parseInt(mo.m, 10) : new Date().getMonth()),
+    weekMeta: wm,
     sessions: Array.isArray(mo.sessions) ? mo.sessions.map(trNormSession) : []
   };
 }
 // Migra el modelo viejo (semanas con sesiones) a meses, ubicando por fecha
 function trMigrateWeeks(weeks) {
   const bucket = {};
-  const ensure = (y, m) => { const k = y + '-' + m; if (!bucket[k]) bucket[k] = { id: trMakeId('mo'), y, m, sessions: [] }; return bucket[k]; };
+  const ensure = (y, m) => { const k = y + '-' + m; if (!bucket[k]) bucket[k] = { id: trMakeId('mo'), y, m, weekMeta: {}, sessions: [] }; return bucket[k]; };
   const pending = [];
   (weeks || []).forEach(w => (w.sessions || []).forEach(s => {
     const ns = trNormSession(s);
@@ -4050,7 +4181,7 @@ function trainingAddMonth() {
   const m = Math.min(12, Math.max(1, parseInt(mm[1], 10))) - 1;
   const y = parseInt(mm[2], 10);
   if (trainingData.months.find(x => x.y === y && x.m === m)) { alert('Ese mes ya existe.'); return; }
-  trainingData.months.push({ id: trMakeId('mo'), y, m, sessions: [] });
+  trainingData.months.push({ id: trMakeId('mo'), y, m, weekMeta: {}, sessions: [] });
   trainingData.months.sort((a, b) => (a.y - b.y) || (a.m - b.m));
   trainingView = 'month'; trainingOpenSessionId = null;
   trainingMonthIdx = trainingData.months.findIndex(x => x.y === y && x.m === m);
@@ -4130,6 +4261,149 @@ function trainingDeletePlayer(pid) {
 function trainingEditPlayer(pid, field, val) {
   const p = trainingData.players.find(x => x.id === pid); if (!p) return;
   p[field] = val; markTrainingDirty(); // sin re-render (mantiene foco)
+}
+
+// ═══════════════════════════════════════════════════════
+//  PERIODIZACIÓN — cargas por día/semana, fases y foco
+//  Usa trainingData (mismos meses) → conectado con Entrenamientos.
+// ═══════════════════════════════════════════════════════
+let periMonthIdx = 0;
+const LOAD_SCALE = {
+  DIF:   { label: 'Diferenciada', color: '#8fd694' },
+  BAJA:  { label: 'Baja',         color: '#f3df8a' },
+  MEDIA: { label: 'Media',        color: '#f2b264' },
+  ALTA:  { label: 'Alta',         color: '#e2685f' },
+};
+const LOAD_CYCLE = ['', 'DIF', 'BAJA', 'MEDIA', 'ALTA'];
+const WEEK_LOADS = {
+  'BAJA':       '#f3df8a',
+  'MEDIA-BAJA': '#f0cf7a',
+  'MEDIA':      '#f2b264',
+  'MEDIA-ALTA': '#ea9464',
+  'ALTA':       '#e2685f',
+};
+
+function periCurMonth() { return trainingData.months[periMonthIdx] || null; }
+
+// Mes que "posee" una fecha (por año/mes); si no existe, el mes actual de la vista
+function trMonthForDate(dateStr) {
+  const dm = /^(\d{4})-(\d{2})-(\d{2})$/.exec(dateStr); if (!dm) return periCurMonth();
+  const y = +dm[1], m = +dm[2] - 1;
+  return trainingData.months.find(x => x.y === y && x.m === m) || periCurMonth();
+}
+function trSessionForDate(dateStr, create) {
+  const mo = trMonthForDate(dateStr); if (!mo) return null;
+  let s = mo.sessions.find(x => x.date === dateStr);
+  if (!s && create) { s = trNormSession({ date: dateStr }); mo.sessions.push(s); }
+  return s;
+}
+// Semanas (lunes→domingo) que tocan el mes
+function periWeeksOf(mo) {
+  const first = new Date(mo.y, mo.m, 1);
+  const start = new Date(first); start.setDate(first.getDate() - ((first.getDay() + 6) % 7)); // lunes de esa semana
+  const lastOfMonth = new Date(mo.y, mo.m + 1, 0);
+  const weeks = [];
+  let cur = new Date(start);
+  while (cur <= lastOfMonth) {
+    const days = [];
+    for (let i = 0; i < 7; i++) { const d = new Date(cur); days.push(d); cur.setDate(cur.getDate() + 1); }
+    weeks.push(days);
+  }
+  return weeks;
+}
+function periDateStr(d) { return trDateStr(d.getFullYear(), d.getMonth(), d.getDate()); }
+
+function renderPeriodization() {
+  const wrap = document.getElementById('periodization-body');
+  if (!wrap) return;
+  const months = trainingData.months;
+  if (periMonthIdx >= months.length) periMonthIdx = Math.max(0, months.length - 1);
+
+  const tabs = months.map((mo, i) =>
+    `<button class="tr-week-tab ${i === periMonthIdx ? 'active' : ''}" onclick="periSelectMonth(${i})">${escHtml(trMonthLabel(mo))}</button>`
+  ).join('') + `<button class="tr-week-add" onclick="periAddMonth()" title="Agregar mes">+ Mes</button>`;
+  const legend = `<div class="peri-legend">${Object.entries(LOAD_SCALE).map(([k, v]) => `<span class="peri-leg"><span class="peri-leg-sw" style="background:${v.color}"></span>${v.label}</span>`).join('')}</div>`;
+  const tabsRow = `<div class="tr-weeks">${tabs}<span class="tr-tabs-spacer"></span>${legend}</div>`;
+
+  if (!months.length) { wrap.innerHTML = tabsRow + '<div class="tr-empty">No hay meses. Agregá uno con "+ Mes" (o creá entrenamientos).</div>'; return; }
+  const mo = periCurMonth();
+  if (!mo.weekMeta) mo.weekMeta = {};
+  const weeks = periWeeksOf(mo);
+  const WD = ['LU', 'MA', 'MI', 'JU', 'VI', 'SA', 'DO'];
+
+  const weeksHTML = weeks.map((days, wi) => {
+    const monday = periDateStr(days[0]);
+    const meta = mo.weekMeta[monday] || { fase: '', carga: '', foco: '' };
+    const cargaColor = WEEK_LOADS[meta.carga] || 'transparent';
+    const cargaOpts = ['<option value="">Carga semanal…</option>']
+      .concat(Object.keys(WEEK_LOADS).map(k => `<option ${meta.carga === k ? 'selected' : ''}>${k}</option>`)).join('');
+
+    const dayCols = days.map(d => {
+      const ds = periDateStr(d);
+      const inMonth = d.getMonth() === mo.m;
+      const s = trSessionForDate(ds, false);
+      const lv = s ? s.loadV : '', lg = s ? s.loadG : '';
+      const partido = s && s.type === 'PARTIDO', viaje = s && s.viaje;
+      const cellV = LOAD_SCALE[lv] ? `style="background:${LOAD_SCALE[lv].color};color:#0d1117"` : '';
+      const cellG = LOAD_SCALE[lg] ? `style="background:${LOAD_SCALE[lg].color};color:#0d1117"` : '';
+      return `<div class="peri-day ${inMonth ? '' : 'peri-out'}">
+        <div class="peri-dnum">${d.getDate()}</div>
+        <div class="peri-dwd">${WD[(d.getDay() + 6) % 7]}</div>
+        <div class="peri-mark ${partido ? 'on-part' : ''}" onclick="periToggle('${ds}','partido')" title="Partido">${partido ? '🏐' : ''}</div>
+        <div class="peri-mark ${viaje ? 'on-viaje' : ''}" onclick="periToggle('${ds}','viaje')" title="Viaje">${viaje ? '✈️' : ''}</div>
+        <div class="peri-load" ${cellV} onclick="periCycleLoad('${ds}','loadV')" title="Carga vóley (clic para cambiar)">${lv ? lv[0] : '·'}</div>
+        <div class="peri-load peri-gym" ${cellG} onclick="periCycleLoad('${ds}','loadG')" title="Carga pesas (clic para cambiar)">${lg ? lg[0] : '·'}</div>
+      </div>`;
+    }).join('');
+
+    return `<div class="peri-week">
+      <div class="peri-week-side">
+        <div class="peri-week-num">Semana ${wi + 1}</div>
+        <input class="peri-fase peri-inp" value="${escHtml(meta.fase)}" placeholder="Fase" oninput="periSetWeek('${monday}','fase',this.value)">
+        <select class="peri-carga peri-inp" style="background:${cargaColor};${meta.carga ? 'color:#0d1117;font-weight:800' : ''}" onchange="periSetWeekCarga('${monday}',this.value)">${cargaOpts}</select>
+      </div>
+      <div class="peri-week-main">
+        <div class="peri-days-row">
+          <div class="peri-rowlbl"><span>Partido</span><span>Viaje</span><span>Vóley</span><span>Pesas</span></div>
+          ${dayCols}
+        </div>
+        <textarea class="peri-foco peri-inp" placeholder="Foco de la semana (objetivos)…" oninput="periSetWeek('${monday}','foco',this.value); autoGrow(this)">${escHtml(meta.foco)}</textarea>
+      </div>
+    </div>`;
+  }).join('');
+
+  wrap.innerHTML = tabsRow + `<div class="peri-month">${weeksHTML}</div>`;
+  wrap.querySelectorAll('.peri-foco').forEach(autoGrow);
+}
+
+function periSelectMonth(i) { periMonthIdx = i; renderPeriodization(); }
+function periAddMonth() {
+  // Reutiliza el alta de meses de Entrenamientos
+  const before = trainingData.months.length;
+  trainingAddMonth();
+  if (trainingData.months.length > before) { periMonthIdx = trainingMonthIdx; renderPeriodization(); }
+}
+function periSetWeek(monday, field, val) {
+  const mo = periCurMonth(); if (!mo) return;
+  if (!mo.weekMeta[monday]) mo.weekMeta[monday] = { fase: '', carga: '', foco: '' };
+  mo.weekMeta[monday][field] = val;
+  markTrainingDirty(); // sin re-render (mantiene foco)
+}
+function periSetWeekCarga(monday, val) {
+  periSetWeek(monday, 'carga', val);
+  renderPeriodization(); // re-render para recolorear
+}
+function periCycleLoad(ds, field) {
+  const s = trSessionForDate(ds, true);
+  const i = LOAD_CYCLE.indexOf(s[field] || '');
+  s[field] = LOAD_CYCLE[(i + 1) % LOAD_CYCLE.length];
+  renderPeriodization(); markTrainingDirty();
+}
+function periToggle(ds, what) {
+  const s = trSessionForDate(ds, true);
+  if (what === 'partido') s.type = (s.type === 'PARTIDO') ? '' : 'PARTIDO';
+  else s.viaje = !s.viaje;
+  renderPeriodization(); markTrainingDirty();
 }
 
 // ═══════════════════════════════════════════════════════
@@ -4371,7 +4645,7 @@ let playersSelFiles = null; // Set de nombres de scout seleccionados; null = tod
 
 // Scouts de la Base de Datos en los que juega el club (ordenados por fecha desc)
 function clubFiles() {
-  return state.files.filter(f => {
+  return filesPool().filter(f => {
     const d = f.data; if (!d || !d.teams) return false;
     return (d.teams.H && isClubTeam(d.teams.H.name)) || (d.teams.V && isClubTeam(d.teams.V.name));
   }).slice().sort((a, b) => {
@@ -4513,6 +4787,7 @@ function plHeadline(skill, st) {
 function renderPlayers() {
   const ci = document.getElementById('pl-club-input');
   if (ci && document.activeElement !== ci) ci.value = state.clubMatch || '';
+  renderDbSelectors();
   renderPlayersScoutDD();
   renderPlayersGridOnly();
 }
@@ -4594,9 +4869,9 @@ function goToSection(s) {
   appView = s;
   document.getElementById('home-screen').style.display = 'none';
   document.getElementById('section-bar').style.display = '';
-  const titles = { plan: '📋 Plan de Juego', database: '🗂️ Base de Datos', video: '🎬 Sala de Video', training: '📅 Entrenamientos', players: '🏐 Jugadores', calendar: '🗓️ Calendario' };
+  const titles = { plan: '📋 Plan de Juego', database: '🗂️ Base de Datos', video: '🎬 Sala de Video', training: '📅 Entrenamientos', players: '🏐 Jugadores', calendar: '🗓️ Calendario', periodization: '📊 Periodización' };
   document.getElementById('section-title-txt').textContent = titles[s] || '';
-  ['plan', 'database', 'video', 'training', 'players', 'calendar'].forEach(v => { const el = document.getElementById('section-' + v); if (el) el.style.display = v === s ? '' : 'none'; });
+  ['plan', 'database', 'video', 'training', 'players', 'calendar', 'periodization'].forEach(v => { const el = document.getElementById('section-' + v); if (el) el.style.display = v === s ? '' : 'none'; });
   ensureSelectionValid();
   if (s === 'database') renderDatabase();
   if (s === 'plan') { renderSelectors(); render(); }
@@ -4604,12 +4879,30 @@ function goToSection(s) {
   if (s === 'training') renderTraining();
   if (s === 'players') renderPlayers();
   if (s === 'calendar') renderCalendar();
+  if (s === 'periodization') renderPeriodization();
 }
 function goHome() {
   appView = 'home';
   document.getElementById('home-screen').style.display = '';
   document.getElementById('section-bar').style.display = 'none';
-  ['plan', 'database', 'video', 'training', 'players', 'calendar'].forEach(v => { const el = document.getElementById('section-' + v); if (el) el.style.display = 'none'; });
+  ['plan', 'database', 'video', 'training', 'players', 'calendar', 'periodization'].forEach(v => { const el = document.getElementById('section-' + v); if (el) el.style.display = 'none'; });
+}
+
+// ── Bases de datos múltiples ──
+let analysisDbs = null; // Set de dbIds a usar en el análisis; null = todas
+function ensureDatabases() {
+  if (!state.databases || !state.databases.length) state.databases = [{ id: 'db_general', name: 'General' }];
+  if (!state.activeDbId || !state.databases.find(d => d.id === state.activeDbId)) state.activeDbId = state.databases[0].id;
+  state.files.forEach(f => { if (!f.dbId || !state.databases.find(d => d.id === f.dbId)) f.dbId = state.databases[0].id; });
+}
+function dbName(id) { const d = (state.databases || []).find(x => x.id === id); return d ? d.name : 'General'; }
+function dbSel(id) { return analysisDbs === null || analysisDbs.has(id); }
+// Pool de scouts según las bases seleccionadas para el análisis
+function filesPool() {
+  ensureDatabases();
+  if (analysisDbs === null) return state.files;
+  const pool = state.files.filter(f => analysisDbs.has(f.dbId || state.databases[0].id));
+  return pool.length ? pool : state.files;
 }
 
 // ── Selección de equipo + partidos ──
@@ -4620,7 +4913,8 @@ function fileHasTeam(f, team) {
 }
 // Partidos que contienen al equipo activo (ordenados por fecha, más reciente primero)
 function teamFiles() {
-  const list = state.activeTeam ? state.files.filter(f => fileHasTeam(f, state.activeTeam)) : state.files.slice();
+  const pool = filesPool();
+  const list = state.activeTeam ? pool.filter(f => fileHasTeam(f, state.activeTeam)) : pool.slice();
   return list.slice().sort((a, b) => {
     const da = a.matchDate || '', db2 = b.matchDate || '';
     if (da && db2) return db2.localeCompare(da);  // más reciente primero
@@ -4656,13 +4950,66 @@ function selectAllMatches() {
 }
 
 function renderSelectors() {
+  renderDbSelectors();
   renderTeamSelects();
   renderMatchDropdowns();
 }
 
+// Desplegable de bases de datos (multi-selección) para las secciones de análisis
+function dbCountLabel() {
+  const dbs = state.databases || [];
+  const total = dbs.length;
+  const n = (analysisDbs === null) ? total : dbs.filter(d => analysisDbs.has(d.id)).length;
+  if (total <= 1) return dbs[0] ? dbs[0].name : 'General';
+  if (n === total) return `Todas (${total})`;
+  if (n === 1) { const only = dbs.find(d => analysisDbs.has(d.id)); return only ? only.name : '1'; }
+  return `${n} de ${total}`;
+}
+function dbDropdownHTML() {
+  const dbs = state.databases || [];
+  const isSel = id => analysisDbs === null || analysisDbs.has(id);
+  const items = dbs.map(d =>
+    `<label class="ms-dd-item"><input type="checkbox" ${isSel(d.id) ? 'checked' : ''} onchange="toggleAnalysisDb('${d.id}')"><span>${escHtml(d.name)}</span></label>`
+  ).join('');
+  const menu = items + `<div class="ms-dd-actions"><button onclick="selectAllDbs()">Seleccionar todas</button></div>`;
+  return `<div class="ms-dd">
+      <button class="ms-dd-btn" onclick="toggleMatchDD(event, this)"><span class="ms-dd-lbl">${escHtml(dbCountLabel())}</span><span class="ms-dd-chev">▾</span></button>
+      <div class="ms-dd-menu">${menu}</div>
+    </div>`;
+}
+function renderDbSelectors() {
+  ensureDatabases();
+  const single = (state.databases || []).length <= 1;
+  const html = dbDropdownHTML();
+  ['db-switcher', 'video-db-switcher', 'pl-db-switcher'].forEach(id => {
+    const el = document.getElementById(id); if (!el) return;
+    // ocultar el grupo si hay una sola base (no molesta)
+    const grp = el.closest('.sel-group') || el.parentElement;
+    if (grp && grp.classList.contains('sel-group')) grp.style.display = single ? 'none' : '';
+    el.innerHTML = html;
+  });
+}
+function toggleAnalysisDb(id) {
+  const dbs = state.databases || [];
+  if (analysisDbs === null) analysisDbs = new Set(dbs.map(d => d.id));
+  if (analysisDbs.has(id)) analysisDbs.delete(id); else analysisDbs.add(id);
+  if (!analysisDbs.size || analysisDbs.size === dbs.length) analysisDbs = null;
+  // al cambiar de base, la selección de equipo/partidos puede quedar inválida
+  const teams = getAllTeams(filesPool().map(f => f.data));
+  if (!teams.find(t => t.name === state.activeTeam)) state.activeTeam = teams[0] ? teams[0].name : null;
+  selMatches = null;
+  renderSelectors();
+  if (appView === 'players') renderPlayers(); else render();
+}
+function selectAllDbs() {
+  analysisDbs = null;
+  renderSelectors();
+  if (appView === 'players') renderPlayers(); else render();
+}
+
 function renderTeamSelects() {
-  // El desplegable de equipo muestra TODOS los equipos de la base
-  const teams = getAllTeams(state.files.map(f => f.data));
+  // El desplegable de equipo muestra los equipos de las bases seleccionadas
+  const teams = getAllTeams(filesPool().map(f => f.data));
   let html;
   if (!teams.length) html = '<span style="color:var(--text-dim);font-size:13px">Cargá scouts en la Base de Datos.</span>';
   else html = `<div class="sel-wrap"><select class="sel-select" onchange="setTeam(this.value)">` +
@@ -5811,7 +6158,9 @@ function firebaseConfigured() {
 // Serializa los datos de UN plan (sin el video local, que no viaja a la nube)
 function buildPlanData(d) {
   return {
-    files: (d.files || []).map(f => ({ name: f.name, data: f.data, youtubeId: f.youtubeId || '', matchLabel: f.matchLabel || '', matchDate: f.matchDate || '' })),
+    files: (d.files || []).map(f => ({ name: f.name, data: f.data, youtubeId: f.youtubeId || '', matchLabel: f.matchLabel || '', matchDate: f.matchDate || '', dbId: f.dbId || 'db_general' })),
+    databases:       d.databases && d.databases.length ? d.databases : [{ id: 'db_general', name: 'General' }],
+    activeDbId:      d.activeDbId || 'db_general',
     activeTeam:      d.activeTeam,
     filter:          d.filter,
     videoLinks:      d.videoLinks,
@@ -5836,7 +6185,9 @@ function buildProjectSnapshot() {
 function planDataFromSaved(d) {
   d = d || {};
   const pd = blankPlanData();
-  pd.files = (d.files || []).map(f => ({ name: f.name, data: f.data, videoURL: null, videoName: null, youtubeId: f.youtubeId || '', matchLabel: f.matchLabel || f.name, matchDate: f.matchDate || '' }));
+  pd.files = (d.files || []).map(f => ({ name: f.name, data: f.data, videoURL: null, videoName: null, youtubeId: f.youtubeId || '', matchLabel: f.matchLabel || f.name, matchDate: f.matchDate || '', dbId: f.dbId || 'db_general' }));
+  pd.databases       = (d.databases && d.databases.length) ? d.databases.map(x => ({ id: x.id, name: x.name })) : [{ id: 'db_general', name: 'General' }];
+  pd.activeDbId      = d.activeDbId || (pd.databases[0] ? pd.databases[0].id : 'db_general');
   pd.activeTeam      = d.activeTeam || null;
   pd.filter          = d.filter || 'quality';
   pd.videoLinks      = d.videoLinks || {};
@@ -5861,6 +6212,7 @@ function applyProject(proj) {
     activePlanIdx = 0;
   }
   state = planes[activePlanIdx].data; // repuntar el estado global al plan activo
+  ensureDatabases();
 }
 
 // ── Gestión de planes (pestañas) ──
@@ -5868,6 +6220,7 @@ function activatePlan(idx) {
   if (idx < 0 || idx >= planes.length) return;
   activePlanIdx = idx;
   state = planes[idx].data;
+  ensureDatabases();
   renderPlanTabs();
   render();
   renderFileChips();
