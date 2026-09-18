@@ -776,6 +776,8 @@
     display: flex; flex-direction: column;
   }
   .video-player-wrap .video-player { aspect-ratio: 16 / 9; width: 100%; background:#000; max-height:none; }
+  .video-player-stage { position:relative; width:100%; background:#000; }
+  #video-player-local { display:block; width:100%; aspect-ratio:16/9; background:#000; object-fit:contain; }
   .video-player-header {
     display: flex; justify-content: space-between; align-items: center; gap: 10px;
     padding: 11px 16px; background: var(--bg3); border-bottom: 1px solid var(--border);
@@ -5498,12 +5500,17 @@ function playVideoClipAt(idx) {
   if (idx < 0 || idx >= activePlaylist.length) return;
   activePlayIdx = idx;
   const play = activePlaylist[idx];
-  const ytId = state.files[play.file_idx]?.youtubeId;
-  if (!ytId) {
-    alert('Este partido no tiene video de YouTube asignado. Pegá el link en el chip del scout correspondiente.');
+  const f = state.files[play.file_idx];
+  if (!f) { alert('No encuentro el partido de esta jugada.'); return; }
+  // Preferencia: video local (más fluido) si está cargado; si no, YouTube
+  if (f.videoURL) {
+    playVideoClipLocal(play.video_time, f.videoURL);
+  } else if (f.youtubeId) {
+    playVideoClip(play.video_time, f.youtubeId);
+  } else {
+    alert('Este partido no tiene video cargado.\nEn la Base de Datos, pegale el link de YouTube o cargá un video local en ese scout.');
     return;
   }
-  playVideoClip(play.video_time, ytId);
   updateNavLabel();
   renderInlinePlaylist(); // si está abierta, refrescar para resaltar la activa
 }
@@ -5609,6 +5616,10 @@ function playVideoClip(centerTime, youtubeId) {
   }
   wrap.style.display = 'block';
   const bd = document.getElementById('video-player-backdrop'); if (bd) bd.style.display = 'block';
+  // mostrar YT, ocultar/pausar el local
+  const lv = document.getElementById('video-player-local');
+  if (lv) { try { lv.pause(); } catch (e) {} lv.style.display = 'none'; }
+  const yt = document.getElementById('video-player'); if (yt) yt.style.display = '';
 
   const BEFORE = vrBefore, AFTER = vrAfter; // usa el mismo ajuste antes/después
   const start = Math.max(0, centerTime - BEFORE);
@@ -5618,10 +5629,39 @@ function playVideoClip(centerTime, youtubeId) {
   popupYTPlay(youtubeId, start, stop);
 }
 
+// Reproduce la ventana [start, stop] de un video LOCAL (archivo cargado en la base)
+function playVideoClipLocal(centerTime, url) {
+  const wrap = document.getElementById('video-player-wrap');
+  const lv = document.getElementById('video-player-local');
+  if (!wrap || !lv) return;
+  wrap.style.display = 'block';
+  const bd = document.getElementById('video-player-backdrop'); if (bd) bd.style.display = 'block';
+  // mostrar el local, ocultar/pausar YT
+  const yt = document.getElementById('video-player'); if (yt) yt.style.display = 'none';
+  try { if (popupYTPlayer && popupYTPlayer.pauseVideo) popupYTPlayer.pauseVideo(); } catch (e) {}
+  lv.style.display = '';
+
+  const BEFORE = vrBefore, AFTER = vrAfter;
+  const start = Math.max(0, centerTime - BEFORE);
+  const stop  = centerTime + AFTER;
+
+  if (clipStopTimer) { clearInterval(clipStopTimer); clipStopTimer = null; }
+  const startPlay = () => { try { lv.currentTime = start; } catch (e) {} lv.play().catch(() => {}); };
+  if (lv.getAttribute('src') !== url) {
+    lv.src = url;
+    lv.onloadedmetadata = startPlay;
+    setTimeout(() => { if (lv.readyState >= 1) startPlay(); }, 300); // respaldo si el evento no dispara
+  } else startPlay();
+  clipStopTimer = setInterval(() => {
+    try { if (lv.currentTime >= stop) popupOnActionEnded(); } catch (e) {}
+  }, 150);
+}
+
 
 function stopVideoClip() {
   if (clipStopTimer) { clearInterval(clipStopTimer); clipStopTimer = null; }
   try { if (popupYTPlayer && popupYTPlayer.pauseVideo) popupYTPlayer.pauseVideo(); } catch (e) {}
+  const lv = document.getElementById('video-player-local'); if (lv) { try { lv.pause(); } catch (e) {} }
 }
 
 function replayCurrentClip() {
@@ -6279,6 +6319,7 @@ function popupOnActionEnded() {
     playVideoClipAt(activePlayIdx + 1);
   } else {
     try { if (popupYTPlayer && popupYTPlayer.pauseVideo) popupYTPlayer.pauseVideo(); } catch (e) {}
+    const lv = document.getElementById('video-player-local'); if (lv) { try { lv.pause(); } catch (e) {} }
   }
 }
 
@@ -7126,7 +7167,10 @@ if (firebaseConfigured()) {
     <button class="vp-x" onclick="closeFloatingPlayer()" title="Cerrar">✕</button>
   </div>
   <div id="video-inline-playlist" class="video-inline-playlist" style="display:none"></div>
-  <div id="video-player" class="video-player"></div>
+  <div class="video-player-stage">
+    <div id="video-player" class="video-player"></div>
+    <video id="video-player-local" class="video-player" style="display:none" controls playsinline></video>
+  </div>
   <div class="video-player-controls">
     <div class="vp-nav">
       <button class="vp-btn" onclick="navPlay(-1)" title="Jugada anterior">◀ Anterior</button>
