@@ -2563,18 +2563,23 @@ function collectAllAttacks(scout) {
 }
 
 function parseTeams(lines) {
+  // Acepta cualquier línea de [3TEAMS] con al menos 2 campos: el código (p[0]) puede ser
+  // numérico, letras o estar vacío. 1ra línea = local (H), 2da = visitante (V).
   const teams = {};
+  const fallback = { H: 'Equipo local', V: 'Adversario' };
   for (const line of lines) {
-    if (!line) continue;
+    if (!line || !line.trim()) continue;
     const p = line.split(';');
-    if (p.length >= 2) {
-      const id = parseInt(p[0]);
-      if (!isNaN(id)) {
-        const side = !('H' in teams) ? 'H' : 'V';
-        teams[side] = { id, name: p[1] };
-      }
-    }
+    if (p.length < 2) continue;
+    const side = !('H' in teams) ? 'H' : (!('V' in teams) ? 'V' : null);
+    if (!side) break;
+    const code = (p[0] || '').trim();
+    const idNum = parseInt(code);
+    const name = (p[1] || '').trim() ? p[1] : (code || fallback[side]);
+    teams[side] = { id: isNaN(idNum) ? code : idNum, name };
   }
+  // Si los dos equipos quedaron con el mismo nombre, diferenciar el visitante
+  if (teams.H && teams.V && teams.H.name === teams.V.name) teams.V.name = teams.V.name + ' (rival)';
   return teams;
 }
 
