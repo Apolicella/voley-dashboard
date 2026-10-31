@@ -1853,6 +1853,8 @@
   .ms-dd-sm .ms-dd-actions button { font-size:11px; padding:6px 4px; }
   .rc-rm { cursor:pointer; color:var(--text-dim); font-weight:700; font-size:13px; }
   .rc-rm:hover { color:var(--red); }
+  .setter-bar { display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-bottom:14px; }
+  .setter-bar .filter-toggle { flex-wrap:wrap; }
   .rc-add-bar { display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-bottom:16px; }
   .rc-add-bar select { background:var(--bg2); border:1.5px solid var(--border); color:var(--text); border-radius:10px;
     padding:9px 13px; font-size:13px; font-weight:700; cursor:pointer; }
@@ -2611,9 +2613,11 @@ function computeSetterDist(scout) {
     if (a.skill !== 'R') continue;
     const recTeam = a.team, recEval = a.eval_;
     const rotation = recTeam === 'H' ? a.rotation_h : a.rotation_v;
+    let setter = null; // armador: jugador de la acción de armado (E) entre la recepción y el ataque
     for (let j = i+1; j < actions.length; j++) {
       const b = actions[j];
       if (b.skill === 'S') break;
+      if (b.skill === 'E' && b.team === recTeam && b.player) setter = b.player;
       if (b.skill === 'A' && b.team === recTeam
           && COMBO_ALL.has(b.combo) && VALID_ZONES.has(b.zone)) {
         rallies[recTeam].push({
@@ -2622,6 +2626,7 @@ function computeSetterDist(scout) {
           set_num:   a.set_num,
           score_h:   a.score_h,
           score_v:   a.score_v,
+          setter,
           attack: b,
         });
         break;
@@ -2684,7 +2689,7 @@ function compileDist(rallies) {
 
     details.push({
       set: r.set_num, score_h: r.score_h, score_v: r.score_v,
-      rotation, combo, zone, group,
+      rotation, combo, zone, group, setter: r.setter || null,
       attack_result: result, reception_quality: reception,
       in_condition: isQ, player: r.attack.player,
       atk_from: r.attack.atk_from || null,
@@ -2742,12 +2747,14 @@ function getAllTeams(dataList) {
 
 // Acumula datos de UN equipo específico (por nombre) en todos los archivos
 // Usa clave neutral "P_03" para jugadores, sin importar si era H o V en cada partido
+let distSetter = 'ALL'; // filtro de armador en Distribución ('ALL', número de camiseta o '?')
 function mergeForTeam(fileEntries, teamName) {
   if (!fileEntries.length || !teamName) return null;
 
   function detailsToRallies(details) {
     return details.map(d => ({
       reception_eval: d.reception_quality,
+      setter: d.setter || null,
       rotation: d.rotation,
       set_num: d.set,
       attack: {
@@ -2822,10 +2829,18 @@ function mergeForTeam(fileEntries, teamName) {
     });
   });
 
+  // Armadores detectados (solo afecta la Distribución del Armador)
+  const setterCounts = {};
+  allDetails.forEach(d => { const k = d.setter || '?'; setterCounts[k] = (setterCounts[k] || 0) + 1; });
+  const setters = Object.entries(setterCounts).map(([num, count]) => ({ num, count })).sort((a, b) => b.count - a.count);
+  if (distSetter !== 'ALL' && !setterCounts[distSetter]) distSetter = 'ALL';
+  const detailsUse = distSetter === 'ALL' ? allDetails : allDetails.filter(d => (d.setter || '?') === distSetter);
+
   return {
     teamName,
     players,
-    setter_distribution: compileDist(detailsToRallies(allDetails)),
+    setters,
+    setter_distribution: compileDist(detailsToRallies(detailsUse)),
     all_attacks: allAtks,
     all_serves:  allServes,
     all_receptions: allRecs,
@@ -2913,6 +2928,7 @@ function render() {
 
     <div class="pv-block" data-pv="dist">
       <div class="section-title">Distribución por Rotación del Armador · ${state.filter==='quality'?'Recepción # y + únicamente':'Todas las recepciones'}</div>
+      <div class="setter-bar" id="setter-bar"></div>
       <div class="rotations-grid" id="rot-grid"></div>
     </div>
 
@@ -2939,6 +2955,8 @@ function render() {
     </div>
   `;
 
+  renderSetterBar(merged);
+
   // Rotaciones
   const grid = document.getElementById('rot-grid');
   const rots = [5,6,1,4,3,2];
@@ -2962,6 +2980,32 @@ function render() {
   renderCustomLinks();
 
   applyPlanView();
+}
+
+// Selector de armador (Distribución del Armador)
+function setSetter(k) { distSetter = k; render(); }
+function renderSetterBar(merged) {
+  const el = document.getElementById('setter-bar');
+  if (!el) return;
+  const list = merged.setters || [];
+  const known = list.filter(s => s.num !== '?');
+  if (!known.length) {
+    el.innerHTML = list.length
+      ? '<span style="color:var(--text-dim);font-size:12.5px">Este scout no trae el armador registrado: borralo y volvé a cargarlo para poder separar por armador.</span>'
+      : '';
+    return;
+  }
+  if (list.length < 2) { el.innerHTML = ''; return; }
+  const total = list.reduce((t, s) => t + s.count, 0);
+  const nm = num => {
+    if (num === '?') return 'Sin dato';
+    const p = (merged.players || {})['P_' + num];
+    return p && p.full_name ? `#${num} ${p.full_name}` : `#${num}`;
+  };
+  const btn = (key, label, n) =>
+    `<button class="${distSetter === key ? 'active' : ''}" onclick="setSetter('${key}')">${escHtml(label)} <span style="opacity:.6">(${n})</span></button>`;
+  el.innerHTML = `<label style="font-size:13px;color:var(--text-dim)">Armador:</label>
+    <div class="filter-toggle">${btn('ALL', 'Todos', total)}${list.map(s => btn(s.num, nm(s.num), s.count)).join('')}</div>`;
 }
 
 // ═══════════════════════════════════════════════════════
@@ -3672,6 +3716,7 @@ function renderEffLegend(rv) {
 
 function setTeam(name) {
   state.activeTeam = name;
+  distSetter = 'ALL'; // al cambiar de equipo, volver a "todos los armadores"
   selMatches = null; // al cambiar de equipo, arrancar con todos sus partidos
   renderSelectors();
   render();
