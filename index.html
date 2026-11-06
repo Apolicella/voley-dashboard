@@ -2003,13 +2003,40 @@
   .rep-ex-x { font-size:12px; color:#333; margin-top:3px; line-height:1.4; }
   /* Impresión del reporte: mostrar SOLO el reporte */
   #report-print { display:none; }
+  @page rep { size: A4; margin: 0; }
   @media print {
+    body.printing-report { margin:0 !important; padding:0 !important; background:#fff !important; }
     body.printing-report > *:not(#report-print) { display:none !important; }
-    body.printing-report #report-print { display:block !important; background:#fff; color:#111; padding:0; }
-    body.printing-report .rep-print-block { break-inside:avoid; margin-bottom:18px; }
-    body.printing-report .rep-pagebreak { break-before:page; border:none; height:0; padding:0; color:transparent; }
-    body.printing-report .rep-courts { grid-template-columns:repeat(3,1fr); }
+    body.printing-report #report-print { display:block !important; background:#fff; color:#111; padding:0; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+    body.printing-report .rep-print-page { page:rep; position:relative; width:794px; height:1121px; overflow:hidden; break-after:page; page-break-after:always; background:#fff; }
+    body.printing-report .rep-print-page:last-child { break-after:auto; page-break-after:auto; }
+    body.printing-report .rep-print-item { position:absolute; overflow:hidden; box-sizing:border-box; }
   }
+  /* Lienzo del reporte */
+  .rep-pages { display:flex; flex-direction:column; gap:26px; align-items:center; margin-top:14px; }
+  .rep-page-block { width:100%; display:flex; flex-direction:column; align-items:center; gap:8px; }
+  .rep-page-head { width:100%; display:flex; justify-content:space-between; align-items:center; font-size:13px; color:var(--text-dim); }
+  .rep-page-wrap { position:relative; box-shadow:0 4px 22px rgba(0,0,0,.45); background:#fff; }
+  .rep-page { position:absolute; left:0; top:0; width:794px; height:1123px; background:#fff; color:#111; transform-origin:0 0;
+    background-image:linear-gradient(#f1f3f5 1px,transparent 1px),linear-gradient(90deg,#f1f3f5 1px,transparent 1px); background-size:24px 24px; }
+  .rep-item { position:absolute; box-sizing:border-box; background:#fff; border:1px dashed #aab4be; }
+  .rep-item.nobg { background:transparent; }
+  .rep-item.sel { outline:2px solid #2ea043; border-color:transparent; }
+  .rep-item-head { position:absolute; left:-1px; top:-24px; height:24px; display:flex; align-items:center; gap:8px; padding:0 6px; background:#2ea043; color:#fff;
+    border-radius:6px 6px 0 0; font-size:11px; font-weight:700; cursor:grab; touch-action:none; user-select:none; white-space:nowrap; }
+  .rep-item:not(.sel) .rep-item-head { background:#7d8590; }
+  .rep-item-head:active { cursor:grabbing; }
+  .rep-item-btns { display:inline-flex; gap:3px; }
+  .rep-item-btns button { background:rgba(255,255,255,.22); border:none; color:#fff; border-radius:4px; font-size:10px; padding:2px 5px; cursor:pointer; }
+  .rep-item-body { position:absolute; inset:0; overflow:hidden; color:#111; }
+  .rep-scale { box-sizing:border-box; padding:10px; color:#111; }
+  .rep-item-rs { position:absolute; right:0; bottom:0; width:18px; height:18px; cursor:nwse-resize; touch-action:none; z-index:5;
+    background:linear-gradient(135deg,transparent 50%,#2ea043 50%); }
+  .rep-props { background:var(--bg2); border:1px solid var(--border); border-radius:12px; padding:14px; margin-top:14px; }
+  .rep-props-t { font-weight:800; margin-bottom:10px; } .rep-props-t span { color:var(--text-dim); font-weight:600; font-size:12px; }
+  .rep-props-row { display:flex; gap:10px; flex-wrap:wrap; align-items:flex-end; }
+  .rep-props-row label { display:flex; flex-direction:column; gap:4px; font-size:11px; color:var(--text-dim); font-weight:700; }
+  .rep-props-hint { margin-top:14px; padding:12px 14px; background:var(--bg2); border:1px dashed var(--border); border-radius:12px; color:var(--text-dim); font-size:13px; }
   .peri-legend { display:flex; gap:14px; flex-wrap:wrap; }
   .peri-leg { display:inline-flex; align-items:center; gap:6px; font-size:12px; color:var(--text-dim); font-weight:600; }
   .peri-leg-sw { width:14px; height:14px; border-radius:4px; display:inline-block; }
@@ -2342,7 +2369,7 @@
 <!-- SECCIÓN: REPORTES PDF (composer personalizable) -->
 <div id="section-report" style="display:none">
   <div class="rep-intro">
-    <p>Armá tu propio PDF: agregá los bloques que quieras (canchas, estadísticas, texto…), ordenalos y descargá. Cada bloque se configura abajo.</p>
+    <p>Armá tu propio PDF sobre hojas A4: agregá bloques (canchas, estadísticas, texto…), <b>arrastralos y estiralos libremente</b>, superponelos para combinarlos y descargá.</p>
     <div class="rep-actions">
       <button class="btn primary" onclick="downloadReportPDF()">🖨 Descargar PDF</button>
       <button class="btn" onclick="reportClear()">🗑 Vaciar</button>
@@ -2424,7 +2451,7 @@ let activePlanIdx = 0;
 let appSharedMode = false; // true = vista sin login (solo lectura), global a toda la app
 
 function blankPlanData() {
-  return { files: [], activeTeam: null, filter: 'quality', videoLinks: {}, playerOverrides: {}, comboVideos: {}, customLinks: [], scoutYoutube: {}, clubMatch: '', databases: [{ id: 'db_general', name: 'General' }], activeDbId: 'db_general', sectionConfig: null, reportBlocks: [], setterCall: 'all', setterPlayer: 'all' };
+  return { files: [], activeTeam: null, filter: 'quality', videoLinks: {}, playerOverrides: {}, comboVideos: {}, customLinks: [], scoutYoutube: {}, clubMatch: '', databases: [{ id: 'db_general', name: 'General' }], activeDbId: 'db_general', sectionConfig: null, reportBlocks: [], reportPages: 1, setterCall: 'all', setterPlayer: 'all' };
 }
 function makePlanId() { return 'plan_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
 function makePlan(name, data) { return { id: makePlanId(), name: name || 'Plan', data: data || blankPlanData() }; }
@@ -2506,9 +2533,10 @@ function parseScoutLine(line) {
     result.atk_from    = cm[2];
     result.atk_to      = cm[3] || null;  // puede ser undefined si solo hay 1 dígito
   }
-  let sm = rest.match(/^(K[A-Z0-9]+)/);
-  if (!sm && result.skill === 'E') sm = rest.match(/(?:^|[^A-Z0-9])(K[A-Z0-9])/);
-  if (sm) result.setter_call = sm[1];
+  // La llamada es K + número (solo K1,K2,K3,K5,K7,K8,K9); lo que sigue al número es la zona del armado.
+  let sm = rest.match(/^K(\d)/);
+  if (!sm && result.skill === 'E') sm = rest.match(/(?:^|[^A-Z0-9])K(\d)/);
+  if (sm) result.setter_call = normCall('K' + sm[1]);
 
   // Saque: formato ~~~[origen][destino] — solo 1=zaguero der, 6=zaguero centro, 5=zaguero izq
   if (result.skill === 'S') {
@@ -2698,10 +2726,17 @@ function parsePlayers(lines, side) {
   return players;
 }
 
+// Solo existen estas llamadas; cualquier sufijo (zona del armado) se ignora
+const VALID_CALLS = ['K1','K2','K3','K5','K7','K8','K9'];
+function normCall(c) {
+  const m = /^K(\d)/.exec(c || '');
+  const k = m ? 'K' + m[1] : null;
+  return k && VALID_CALLS.includes(k) ? k : null;
+}
 // Llamadas de armador disponibles en un set de details (K1, K2, …)
 function availableCalls(details, setter) {
   const st = new Set();
-  (details || []).forEach(d => { if (d.setter_call && (!setter || setter === 'all' || d.setter === setter)) st.add(d.setter_call); });
+  (details || []).forEach(d => { const c = normCall(d.setter_call); if (c && (!setter || setter === 'all' || d.setter === setter)) st.add(c); });
   return [...st].sort();
 }
 // Armadores (números) disponibles
@@ -2711,7 +2746,7 @@ function availableSetters(details) {
   return [...st].sort();
 }
 function detailMatchesSetter(d, call, setter) {
-  return (!call || call === 'all' || (d.setter_call || null) === call) &&
+  return (!call || call === 'all' || normCall(d.setter_call) === call) &&
          (!setter || setter === 'all' || (d.setter || null) === setter);
 }
 // Reconstruye la distribución filtrando por llamada y/o armador
@@ -3132,7 +3167,7 @@ function renderSetterCallBar(calls, setters, players, details) {
   const curS = (setters || []).includes(state.setterPlayer) ? state.setterPlayer : 'all';
   const nameOf = n => repPlayerName(players || {}, 'P_' + n);
   const total = (details || []).length;
-  const noCalls = !(details || []).some(d => d.setter_call);
+  const noCalls = !(details || []).some(d => normCall(d.setter_call));
   const noSetters = !(setters || []).length;
   let html = '<div class="call-bar">';
   html += `<span class="call-lbl">🧑‍🤝‍🧑 Armador:</span>
@@ -4692,20 +4727,80 @@ function repTypeLabel(t) { const x = REP_TYPES.find(r => r.t === t); return x ? 
 function repMakeId() { return 'rb' + Date.now().toString(36) + Math.random().toString(36).slice(2, 5); }
 function repBlocks() { if (!Array.isArray(state.reportBlocks)) state.reportBlocks = []; return state.reportBlocks; }
 
+const REP_PW = 794, REP_PH = 1123;   // hoja A4 a 96 dpi
+const REP_DEF = { texto:[360,150], distribucion:[754,700], recepcion:[360,380], ataque:[360,380], statsjug:[360,280], periodizacion:[754,400], calendario:[500,420], entrenamiento:[460,420] };
+let repScale = 1;
+
 function reportAdd(t) {
-  const b = { id: repMakeId(), type: t };
+  if (t === 'pagebreak') { reportAddPage(); return; }
+  const pg = Math.min(state.reportCurPage || 0, repPageCount() - 1);
+  const n = repBlocks().filter(b => b.page === pg).length;
+  const d = REP_DEF[t] || [360, 300];
+  const b = { id: repMakeId(), type: t, page: pg, px: 30 + (n % 6) * 24, py: 40 + (n % 6) * 24, w: d[0], h: d[1], z: repMaxZ() + 1, sc: 1, bg: 'white' };
   if (t === 'texto') { b.heading = ''; b.body = ''; }
-  repBlocks().push(b); markDirty(); renderReport();
+  repBlocks().push(b); state.reportSel = b.id; markDirty(); renderReport();
 }
-function reportRemove(id) { state.reportBlocks = repBlocks().filter(b => b.id !== id); markDirty(); renderReport(); }
-function reportMove(id, dir) {
-  const a = repBlocks(); const i = a.findIndex(b => b.id === id); const j = i + dir;
-  if (i < 0 || j < 0 || j >= a.length) return;
-  [a[i], a[j]] = [a[j], a[i]]; markDirty(); renderReport();
-}
+function reportRemove(id) { state.reportBlocks = repBlocks().filter(b => b.id !== id); if (state.reportSel === id) state.reportSel = null; markDirty(); renderReport(); }
 function reportSet(id, field, val) { const b = repBlocks().find(x => x.id === id); if (!b) return; b[field] = val; markDirty(); renderReport(); }
-function reportSetText(id, field, val) { const b = repBlocks().find(x => x.id === id); if (!b) return; b[field] = val; markDirty(); } // sin re-render (mantiene foco)
-function reportClear() { if (!repBlocks().length) return; if (!confirm('¿Vaciar el reporte?')) return; state.reportBlocks = []; markDirty(); renderReport(); }
+function reportSetText(id, field, val) { const b = repBlocks().find(x => x.id === id); if (!b) return; b[field] = val; markDirty(); repRefreshItem(id); } // sin re-render (mantiene foco)
+function reportClear() { if (!repBlocks().length) return; if (!confirm('¿Vaciar el reporte?')) return; state.reportBlocks = []; state.reportPages = 1; state.reportSel = null; markDirty(); renderReport(); }
+function repMaxZ() { return repBlocks().reduce((m, b) => Math.max(m, b.z || 0), 0); }
+function repMinZ() { return repBlocks().reduce((m, b) => Math.min(m, b.z || 0), 0); }
+function repPageCount() { return Math.max(1, state.reportPages || 1, ...repBlocks().map(b => (b.page || 0) + 1)); }
+function reportAddPage() { state.reportPages = repPageCount() + 1; state.reportCurPage = state.reportPages - 1; markDirty(); renderReport(); }
+function reportRemovePage(pg) {
+  const inPg = repBlocks().filter(b => b.page === pg);
+  if (inPg.length && !confirm('Esta página tiene ' + inPg.length + ' bloque(s). ¿Quitarla con su contenido?')) return;
+  if (repPageCount() <= 1) { state.reportBlocks = []; markDirty(); renderReport(); return; }
+  state.reportBlocks = repBlocks().filter(b => b.page !== pg);
+  state.reportBlocks.forEach(b => { if (b.page > pg) b.page--; });
+  state.reportPages = repPageCount() - 1; if (state.reportPages < 1) state.reportPages = 1;
+  state.reportCurPage = Math.min(state.reportCurPage || 0, state.reportPages - 1); state.reportSel = null;
+  markDirty(); renderReport();
+}
+function reportZ(id, dir) {
+  const b = repBlocks().find(x => x.id === id); if (!b) return;
+  b.z = dir > 0 ? repMaxZ() + 1 : repMinZ() - 1; markDirty();
+  const el = document.getElementById('ri_' + id); if (el) el.style.zIndex = b.z + 1000;
+}
+function reportDup(id) {
+  const b = repBlocks().find(x => x.id === id); if (!b) return;
+  const c = JSON.parse(JSON.stringify(b)); c.id = repMakeId(); c.px = Math.min(b.px + 24, REP_PW - 40); c.py = Math.min(b.py + 24, REP_PH - 40); c.z = repMaxZ() + 1;
+  repBlocks().push(c); state.reportSel = c.id; markDirty(); renderReport();
+}
+// Completa posición/tamaño en bloques viejos (sin lienzo) apilándolos en la hoja
+function repNormalize() {
+  const bl = repBlocks(); let page = 0, y = 30, curPages = Math.max(1, state.reportPages || 1);
+  const legacy = bl.some(b => b.px == null);
+  if (legacy) {
+    const out = [];
+    bl.forEach(b => {
+      if (b.type === 'pagebreak') { page++; y = 30; return; }
+      if (b.px == null) {
+        const d = REP_DEF[b.type] || [360, 300]; const w = Math.min(754, d[0]), h = d[1];
+        if (y + h > REP_PH - 30 && y > 30) { page++; y = 30; }
+        Object.assign(b, { page, px: 20, py: y, w: 754, h, z: out.length });
+        y += h + 16;
+      }
+      out.push(b);
+    });
+    state.reportBlocks = out; curPages = Math.max(curPages, page + 1); state.reportPages = curPages;
+  }
+  repBlocks().forEach((b, i) => {
+    if (b.page == null) b.page = 0; if (b.w == null) b.w = 360; if (b.h == null) b.h = 200; if (b.px == null) b.px = 20; if (b.py == null) b.py = 20;
+    if (b.z == null) b.z = i; if (!b.sc) b.sc = 1; if (!b.bg) b.bg = 'white';
+  });
+  state.reportPages = repPageCount();
+}
+// Contenido de un bloque con su escala (compartido por preview y PDF)
+function repItemInner(b) {
+  const sc = b.sc || 1;
+  return `<div class="rep-scale" style="width:${(b.w / sc).toFixed(1)}px;transform:scale(${sc});transform-origin:0 0">${reportBlockContent(b)}</div>`;
+}
+function repRefreshItem(id) {
+  const b = repBlocks().find(x => x.id === id); const el = document.getElementById('ri_' + id); if (!b || !el) return;
+  const body = el.querySelector('.rep-item-body'); if (body) body.innerHTML = repItemInner(b);
+}
 
 // Helpers de datos
 function repAllTeams() { return getAllTeams(filesPool().map(f => f.data)).map(t => t.name); }
@@ -4853,31 +4948,101 @@ function reportBlockConfig(b) {
 }
 
 function renderReport() {
+  repNormalize();
   const pal = document.getElementById('rep-palette');
-  if (pal) pal.innerHTML = '<span class="rep-pal-lbl">Agregar bloque:</span>' + REP_TYPES.map(t => `<button class="rep-pal-btn" onclick="reportAdd('${t.t}')">${t.label}</button>`).join('');
+  const cur = Math.min(state.reportCurPage || 0, repPageCount() - 1);
+  if (pal) pal.innerHTML = `<span class="rep-pal-lbl">Agregar a la página ${cur + 1}:</span>` + REP_TYPES.filter(t => t.t !== 'pagebreak').map(t => `<button class="rep-pal-btn" onclick="reportAdd('${t.t}')">${t.label}</button>`).join('')
+    + `<button class="rep-pal-btn" onclick="reportAddPage()">＋ Nueva página</button>`;
   const comp = document.getElementById('rep-composer'); if (!comp) return;
-  const blocks = repBlocks();
-  if (!blocks.length) { comp.innerHTML = '<div class="rep-empty">Tu reporte está vacío.<br><span>Agregá bloques con los botones de arriba, configuralos, ordenalos, y después tocá "Descargar PDF".</span></div>'; return; }
-  comp.innerHTML = blocks.map((b, i) => `
-    <div class="rep-block">
-      <div class="rep-block-head">
-        <span class="rep-block-type">${repTypeLabel(b.type)}</span>
-        <div class="rep-block-tools">
-          <button onclick="reportMove('${b.id}',-1)" ${i === 0 ? 'disabled' : ''} title="Subir">↑</button>
-          <button onclick="reportMove('${b.id}',1)" ${i === blocks.length - 1 ? 'disabled' : ''} title="Bajar">↓</button>
-          <button class="rep-del" onclick="reportRemove('${b.id}')" title="Quitar">✕</button>
+  const avail = Math.max(300, (comp.clientWidth || REP_PW) - 4);
+  repScale = Math.min(1, avail / REP_PW);
+  const np = repPageCount();
+  let html = '<div id="rep-props"></div><div class="rep-pages">';
+  for (let pg = 0; pg < np; pg++) {
+    const items = repBlocks().filter(b => b.page === pg).map(b => `
+      <div class="rep-item ${b.bg === 'none' ? 'nobg' : ''} ${state.reportSel === b.id ? 'sel' : ''}" id="ri_${b.id}" data-id="${b.id}"
+           style="left:${b.px}px;top:${b.py}px;width:${b.w}px;height:${b.h}px;z-index:${(b.z || 0) + 1000}" onpointerdown="repSelect('${b.id}')">
+        <div class="rep-item-head" onpointerdown="repDragStart(event,'${b.id}','move')">
+          <span class="rep-item-lbl">⠿ ${repTypeLabel(b.type)}</span>
+          <span class="rep-item-btns"><button onpointerdown="event.stopPropagation()" onclick="reportZ('${b.id}',1)" title="Traer al frente">▲</button><button onpointerdown="event.stopPropagation()" onclick="reportZ('${b.id}',-1)" title="Mandar al fondo">▼</button><button onpointerdown="event.stopPropagation()" onclick="reportRemove('${b.id}')" title="Quitar">✕</button></span>
         </div>
-      </div>
-      <div class="rep-block-config">${reportBlockConfig(b)}</div>
-      <div class="rep-block-prev">${reportBlockContent(b)}</div>
-    </div>`).join('');
-  comp.querySelectorAll('.rep-ta').forEach(autoGrow);
+        <div class="rep-item-body">${repItemInner(b)}</div>
+        <div class="rep-item-rs" onpointerdown="repDragStart(event,'${b.id}','resize')" title="Cambiar tamaño"></div>
+      </div>`).join('');
+    html += `<div class="rep-page-block">
+      <div class="rep-page-head"><b>Página ${pg + 1}</b><span><button class="rep-pal-btn" onclick="state.reportCurPage=${pg};renderReport()" ${pg === cur ? 'disabled' : ''}>${pg === cur ? 'Página activa' : 'Usar esta página'}</button> <button class="rep-pal-btn" onclick="reportRemovePage(${pg})">🗑 Quitar página</button></span></div>
+      <div class="rep-page-wrap" style="width:${REP_PW * repScale}px;height:${REP_PH * repScale}px">
+        <div class="rep-page" data-page="${pg}" style="transform:scale(${repScale})" onpointerdown="if(event.target===this){state.reportCurPage=${pg};repSelect(null)}">${items}</div>
+      </div></div>`;
+  }
+  html += '</div>';
+  comp.innerHTML = html;
+  renderReportProps();
+}
+
+function repSelect(id) {
+  if (id && state.reportSel === id) return;
+  state.reportSel = id || null;
+  if (id) { const b = repBlocks().find(x => x.id === id); if (b) state.reportCurPage = b.page; }
+  document.querySelectorAll('.rep-item').forEach(el => el.classList.toggle('sel', el.dataset.id === id));
+  renderReportProps();
+}
+function renderReportProps() {
+  const el = document.getElementById('rep-props'); if (!el) return;
+  const b = repBlocks().find(x => x.id === state.reportSel);
+  if (!b) { el.innerHTML = '<div class="rep-props-hint">👆 Tocá un bloque para configurarlo. Arrastralo desde su barra para moverlo, estiralo desde la esquina inferior derecha, y superponelo con otros como quieras.</div>'; return; }
+  const np = repPageCount();
+  const scOpts = [0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1, 1.15, 1.3, 1.5, 2].map(v => `<option value="${v}" ${Math.abs((b.sc || 1) - v) < 0.01 ? 'selected' : ''}>${Math.round(v * 100)}%</option>`).join('');
+  el.innerHTML = `<div class="rep-props">
+    <div class="rep-props-t">${repTypeLabel(b.type)} <span>· propiedades</span></div>
+    <div class="rep-block-config" style="border:none;padding:0 0 10px">${reportBlockConfig(b)}</div>
+    <div class="rep-props-row">
+      <label>Página <select class="rep-cfg" onchange="reportSet('${b.id}','page',parseInt(this.value,10))">${Array.from({ length: np }, (_, i) => `<option value="${i}" ${b.page === i ? 'selected' : ''}>${i + 1}</option>`).join('')}</select></label>
+      <label>Tamaño del contenido <select class="rep-cfg" onchange="reportSet('${b.id}','sc',parseFloat(this.value))">${scOpts}</select></label>
+      <label>Fondo <select class="rep-cfg" onchange="reportSet('${b.id}','bg',this.value)"><option value="white" ${b.bg !== 'none' ? 'selected' : ''}>Blanco</option><option value="none" ${b.bg === 'none' ? 'selected' : ''}>Transparente</option></select></label>
+      <button class="rep-pal-btn" onclick="reportZ('${b.id}',1)">▲ Al frente</button>
+      <button class="rep-pal-btn" onclick="reportZ('${b.id}',-1)">▼ Al fondo</button>
+      <button class="rep-pal-btn" onclick="reportDup('${b.id}')">⧉ Duplicar</button>
+      <button class="rep-pal-btn" onclick="reportRemove('${b.id}')">✕ Quitar</button>
+    </div></div>`;
+  el.querySelectorAll('.rep-ta').forEach(autoGrow);
+}
+
+// Arrastrar (mover) y estirar (redimensionar) un bloque dentro de la hoja
+function repDragStart(e, id, mode) {
+  if (e.button != null && e.button > 0) return;
+  e.preventDefault(); e.stopPropagation();
+  const b = repBlocks().find(x => x.id === id); const el = document.getElementById('ri_' + id); if (!b || !el) return;
+  repSelect(id);
+  const sx = e.clientX, sy = e.clientY, ox = b.px, oy = b.py, ow = b.w, oh = b.h, sc = repScale || 1;
+  const onMove = ev => {
+    const dx = (ev.clientX - sx) / sc, dy = (ev.clientY - sy) / sc;
+    if (mode === 'move') {
+      b.px = Math.round(Math.max(0, Math.min(REP_PW - 40, ox + dx)));
+      b.py = Math.round(Math.max(24, Math.min(REP_PH - 30, oy + dy)));
+      el.style.left = b.px + 'px'; el.style.top = b.py + 'px';
+    } else {
+      b.w = Math.round(Math.max(80, Math.min(REP_PW - b.px, ow + dx)));
+      b.h = Math.round(Math.max(50, Math.min(REP_PH - b.py, oh + dy)));
+      el.style.width = b.w + 'px'; el.style.height = b.h + 'px';
+      const inner = el.querySelector('.rep-scale'); if (inner) inner.style.width = (b.w / (b.sc || 1)).toFixed(1) + 'px';
+    }
+  };
+  const onUp = () => { window.removeEventListener('pointermove', onMove); window.removeEventListener('pointerup', onUp); window.removeEventListener('pointercancel', onUp); markDirty(); };
+  window.addEventListener('pointermove', onMove); window.addEventListener('pointerup', onUp); window.addEventListener('pointercancel', onUp);
 }
 
 function downloadReportPDF() {
   const area = document.getElementById('report-print'); if (!area) return;
+  repNormalize();
   if (!repBlocks().length) { alert('El reporte está vacío. Agregá algún bloque primero.'); return; }
-  area.innerHTML = repBlocks().map(b => `<div class="rep-print-block">${reportBlockContent(b)}</div>`).join('');
+  const np = repPageCount(); let html = '';
+  for (let pg = 0; pg < np; pg++) {
+    const items = repBlocks().filter(b => b.page === pg).sort((a, c) => (a.z || 0) - (c.z || 0)).map((b, i) =>
+      `<div class="rep-print-item" style="left:${b.px}px;top:${b.py}px;width:${b.w}px;height:${b.h}px;z-index:${i + 1};${b.bg === 'none' ? '' : 'background:#fff;'}">${repItemInner(b)}</div>`).join('');
+    html += `<div class="rep-print-page">${items}</div>`;
+  }
+  area.innerHTML = html;
   document.body.classList.add('printing-report');
   window.print();
   setTimeout(() => document.body.classList.remove('printing-report'), 600);
@@ -6750,6 +6915,7 @@ function buildPlanData(d) {
     activeDbId:      d.activeDbId || 'db_general',
     sectionConfig:   d.sectionConfig || null,
     reportBlocks:    d.reportBlocks || [],
+    reportPages:     d.reportPages || 1,
     activeTeam:      d.activeTeam,
     filter:          d.filter,
     videoLinks:      d.videoLinks,
@@ -6779,6 +6945,7 @@ function planDataFromSaved(d) {
   pd.activeDbId      = d.activeDbId || (pd.databases[0] ? pd.databases[0].id : 'db_general');
   pd.sectionConfig   = d.sectionConfig || null;
   pd.reportBlocks    = Array.isArray(d.reportBlocks) ? d.reportBlocks : [];
+  pd.reportPages     = d.reportPages || 1;
   pd.activeTeam      = d.activeTeam || null;
   pd.filter          = d.filter || 'quality';
   pd.videoLinks      = d.videoLinks || {};
