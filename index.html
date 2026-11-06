@@ -2424,7 +2424,7 @@ let activePlanIdx = 0;
 let appSharedMode = false; // true = vista sin login (solo lectura), global a toda la app
 
 function blankPlanData() {
-  return { files: [], activeTeam: null, filter: 'quality', videoLinks: {}, playerOverrides: {}, comboVideos: {}, customLinks: [], scoutYoutube: {}, clubMatch: '', databases: [{ id: 'db_general', name: 'General' }], activeDbId: 'db_general', sectionConfig: null, reportBlocks: [], setterCall: 'all' };
+  return { files: [], activeTeam: null, filter: 'quality', videoLinks: {}, playerOverrides: {}, comboVideos: {}, customLinks: [], scoutYoutube: {}, clubMatch: '', databases: [{ id: 'db_general', name: 'General' }], activeDbId: 'db_general', sectionConfig: null, reportBlocks: [], setterCall: 'all', setterPlayer: 'all' };
 }
 function makePlanId() { return 'plan_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
 function makePlan(name, data) { return { id: makePlanId(), name: name || 'Plan', data: data || blankPlanData() }; }
@@ -2506,7 +2506,8 @@ function parseScoutLine(line) {
     result.atk_from    = cm[2];
     result.atk_to      = cm[3] || null;  // puede ser undefined si solo hay 1 dígito
   }
-  const sm = rest.match(/^(K[A-Z0-9]+)/);
+  let sm = rest.match(/^(K[A-Z0-9]+)/);
+  if (!sm && result.skill === 'E') sm = rest.match(/(?:^|[^A-Z0-9])(K[A-Z0-9])/);
   if (sm) result.setter_call = sm[1];
 
   // Saque: formato ~~~[origen][destino] — solo 1=zaguero der, 6=zaguero centro, 5=zaguero izq
@@ -2698,19 +2699,29 @@ function parsePlayers(lines, side) {
 }
 
 // Llamadas de armador disponibles en un set de details (K1, K2, …)
-function availableCalls(details) {
-  const s = new Set();
-  (details || []).forEach(d => { if (d.setter_call) s.add(d.setter_call); });
-  return [...s].sort();
+function availableCalls(details, setter) {
+  const st = new Set();
+  (details || []).forEach(d => { if (d.setter_call && (!setter || setter === 'all' || d.setter === setter)) st.add(d.setter_call); });
+  return [...st].sort();
 }
-// Reconstruye la distribución quedándose solo con una llamada del armador
-function distByCall(dist, call) {
-  if (!call || call === 'all') return dist;
+// Armadores (números) disponibles
+function availableSetters(details) {
+  const st = new Set();
+  (details || []).forEach(d => { if (d.setter) st.add(d.setter); });
+  return [...st].sort();
+}
+function detailMatchesSetter(d, call, setter) {
+  return (!call || call === 'all' || (d.setter_call || null) === call) &&
+         (!setter || setter === 'all' || (d.setter || null) === setter);
+}
+// Reconstruye la distribución filtrando por llamada y/o armador
+function distByCall(dist, call, setter) {
+  if ((!call || call === 'all') && (!setter || setter === 'all')) return dist;
   const rallies = (dist.details || [])
-    .filter(d => (d.setter_call || null) === call)
+    .filter(d => detailMatchesSetter(d, call, setter))
     .map(d => ({
       reception_eval: d.reception_quality, rotation: d.rotation, set_num: d.set,
-      score_h: d.score_h, score_v: d.score_v, setter_call: d.setter_call,
+      score_h: d.score_h, score_v: d.score_v, setter_call: d.setter_call, setter: d.setter,
       attack: {
         combo: d.combo, zone: d.zone, combo_group: d.group, eval_: d.attack_result,
         player: d.player, atk_from: d.atk_from, atk_to: d.atk_to, video_time: d.video_time, file_idx: d.file_idx,
@@ -2729,11 +2740,13 @@ function computeSetterDist(scout) {
     const recTeam = a.team, recEval = a.eval_;
     const rotation = recTeam === 'H' ? a.rotation_h : a.rotation_v;
     let lastCall = null; // llamada del armador (K1/K2…) que ocurre antes del ataque
+    let lastSetter = null; // número del armador que hizo el armado
     for (let j = i+1; j < actions.length; j++) {
       const b = actions[j];
       if (b.skill === 'S') break;
       // El armado (E) del mismo equipo lleva la llamada del armador
       if (b.team === recTeam && b.setter_call) lastCall = b.setter_call;
+      if (b.team === recTeam && b.skill === 'E' && b.player) lastSetter = b.player;
       if (b.skill === 'A' && b.team === recTeam
           && COMBO_ALL.has(b.combo) && VALID_ZONES.has(b.zone)) {
         rallies[recTeam].push({
@@ -2743,6 +2756,7 @@ function computeSetterDist(scout) {
           score_h:   a.score_h,
           score_v:   a.score_v,
           setter_call: b.setter_call || lastCall || null,
+          setter: lastSetter,
           attack: b,
         });
         break;
@@ -2807,6 +2821,7 @@ function compileDist(rallies) {
       set: r.set_num, score_h: r.score_h, score_v: r.score_v,
       rotation, combo, zone, group,
       setter_call: r.setter_call || null,
+      setter: r.setter || null,
       attack_result: result, reception_quality: reception,
       in_condition: isQ, player: r.attack.player,
       atk_from: r.attack.atk_from || null,
@@ -2874,6 +2889,7 @@ function mergeForTeam(fileEntries, teamName) {
       set_num: d.set,
       score_h: d.score_h, score_v: d.score_v,
       setter_call: d.setter_call || null,
+      setter: d.setter || null,
       attack: {
         combo: d.combo, zone: d.zone, combo_group: d.group,
         eval_: d.attack_result, player: d.player,
@@ -3066,10 +3082,13 @@ function render() {
 
   // Llamada del armador: selector + distribución filtrada
   if (!state.setterCall) state.setterCall = 'all';
-  const callOpts = availableCalls(dist.details);
+  if (!state.setterPlayer) state.setterPlayer = 'all';
+  const setterOpts = availableSetters(dist.details);
+  if (state.setterPlayer !== 'all' && !setterOpts.includes(state.setterPlayer)) state.setterPlayer = 'all';
+  const callOpts = availableCalls(dist.details, state.setterPlayer);
   if (state.setterCall !== 'all' && !callOpts.includes(state.setterCall)) state.setterCall = 'all';
-  renderSetterCallBar(callOpts);
-  const distView = distByCall(dist, state.setterCall);
+  renderSetterCallBar(callOpts, setterOpts, merged.players || {}, dist.details);
+  const distView = distByCall(dist, state.setterCall, state.setterPlayer);
 
   // Rotaciones
   const grid = document.getElementById('rot-grid');
@@ -3106,22 +3125,42 @@ function setPlanView(v) {
 }
 
 // Selector de llamada del armador (K1, K2, …) para la distribución
-function renderSetterCallBar(calls) {
+function renderSetterCallBar(calls, setters, players, details) {
   const bar = document.getElementById('setter-call-bar');
   if (!bar) return;
-  if (!calls || !calls.length) { bar.innerHTML = ''; return; }
-  const cur = calls.includes(state.setterCall) ? state.setterCall : 'all';
-  bar.innerHTML = `<div class="call-bar">
-      <span class="call-lbl">🏐 Llamada del armador:</span>
-      <select class="call-select" onchange="setSetterCall(this.value)">
-        <option value="all" ${cur === 'all' ? 'selected' : ''}>Todas las llamadas</option>
-        ${calls.map(c => `<option value="${escHtml(c)}" ${cur === c ? 'selected' : ''}>${escHtml(c)}</option>`).join('')}
-      </select>
-      ${cur !== 'all' ? `<span class="call-hint">viendo solo ${escHtml(cur)}</span>` : ''}
-    </div>`;
+  const curC = (calls || []).includes(state.setterCall) ? state.setterCall : 'all';
+  const curS = (setters || []).includes(state.setterPlayer) ? state.setterPlayer : 'all';
+  const nameOf = n => repPlayerName(players || {}, 'P_' + n);
+  const total = (details || []).length;
+  const noCalls = !(details || []).some(d => d.setter_call);
+  const noSetters = !(setters || []).length;
+  let html = '<div class="call-bar">';
+  html += `<span class="call-lbl">🧑‍🤝‍🧑 Armador:</span>
+      <select class="call-select" onchange="setSetterPlayer(this.value)" ${noSetters ? 'disabled' : ''}>
+        <option value="all">Todos los armadores</option>
+        ${(setters || []).map(n => `<option value="${escHtml(n)}" ${curS === n ? 'selected' : ''}>${escHtml(nameOf(n))}</option>`).join('')}
+      </select>`;
+  html += `<span class="call-lbl">🏐 Llamada:</span>
+      <select class="call-select" onchange="setSetterCall(this.value)" ${noCalls ? 'disabled' : ''}>
+        <option value="all">Todas las llamadas</option>
+        ${(calls || []).map(c => `<option value="${escHtml(c)}" ${curC === c ? 'selected' : ''}>${escHtml(c)}</option>`).join('')}
+      </select>`;
+  if (curS !== 'all' || curC !== 'all') {
+    const n = (details || []).filter(d => detailMatchesSetter(d, curC, curS)).length;
+    html += `<span class="call-hint">viendo ${n} de ${total} ataques</span>`;
+  }
+  html += '</div>';
+  if (total && (noCalls || noSetters)) {
+    html += `<div class="call-hint" style="margin:6px 0 10px">⚠ ${noCalls ? 'Estos scouts no tienen llamadas (K1, K2…) guardadas' : ''}${noCalls && noSetters ? ' ni ' : ''}${noSetters ? 'dato del armador' : ''}. Si los cargaste antes de esta versión, <b>quitalos y volvé a cargar los .dvw</b> en la Base de Datos para que se lean.</div>`;
+  }
+  bar.innerHTML = html;
 }
 function setSetterCall(v) {
   state.setterCall = v || 'all';
+  render();
+}
+function setSetterPlayer(v) {
+  state.setterPlayer = v || 'all';
   render();
 }
 function applyPlanView() {
@@ -4684,14 +4723,14 @@ function reportBlockContent(b) {
   if (b.type === 'distribucion') {
     const team = b.team || repAllTeams()[0]; const merged = repMergedTeam(team);
     if (!merged) return repEmpty('Elegí un equipo con datos cargados.');
-    const dist = distByCall(merged.setter_distribution, b.call || 'all');
+    const dist = distByCall(merged.setter_distribution, b.call || 'all', b.setter || 'all');
     const rots = (b.rot && b.rot !== 'all') ? [b.rot] : [5, 6, 1, 4, 3, 2];
     const flt = state.filter;
     const courts = rots.map(rot => {
       const rd = dist.by_rotation[rot]; const rv = rd ? (rd[flt] || rd.all) : null; const total = rv ? rv.total : 0;
       return `<div class="rep-court"><div class="rep-court-t">Rotación ${rot}${total ? ` · ${total} atq` : ''}</div>${renderCourtSVG(rot, rv, total > 0)}${total ? renderZoneBars(rv, ['4', '3', '2', '9', '8']) : '<div class="rep-nd">Sin datos</div>'}</div>`;
     }).join('');
-    return `<div class="rep-widget"><div class="rep-wtitle">Distribución del armador · ${escHtml(team)}${(b.call && b.call !== 'all') ? ` · llamada ${escHtml(b.call)}` : ''}</div><div class="rep-courts">${courts}</div></div>`;
+    return `<div class="rep-widget"><div class="rep-wtitle">Distribución del armador · ${escHtml(team)}${(b.setter && b.setter !== 'all') ? ` · armador ${escHtml(repPlayerName(merged.players, 'P_' + b.setter))}` : ''}${(b.call && b.call !== 'all') ? ` · llamada ${escHtml(b.call)}` : ''}</div><div class="rep-courts">${courts}</div></div>`;
   }
   if (b.type === 'recepcion' || b.type === 'ataque') {
     const team = b.team || repAllTeams()[0]; const merged = repMergedTeam(team);
@@ -4775,10 +4814,12 @@ function reportBlockConfig(b) {
   if (b.type === 'pagebreak') return '<span class="rep-cfg-note">Fuerza el inicio de una página nueva en el PDF.</span>';
   if (b.type === 'distribucion') {
     const team = b.team || teams[0]; const merged = repMergedTeam(team);
-    const calls = merged ? availableCalls(merged.setter_distribution.details) : [];
+    const calls = merged ? availableCalls(merged.setter_distribution.details, b.setter) : [];
+    const setters = merged ? availableSetters(merged.setter_distribution.details) : [];
+    const setSel = setters.length ? `<select class="rep-cfg" onchange="reportSet('${b.id}','setter',this.value)"><option value="all">Todos los armadores</option>${setters.map(n => `<option value="${escHtml(n)}" ${b.setter === n ? 'selected' : ''}>${escHtml(repPlayerName(merged.players, 'P_' + n))}</option>`).join('')}</select>` : '';
     const rotSel = `<select class="rep-cfg" onchange="reportSet('${b.id}','rot',this.value)"><option value="all" ${(!b.rot || b.rot === 'all') ? 'selected' : ''}>Todas las rotaciones</option>${[1, 2, 3, 4, 5, 6].map(r => `<option value="${r}" ${b.rot == r ? 'selected' : ''}>Rotación ${r}</option>`).join('')}</select>`;
     const callSel = calls.length ? `<select class="rep-cfg" onchange="reportSet('${b.id}','call',this.value)"><option value="all" ${(!b.call || b.call === 'all') ? 'selected' : ''}>Todas las llamadas</option>${calls.map(c => `<option ${b.call === c ? 'selected' : ''}>${escHtml(c)}</option>`).join('')}</select>` : '';
-    return teamSel(team) + rotSel + callSel;
+    return teamSel(team) + rotSel + setSel + callSel;
   }
   if (b.type === 'recepcion' || b.type === 'ataque') {
     const team = b.team || teams[0]; const merged = repMergedTeam(team);
@@ -7405,7 +7446,7 @@ function openZonePopup(rot, zone) {
     d.rotation == rot &&
     (zone === null || d.zone === zone) &&
     (state.filter === 'all' || d.in_condition) &&
-    (!state.setterCall || state.setterCall === 'all' || (d.setter_call || null) === state.setterCall)
+    detailMatchesSetter(d, state.setterCall, state.setterPlayer)
   );
 
   if (filtered.length === 0) return;
