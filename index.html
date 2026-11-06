@@ -1836,6 +1836,14 @@
     padding:10px 18px; font-size:14px; font-weight:700; cursor:pointer; transition:all .15s; }
   .pv-tab:hover { color:var(--text); border-color:var(--accent); }
   .pv-tab.active { background:#1f6f4322; border-color:var(--accent); color:var(--accent); }
+  /* selector de llamada del armador */
+  .call-bar { display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:16px; }
+  .call-lbl { font-size:13px; font-weight:800; color:var(--text-dim); }
+  .call-select { background:var(--bg2); border:1.5px solid var(--border); color:var(--text); border-radius:10px;
+    padding:9px 14px; font-size:14px; font-weight:700; cursor:pointer; min-width:180px; }
+  .call-select:hover { border-color:var(--accent); }
+  .call-select:focus { outline:none; border-color:var(--accent); box-shadow:0 0 0 3px #1f6f4322; }
+  .call-hint { font-size:12px; color:var(--accent); font-weight:700; }
   /* recepción: canchas por receptor */
   .rc-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(300px,1fr)); gap:18px; }
   .rc-card { background:var(--bg2); border:1px solid var(--border); border-radius:14px; padding:14px; }
@@ -1853,8 +1861,6 @@
   .ms-dd-sm .ms-dd-actions button { font-size:11px; padding:6px 4px; }
   .rc-rm { cursor:pointer; color:var(--text-dim); font-weight:700; font-size:13px; }
   .rc-rm:hover { color:var(--red); }
-  .setter-bar { display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-bottom:14px; }
-  .setter-bar .filter-toggle { flex-wrap:wrap; }
   .rc-add-bar { display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-bottom:16px; }
   .rc-add-bar select { background:var(--bg2); border:1.5px solid var(--border); color:var(--text); border-radius:10px;
     padding:9px 13px; font-size:13px; font-weight:700; cursor:pointer; }
@@ -1930,6 +1936,80 @@
   .pl-evalseg { height:100%; }
   /* ═══════════ PERIODIZACIÓN ═══════════ */
   #section-periodization { max-width:1100px; margin:0 auto; padding:22px 32px 80px; }
+  /* ═══════════ REPORTES PDF ═══════════ */
+  #section-report { max-width:1000px; margin:0 auto; padding:22px 32px 80px; }
+  .rep-intro { display:flex; justify-content:space-between; align-items:center; gap:16px; flex-wrap:wrap; margin-bottom:18px; }
+  .rep-intro p { color:var(--text-dim); font-size:13px; line-height:1.5; max-width:560px; margin:0; }
+  .rep-actions { display:flex; gap:10px; }
+  .rep-palette { display:flex; align-items:center; gap:8px; flex-wrap:wrap; padding:14px; background:var(--bg2);
+    border:1px solid var(--border); border-radius:12px; margin-bottom:18px; }
+  .rep-pal-lbl { font-size:12px; font-weight:800; text-transform:uppercase; letter-spacing:.04em; color:var(--text-dim); }
+  .rep-pal-btn { background:var(--bg3); border:1px solid var(--border); color:var(--text); border-radius:9px;
+    padding:8px 12px; font-size:13px; font-weight:700; cursor:pointer; transition:all .12s; }
+  .rep-pal-btn:hover { border-color:var(--accent); color:var(--accent); }
+  .rep-composer { display:flex; flex-direction:column; gap:16px; }
+  .rep-empty { color:var(--text-dim); text-align:center; padding:50px 20px; font-size:15px; line-height:1.6; }
+  .rep-empty span { font-size:13px; }
+  .rep-block { background:var(--bg2); border:1px solid var(--border); border-radius:14px; overflow:hidden; }
+  .rep-block-head { display:flex; justify-content:space-between; align-items:center; gap:10px; padding:10px 14px; background:var(--bg3); border-bottom:1px solid var(--border); }
+  .rep-block-type { font-weight:800; font-size:14px; }
+  .rep-block-tools { display:flex; gap:6px; }
+  .rep-block-tools button { background:var(--bg2); border:1px solid var(--border); color:var(--text); border-radius:7px;
+    width:30px; height:30px; cursor:pointer; font-size:14px; font-weight:700; }
+  .rep-block-tools button:hover:not(:disabled) { border-color:var(--accent); color:var(--accent); }
+  .rep-block-tools button:disabled { opacity:.35; cursor:default; }
+  .rep-block-tools .rep-del:hover { border-color:var(--red); color:var(--red); }
+  .rep-block-config { display:flex; gap:10px; flex-wrap:wrap; padding:12px 14px; border-bottom:1px solid var(--border); }
+  .rep-cfg { background:var(--bg3); border:1px solid var(--border); color:var(--text); border-radius:8px; padding:8px 11px; font-size:13px; font-family:inherit; }
+  .rep-cfg:focus { outline:none; border-color:var(--accent); }
+  .rep-cfg-wide { flex:1; min-width:220px; }
+  .rep-cfg-year { width:90px; }
+  .rep-cfg-note { font-size:12px; color:var(--text-dim); }
+  .rep-ta { min-height:60px; resize:vertical; line-height:1.5; }
+  .rep-block-prev { padding:16px; background:#fff; color:#111; }
+  /* Contenido del reporte (fondo blanco, listo para PDF) */
+  .rep-widget { margin-bottom:4px; }
+  .rep-wtitle { font-size:15px; font-weight:800; color:#1f6f43; margin-bottom:10px; border-bottom:2px solid #e3e8ee; padding-bottom:6px; }
+  .rep-courts { display:grid; grid-template-columns:repeat(auto-fill, minmax(230px,1fr)); gap:14px; }
+  .rep-court { border:1px solid #e3e8ee; border-radius:10px; padding:10px; }
+  .rep-court-t { font-weight:700; font-size:13px; margin-bottom:6px; color:#333; }
+  .rep-court svg { width:100%; height:auto; }
+  .rep-nd { color:#999; font-size:12px; text-align:center; padding:8px; }
+  .rep-doc-text h2 { font-size:19px; margin:0 0 8px; color:#111; }
+  .rep-doc-text .rep-body { font-size:14px; line-height:1.6; color:#222; white-space:pre-wrap; }
+  .rep-pagebreak { text-align:center; color:#bbb; font-size:12px; border-top:1px dashed #ccc; padding-top:6px; }
+  .rep-funds { display:grid; grid-template-columns:repeat(auto-fill, minmax(240px,1fr)); gap:12px; }
+  .rep-fund { border:1px solid #e3e8ee; border-left:4px solid var(--c); border-radius:10px; padding:10px; }
+  .rep-fund-h { font-weight:800; font-size:14px; color:var(--c); margin-bottom:8px; }
+  .rep-fund-g { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; }
+  .rep-metric { text-align:center; background:#f3f6f9; border-radius:8px; padding:7px 4px; }
+  .rep-metric b { display:block; font-size:18px; color:#111; }
+  .rep-metric span { font-size:9.5px; color:#777; text-transform:uppercase; font-weight:700; }
+  .rep-peri, .rep-cal { width:100%; border-collapse:collapse; font-size:11px; }
+  .rep-peri th, .rep-peri td, .rep-cal th, .rep-cal td { border:1px solid #d9dee5; padding:4px 5px; text-align:center; color:#222; }
+  .rep-peri th, .rep-cal th { background:#eef2f6; font-weight:800; }
+  .rep-peri-sem { font-weight:800; background:#eef2f6; }
+  .rep-peri-foco { text-align:left; max-width:160px; }
+  .rep-cal td { height:48px; vertical-align:top; }
+  .rep-cal-d { font-weight:800; font-size:11px; }
+  .rep-cal-ev { font-size:9px; color:#fff; border-radius:3px; padding:1px 3px; margin-top:2px; }
+  .rep-cal-empty { background:#f7f9fb; }
+  .rep-ent-jug { font-size:13px; color:#333; margin-bottom:8px; }
+  .rep-ex-list { display:flex; flex-direction:column; gap:8px; }
+  .rep-ex { border:1px solid #e3e8ee; border-radius:8px; padding:8px 10px; }
+  .rep-ex-h { font-weight:700; font-size:13px; color:#111; }
+  .rep-ex-h span { font-weight:600; color:#777; font-size:11px; }
+  .rep-ex-o { font-size:12px; color:#1f6f43; margin-top:3px; }
+  .rep-ex-x { font-size:12px; color:#333; margin-top:3px; line-height:1.4; }
+  /* Impresión del reporte: mostrar SOLO el reporte */
+  #report-print { display:none; }
+  @media print {
+    body.printing-report > *:not(#report-print) { display:none !important; }
+    body.printing-report #report-print { display:block !important; background:#fff; color:#111; padding:0; }
+    body.printing-report .rep-print-block { break-inside:avoid; margin-bottom:18px; }
+    body.printing-report .rep-pagebreak { break-before:page; border:none; height:0; padding:0; color:transparent; }
+    body.printing-report .rep-courts { grid-template-columns:repeat(3,1fr); }
+  }
   .peri-legend { display:flex; gap:14px; flex-wrap:wrap; }
   .peri-leg { display:inline-flex; align-items:center; gap:6px; font-size:12px; color:var(--text-dim); font-weight:600; }
   .peri-leg-sw { width:14px; height:14px; border-radius:4px; display:inline-block; }
@@ -2171,6 +2251,10 @@
       <div class="hc-icon">📊</div><div class="hc-name">Periodización</div>
       <div class="hc-desc">Planilla de cargas por día y semana (vóley y pesas), fases y foco. Conectada con los entrenamientos.</div>
     </div>
+    <div class="home-card" id="hcard-report" onclick="goToSection('report')">
+      <div class="hc-icon">📄</div><div class="hc-name">Reportes PDF</div>
+      <div class="hc-desc">Armá un PDF a medida: sumá canchas, estadísticas y texto de cualquier sección, ordenalo y descargalo.</div>
+    </div>
   </div>
   <div id="section-config" class="section-config editor-only" style="display:none">
     <div class="sc-head">⚙️ Secciones — visibilidad y edición <span class="sc-note">(solo vos, logueado, podés cambiar esto)</span></div>
@@ -2255,6 +2339,20 @@
   <div id="players-body"></div>
 </div>
 
+<!-- SECCIÓN: REPORTES PDF (composer personalizable) -->
+<div id="section-report" style="display:none">
+  <div class="rep-intro">
+    <p>Armá tu propio PDF: agregá los bloques que quieras (canchas, estadísticas, texto…), ordenalos y descargá. Cada bloque se configura abajo.</p>
+    <div class="rep-actions">
+      <button class="btn primary" onclick="downloadReportPDF()">🖨 Descargar PDF</button>
+      <button class="btn" onclick="reportClear()">🗑 Vaciar</button>
+    </div>
+  </div>
+  <div class="rep-palette" id="rep-palette"></div>
+  <div class="rep-composer" id="rep-composer"></div>
+</div>
+<div id="report-print"></div>
+
 <!-- SECCIÓN: PERIODIZACIÓN (cargas, fases y foco; conectada con Entrenamientos) -->
 <div id="section-periodization" style="display:none">
   <div class="tr-intro">
@@ -2326,7 +2424,7 @@ let activePlanIdx = 0;
 let appSharedMode = false; // true = vista sin login (solo lectura), global a toda la app
 
 function blankPlanData() {
-  return { files: [], activeTeam: null, filter: 'quality', videoLinks: {}, playerOverrides: {}, comboVideos: {}, customLinks: [], scoutYoutube: {}, clubMatch: '', databases: [{ id: 'db_general', name: 'General' }], activeDbId: 'db_general', sectionConfig: null };
+  return { files: [], activeTeam: null, filter: 'quality', videoLinks: {}, playerOverrides: {}, comboVideos: {}, customLinks: [], scoutYoutube: {}, clubMatch: '', databases: [{ id: 'db_general', name: 'General' }], activeDbId: 'db_general', sectionConfig: null, reportBlocks: [], setterCall: 'all' };
 }
 function makePlanId() { return 'plan_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
 function makePlan(name, data) { return { id: makePlanId(), name: name || 'Plan', data: data || blankPlanData() }; }
@@ -2565,23 +2663,18 @@ function collectAllAttacks(scout) {
 }
 
 function parseTeams(lines) {
-  // Acepta cualquier línea de [3TEAMS] con al menos 2 campos: el código (p[0]) puede ser
-  // numérico, letras o estar vacío. 1ra línea = local (H), 2da = visitante (V).
   const teams = {};
-  const fallback = { H: 'Equipo local', V: 'Adversario' };
   for (const line of lines) {
-    if (!line || !line.trim()) continue;
+    if (!line) continue;
     const p = line.split(';');
-    if (p.length < 2) continue;
-    const side = !('H' in teams) ? 'H' : (!('V' in teams) ? 'V' : null);
-    if (!side) break;
-    const code = (p[0] || '').trim();
-    const idNum = parseInt(code);
-    const name = (p[1] || '').trim() ? p[1] : (code || fallback[side]);
-    teams[side] = { id: isNaN(idNum) ? code : idNum, name };
+    if (p.length >= 2) {
+      const id = parseInt(p[0]);
+      if (!isNaN(id)) {
+        const side = !('H' in teams) ? 'H' : 'V';
+        teams[side] = { id, name: p[1] };
+      }
+    }
   }
-  // Si los dos equipos quedaron con el mismo nombre, diferenciar el visitante
-  if (teams.H && teams.V && teams.H.name === teams.V.name) teams.V.name = teams.V.name + ' (rival)';
   return teams;
 }
 
@@ -2604,6 +2697,28 @@ function parsePlayers(lines, side) {
   return players;
 }
 
+// Llamadas de armador disponibles en un set de details (K1, K2, …)
+function availableCalls(details) {
+  const s = new Set();
+  (details || []).forEach(d => { if (d.setter_call) s.add(d.setter_call); });
+  return [...s].sort();
+}
+// Reconstruye la distribución quedándose solo con una llamada del armador
+function distByCall(dist, call) {
+  if (!call || call === 'all') return dist;
+  const rallies = (dist.details || [])
+    .filter(d => (d.setter_call || null) === call)
+    .map(d => ({
+      reception_eval: d.reception_quality, rotation: d.rotation, set_num: d.set,
+      score_h: d.score_h, score_v: d.score_v, setter_call: d.setter_call,
+      attack: {
+        combo: d.combo, zone: d.zone, combo_group: d.group, eval_: d.attack_result,
+        player: d.player, atk_from: d.atk_from, atk_to: d.atk_to, video_time: d.video_time, file_idx: d.file_idx,
+      }
+    }));
+  return compileDist(rallies);
+}
+
 function computeSetterDist(scout) {
   const actions = scout.filter(a => !a.special && a.skill);
   const rallies = { H: [], V: [] };
@@ -2613,11 +2728,12 @@ function computeSetterDist(scout) {
     if (a.skill !== 'R') continue;
     const recTeam = a.team, recEval = a.eval_;
     const rotation = recTeam === 'H' ? a.rotation_h : a.rotation_v;
-    let setter = null; // armador: jugador de la acción de armado (E) entre la recepción y el ataque
+    let lastCall = null; // llamada del armador (K1/K2…) que ocurre antes del ataque
     for (let j = i+1; j < actions.length; j++) {
       const b = actions[j];
       if (b.skill === 'S') break;
-      if (b.skill === 'E' && b.team === recTeam && b.player) setter = b.player;
+      // El armado (E) del mismo equipo lleva la llamada del armador
+      if (b.team === recTeam && b.setter_call) lastCall = b.setter_call;
       if (b.skill === 'A' && b.team === recTeam
           && COMBO_ALL.has(b.combo) && VALID_ZONES.has(b.zone)) {
         rallies[recTeam].push({
@@ -2626,7 +2742,7 @@ function computeSetterDist(scout) {
           set_num:   a.set_num,
           score_h:   a.score_h,
           score_v:   a.score_v,
-          setter,
+          setter_call: b.setter_call || lastCall || null,
           attack: b,
         });
         break;
@@ -2689,7 +2805,8 @@ function compileDist(rallies) {
 
     details.push({
       set: r.set_num, score_h: r.score_h, score_v: r.score_v,
-      rotation, combo, zone, group, setter: r.setter || null,
+      rotation, combo, zone, group,
+      setter_call: r.setter_call || null,
       attack_result: result, reception_quality: reception,
       in_condition: isQ, player: r.attack.player,
       atk_from: r.attack.atk_from || null,
@@ -2747,16 +2864,16 @@ function getAllTeams(dataList) {
 
 // Acumula datos de UN equipo específico (por nombre) en todos los archivos
 // Usa clave neutral "P_03" para jugadores, sin importar si era H o V en cada partido
-let distSetter = 'ALL'; // filtro de armador en Distribución ('ALL', número de camiseta o '?')
 function mergeForTeam(fileEntries, teamName) {
   if (!fileEntries.length || !teamName) return null;
 
   function detailsToRallies(details) {
     return details.map(d => ({
       reception_eval: d.reception_quality,
-      setter: d.setter || null,
       rotation: d.rotation,
       set_num: d.set,
+      score_h: d.score_h, score_v: d.score_v,
+      setter_call: d.setter_call || null,
       attack: {
         combo: d.combo, zone: d.zone, combo_group: d.group,
         eval_: d.attack_result, player: d.player,
@@ -2829,18 +2946,10 @@ function mergeForTeam(fileEntries, teamName) {
     });
   });
 
-  // Armadores detectados (solo afecta la Distribución del Armador)
-  const setterCounts = {};
-  allDetails.forEach(d => { const k = d.setter || '?'; setterCounts[k] = (setterCounts[k] || 0) + 1; });
-  const setters = Object.entries(setterCounts).map(([num, count]) => ({ num, count })).sort((a, b) => b.count - a.count);
-  if (distSetter !== 'ALL' && !setterCounts[distSetter]) distSetter = 'ALL';
-  const detailsUse = distSetter === 'ALL' ? allDetails : allDetails.filter(d => (d.setter || '?') === distSetter);
-
   return {
     teamName,
     players,
-    setters,
-    setter_distribution: compileDist(detailsToRallies(detailsUse)),
+    setter_distribution: compileDist(detailsToRallies(allDetails)),
     all_attacks: allAtks,
     all_serves:  allServes,
     all_receptions: allRecs,
@@ -2928,7 +3037,7 @@ function render() {
 
     <div class="pv-block" data-pv="dist">
       <div class="section-title">Distribución por Rotación del Armador · ${state.filter==='quality'?'Recepción # y + únicamente':'Todas las recepciones'}</div>
-      <div class="setter-bar" id="setter-bar"></div>
+      <div id="setter-call-bar"></div>
       <div class="rotations-grid" id="rot-grid"></div>
     </div>
 
@@ -2955,16 +3064,21 @@ function render() {
     </div>
   `;
 
-  renderSetterBar(merged);
+  // Llamada del armador: selector + distribución filtrada
+  if (!state.setterCall) state.setterCall = 'all';
+  const callOpts = availableCalls(dist.details);
+  if (state.setterCall !== 'all' && !callOpts.includes(state.setterCall)) state.setterCall = 'all';
+  renderSetterCallBar(callOpts);
+  const distView = distByCall(dist, state.setterCall);
 
   // Rotaciones
   const grid = document.getElementById('rot-grid');
   const rots = [5,6,1,4,3,2];
   for (const rot of rots) {
-    const rd    = dist.by_rotation[rot];
+    const rd    = distView.by_rotation[rot];
     const rv    = rd ? rd[state.filter] || rd.all : null;
     const total = rv ? rv.total : 0;
-    grid.appendChild(renderRotCard(rot, rv, total, dist.details));
+    grid.appendChild(renderRotCard(rot, rv, total, distView.details));
   }
 
   // Atacantes
@@ -2982,32 +3096,6 @@ function render() {
   applyPlanView();
 }
 
-// Selector de armador (Distribución del Armador)
-function setSetter(k) { distSetter = k; render(); }
-function renderSetterBar(merged) {
-  const el = document.getElementById('setter-bar');
-  if (!el) return;
-  const list = merged.setters || [];
-  const known = list.filter(s => s.num !== '?');
-  if (!known.length) {
-    el.innerHTML = list.length
-      ? '<span style="color:var(--text-dim);font-size:12.5px">Este scout no trae el armador registrado: borralo y volvé a cargarlo para poder separar por armador.</span>'
-      : '';
-    return;
-  }
-  if (list.length < 2) { el.innerHTML = ''; return; }
-  const total = list.reduce((t, s) => t + s.count, 0);
-  const nm = num => {
-    if (num === '?') return 'Sin dato';
-    const p = (merged.players || {})['P_' + num];
-    return p && p.full_name ? `#${num} ${p.full_name}` : `#${num}`;
-  };
-  const btn = (key, label, n) =>
-    `<button class="${distSetter === key ? 'active' : ''}" onclick="setSetter('${key}')">${escHtml(label)} <span style="opacity:.6">(${n})</span></button>`;
-  el.innerHTML = `<label style="font-size:13px;color:var(--text-dim)">Armador:</label>
-    <div class="filter-toggle">${btn('ALL', 'Todos', total)}${list.map(s => btn(s.num, nm(s.num), s.count)).join('')}</div>`;
-}
-
 // ═══════════════════════════════════════════════════════
 //  VISTAS DEL PLAN DE JUEGO (distribución / ataque / recepción)
 // ═══════════════════════════════════════════════════════
@@ -3015,6 +3103,26 @@ let planView = 'dist';
 function setPlanView(v) {
   planView = v;
   applyPlanView();
+}
+
+// Selector de llamada del armador (K1, K2, …) para la distribución
+function renderSetterCallBar(calls) {
+  const bar = document.getElementById('setter-call-bar');
+  if (!bar) return;
+  if (!calls || !calls.length) { bar.innerHTML = ''; return; }
+  const cur = calls.includes(state.setterCall) ? state.setterCall : 'all';
+  bar.innerHTML = `<div class="call-bar">
+      <span class="call-lbl">🏐 Llamada del armador:</span>
+      <select class="call-select" onchange="setSetterCall(this.value)">
+        <option value="all" ${cur === 'all' ? 'selected' : ''}>Todas las llamadas</option>
+        ${calls.map(c => `<option value="${escHtml(c)}" ${cur === c ? 'selected' : ''}>${escHtml(c)}</option>`).join('')}
+      </select>
+      ${cur !== 'all' ? `<span class="call-hint">viendo solo ${escHtml(cur)}</span>` : ''}
+    </div>`;
+}
+function setSetterCall(v) {
+  state.setterCall = v || 'all';
+  render();
 }
 function applyPlanView() {
   ['dist','atk','rec'].forEach(v => {
@@ -3716,7 +3824,6 @@ function renderEffLegend(rv) {
 
 function setTeam(name) {
   state.activeTeam = name;
-  distSetter = 'ALL'; // al cambiar de equipo, volver a "todos los armadores"
   selMatches = null; // al cambiar de equipo, arrancar con todos sus partidos
   renderSelectors();
   render();
@@ -4529,6 +4636,213 @@ function periToggle(ds, what) {
 }
 
 // ═══════════════════════════════════════════════════════
+//  REPORTES PDF — composer personalizable (bloques de widgets + texto)
+// ═══════════════════════════════════════════════════════
+const REP_TYPES = [
+  { t: 'texto',         label: '📝 Texto' },
+  { t: 'distribucion',  label: '🎯 Distribución armador' },
+  { t: 'recepcion',     label: '🛡️ Recepción jugador' },
+  { t: 'ataque',        label: '⚡ Ataque jugador' },
+  { t: 'statsjug',      label: '🏐 Stats jugador' },
+  { t: 'periodizacion', label: '📊 Periodización (mes)' },
+  { t: 'calendario',    label: '🗓️ Calendario (mes)' },
+  { t: 'entrenamiento', label: '📅 Entrenamiento (día)' },
+  { t: 'pagebreak',     label: '📄 Salto de página' },
+];
+function repTypeLabel(t) { const x = REP_TYPES.find(r => r.t === t); return x ? x.label : t; }
+function repMakeId() { return 'rb' + Date.now().toString(36) + Math.random().toString(36).slice(2, 5); }
+function repBlocks() { if (!Array.isArray(state.reportBlocks)) state.reportBlocks = []; return state.reportBlocks; }
+
+function reportAdd(t) {
+  const b = { id: repMakeId(), type: t };
+  if (t === 'texto') { b.heading = ''; b.body = ''; }
+  repBlocks().push(b); markDirty(); renderReport();
+}
+function reportRemove(id) { state.reportBlocks = repBlocks().filter(b => b.id !== id); markDirty(); renderReport(); }
+function reportMove(id, dir) {
+  const a = repBlocks(); const i = a.findIndex(b => b.id === id); const j = i + dir;
+  if (i < 0 || j < 0 || j >= a.length) return;
+  [a[i], a[j]] = [a[j], a[i]]; markDirty(); renderReport();
+}
+function reportSet(id, field, val) { const b = repBlocks().find(x => x.id === id); if (!b) return; b[field] = val; markDirty(); renderReport(); }
+function reportSetText(id, field, val) { const b = repBlocks().find(x => x.id === id); if (!b) return; b[field] = val; markDirty(); } // sin re-render (mantiene foco)
+function reportClear() { if (!repBlocks().length) return; if (!confirm('¿Vaciar el reporte?')) return; state.reportBlocks = []; markDirty(); renderReport(); }
+
+// Helpers de datos
+function repAllTeams() { return getAllTeams(filesPool().map(f => f.data)).map(t => t.name); }
+function repMergedTeam(team) { if (!team) return null; const files = filesPool().filter(f => fileHasTeam(f, team)); return files.length ? mergeForTeam(files, team) : null; }
+function repPlayerName(players, pk) { const p = players && players[pk]; return p ? ((p.number ? '#' + p.number + ' ' : '') + (p.last_name || p.full_name || pk)) : pk; }
+function repEmpty(msg) { return `<div class="rep-nd">${escHtml(msg)}</div>`; }
+
+// Contenido puro de un bloque (sirve para la vista previa Y para el PDF)
+function reportBlockContent(b) {
+  if (b.type === 'texto') {
+    return `<div class="rep-doc-text">${b.heading ? `<h2>${escHtml(b.heading)}</h2>` : ''}${b.body ? `<div class="rep-body">${escHtml(b.body).replace(/\n/g, '<br>')}</div>` : ''}</div>`;
+  }
+  if (b.type === 'pagebreak') return `<div class="rep-pagebreak">— salto de página —</div>`;
+
+  if (b.type === 'distribucion') {
+    const team = b.team || repAllTeams()[0]; const merged = repMergedTeam(team);
+    if (!merged) return repEmpty('Elegí un equipo con datos cargados.');
+    const dist = distByCall(merged.setter_distribution, b.call || 'all');
+    const rots = (b.rot && b.rot !== 'all') ? [b.rot] : [5, 6, 1, 4, 3, 2];
+    const flt = state.filter;
+    const courts = rots.map(rot => {
+      const rd = dist.by_rotation[rot]; const rv = rd ? (rd[flt] || rd.all) : null; const total = rv ? rv.total : 0;
+      return `<div class="rep-court"><div class="rep-court-t">Rotación ${rot}${total ? ` · ${total} atq` : ''}</div>${renderCourtSVG(rot, rv, total > 0)}${total ? renderZoneBars(rv, ['4', '3', '2', '9', '8']) : '<div class="rep-nd">Sin datos</div>'}</div>`;
+    }).join('');
+    return `<div class="rep-widget"><div class="rep-wtitle">Distribución del armador · ${escHtml(team)}${(b.call && b.call !== 'all') ? ` · llamada ${escHtml(b.call)}` : ''}</div><div class="rep-courts">${courts}</div></div>`;
+  }
+  if (b.type === 'recepcion' || b.type === 'ataque') {
+    const team = b.team || repAllTeams()[0]; const merged = repMergedTeam(team);
+    if (!merged) return repEmpty('Elegí un equipo con datos cargados.');
+    const isRec = b.type === 'recepcion';
+    const src = (isRec ? merged.all_receptions : merged.all_attacks) || [];
+    const pk = b.player || (src[0] && src[0].player_key);
+    const list = src.filter(x => x.player_key === pk);
+    const svg = isRec ? recCourtSVG(pk, list) : atkCourtSVG(pk, list);
+    return `<div class="rep-widget"><div class="rep-wtitle">${isRec ? 'Recepción' : 'Ataque'} · ${escHtml(repPlayerName(merged.players, pk))} (${escHtml(team)})</div><div class="rep-court">${svg}</div></div>`;
+  }
+  if (b.type === 'statsjug') {
+    const { agg } = computePlayersDB(); const nm = b.nm || Object.keys(agg)[0];
+    const p = agg[nm]; if (!p) return repEmpty('Cargá scouts de tu club (sección Jugadores).');
+    const funds = STAT_SKILLS.filter(s => p.stats[s].total > 0);
+    const body = funds.map(s => {
+      const st = p.stats[s]; const ms = plFundMetrics(s, st);
+      return `<div class="rep-fund" style="--c:${PL_FUND[s].color}"><div class="rep-fund-h">${PL_FUND[s].icon} ${PL_FUND[s].name}</div><div class="rep-fund-g">${ms.map(m => `<div class="rep-metric"><b>${m.value}</b><span>${m.label}</span></div>`).join('')}</div></div>`;
+    }).join('');
+    return `<div class="rep-widget"><div class="rep-wtitle">Estadísticas · ${escHtml(p.name)}</div><div class="rep-funds">${body}</div></div>`;
+  }
+  if (b.type === 'periodizacion') {
+    const mo = trainingData.months.find(m => m.id === b.monthId) || trainingData.months[0];
+    if (!mo) return repEmpty('No hay meses cargados (sección Entrenamientos/Periodización).');
+    const weeks = periWeeksOf(mo); const WD = ['Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sá', 'Do'];
+    const rows = weeks.map((days, wi) => {
+      const monday = trDateStr(days[0].getFullYear(), days[0].getMonth(), days[0].getDate());
+      const meta = (mo.weekMeta || {})[monday] || {};
+      const cells = days.map(d => {
+        const s = trSessionForDate(trDateStr(d.getFullYear(), d.getMonth(), d.getDate()), false);
+        const lv = s ? s.loadV : ''; const col = LOAD_SCALE[lv] ? LOAD_SCALE[lv].color : 'transparent';
+        const dim = d.getMonth() === mo.m ? '' : 'opacity:.4';
+        return `<td style="background:${col};${dim}">${d.getDate()}</td>`;
+      }).join('');
+      const auto = periWeekLoad(days);
+      return `<tr><td class="rep-peri-sem">${wi + 1}</td><td>${escHtml(meta.fase || '')}</td>${cells}<td>${escHtml(auto.replace('-', ' '))}</td><td class="rep-peri-foco">${escHtml(meta.foco || '')}</td></tr>`;
+    }).join('');
+    return `<div class="rep-widget"><div class="rep-wtitle">Periodización · ${escHtml(trMonthLabel(mo))}</div><table class="rep-peri"><thead><tr><th>Sem</th><th>Fase</th>${WD.map(w => `<th>${w}</th>`).join('')}<th>Carga</th><th>Foco</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+  }
+  if (b.type === 'calendario') {
+    const now = new Date();
+    const y = (b.y != null ? b.y : now.getFullYear());
+    const m = (b.m != null ? b.m : now.getMonth());
+    const first = new Date(y, m, 1); const offset = (first.getDay() + 6) % 7;
+    const daysIn = new Date(y, m + 1, 0).getDate();
+    const cells = [];
+    for (let i = 0; i < offset; i++) cells.push('<td class="rep-cal-empty"></td>');
+    for (let d = 1; d <= daysIn; d++) {
+      const date = trDateStr(y, m, d);
+      const evs = (calData.events || []).filter(ev => calEventCoversDay(ev, date));
+      const tags = evs.map(ev => { const t = CAL_TYPES[ev.type] || CAL_TYPES.EVENTO; return `<div class="rep-cal-ev" style="background:${t.color}">${escHtml(ev.title || t.label)}</div>`; }).join('');
+      cells.push(`<td><div class="rep-cal-d">${d}</div>${tags}</td>`);
+    }
+    while (cells.length % 7) cells.push('<td class="rep-cal-empty"></td>');
+    let rows = ''; for (let i = 0; i < cells.length; i += 7) rows += `<tr>${cells.slice(i, i + 7).join('')}</tr>`;
+    const WD = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
+    return `<div class="rep-widget"><div class="rep-wtitle">Calendario · ${TR_MONTHS[m]} ${y}</div><table class="rep-cal"><thead><tr>${WD.map(w => `<th>${w}</th>`).join('')}</tr></thead><tbody>${rows}</tbody></table></div>`;
+  }
+  if (b.type === 'entrenamiento') {
+    const mo = trainingData.months.find(x => x.id === b.monthId) || trainingData.months[0];
+    if (!mo) return repEmpty('No hay meses en Entrenamientos.');
+    const s = (mo.sessions || []).find(x => x.id === b.sessionId) || (mo.sessions || [])[0];
+    if (!s) return repEmpty('Ese mes no tiene entrenamientos cargados.');
+    const dm = /^(\d{4})-(\d{2})-(\d{2})$/.exec(s.date);
+    const titulo = (dm ? (TR_DAYS[(new Date(+dm[1], +dm[2] - 1, +dm[3]).getDay() + 6) % 7] + ' ' + dm[3] + '/' + dm[2]) : 'Sesión') + (s.name ? ' · ' + s.name : '');
+    const jug = (s.players || []).map(pid => { const p = trPlayerById(pid); return p ? escHtml(p.name || '') : ''; }).filter(Boolean).join(', ');
+    const exs = (s.exercises || []).map((e, i) => `<div class="rep-ex"><div class="rep-ex-h">${i + 1}. ${escHtml(e.name || 'Ejercicio')}${e.duration ? ` <span>⏱ ${escHtml(e.duration)}</span>` : ''}</div>${e.objective ? `<div class="rep-ex-o">🎯 ${escHtml(e.objective)}</div>` : ''}${e.explanation ? `<div class="rep-ex-x">${escHtml(e.explanation).replace(/\n/g, '<br>')}</div>` : ''}</div>`).join('');
+    return `<div class="rep-widget"><div class="rep-wtitle">Entrenamiento · ${escHtml(titulo)}</div>${jug ? `<div class="rep-ent-jug">Jugadores: ${jug}</div>` : ''}<div class="rep-ex-list">${exs || '<div class="rep-nd">Sin ejercicios.</div>'}</div></div>`;
+  }
+  return '';
+}
+
+// Controles de configuración de un bloque (en el composer)
+function reportBlockConfig(b) {
+  const teams = repAllTeams();
+  const teamSel = (cur) => `<select class="rep-cfg" onchange="reportSet('${b.id}','team',this.value)"><option value="">Equipo…</option>${teams.map(t => `<option ${cur === t ? 'selected' : ''}>${escHtml(t)}</option>`).join('')}</select>`;
+  if (b.type === 'texto') {
+    return `<input class="rep-cfg rep-cfg-wide" placeholder="Título (opcional)" value="${escHtml(b.heading || '')}" oninput="reportSetText('${b.id}','heading',this.value)">
+      <textarea class="rep-cfg rep-cfg-wide rep-ta" placeholder="Escribí acá el texto…" oninput="reportSetText('${b.id}','body',this.value); autoGrow(this)">${escHtml(b.body || '')}</textarea>`;
+  }
+  if (b.type === 'pagebreak') return '<span class="rep-cfg-note">Fuerza el inicio de una página nueva en el PDF.</span>';
+  if (b.type === 'distribucion') {
+    const team = b.team || teams[0]; const merged = repMergedTeam(team);
+    const calls = merged ? availableCalls(merged.setter_distribution.details) : [];
+    const rotSel = `<select class="rep-cfg" onchange="reportSet('${b.id}','rot',this.value)"><option value="all" ${(!b.rot || b.rot === 'all') ? 'selected' : ''}>Todas las rotaciones</option>${[1, 2, 3, 4, 5, 6].map(r => `<option value="${r}" ${b.rot == r ? 'selected' : ''}>Rotación ${r}</option>`).join('')}</select>`;
+    const callSel = calls.length ? `<select class="rep-cfg" onchange="reportSet('${b.id}','call',this.value)"><option value="all" ${(!b.call || b.call === 'all') ? 'selected' : ''}>Todas las llamadas</option>${calls.map(c => `<option ${b.call === c ? 'selected' : ''}>${escHtml(c)}</option>`).join('')}</select>` : '';
+    return teamSel(team) + rotSel + callSel;
+  }
+  if (b.type === 'recepcion' || b.type === 'ataque') {
+    const team = b.team || teams[0]; const merged = repMergedTeam(team);
+    const src = merged ? ((b.type === 'recepcion' ? merged.all_receptions : merged.all_attacks) || []) : [];
+    const pks = [...new Set(src.map(x => x.player_key))];
+    const playerSel = `<select class="rep-cfg" onchange="reportSet('${b.id}','player',this.value)"><option value="">Jugador…</option>${pks.map(pk => `<option value="${escHtml(pk)}" ${b.player === pk ? 'selected' : ''}>${escHtml(repPlayerName(merged ? merged.players : {}, pk))}</option>`).join('')}</select>`;
+    return teamSel(team) + playerSel;
+  }
+  if (b.type === 'statsjug') {
+    const { agg } = computePlayersDB(); const names = Object.keys(agg).sort((a, c) => agg[a].name.localeCompare(agg[c].name, 'es'));
+    return `<select class="rep-cfg rep-cfg-wide" onchange="reportSet('${b.id}','nm',this.value)"><option value="">Jugador del club…</option>${names.map(nm => `<option value="${escHtml(nm)}" ${b.nm === nm ? 'selected' : ''}>${escHtml(agg[nm].name)}</option>`).join('')}</select>`;
+  }
+  if (b.type === 'periodizacion') {
+    const months = trainingData.months;
+    return `<select class="rep-cfg rep-cfg-wide" onchange="reportSet('${b.id}','monthId',this.value)"><option value="">Mes…</option>${months.map(m => `<option value="${m.id}" ${b.monthId === m.id ? 'selected' : ''}>${escHtml(trMonthLabel(m))}</option>`).join('')}</select>`;
+  }
+  if (b.type === 'calendario') {
+    const now = new Date(); const y = (b.y != null ? b.y : now.getFullYear()); const m = (b.m != null ? b.m : now.getMonth());
+    return `<select class="rep-cfg" onchange="reportSet('${b.id}','m',parseInt(this.value,10))">${TR_MONTHS.map((nm, i) => `<option value="${i}" ${m === i ? 'selected' : ''}>${nm}</option>`).join('')}</select>
+      <input class="rep-cfg rep-cfg-year" type="number" value="${y}" oninput="reportSet('${b.id}','y',parseInt(this.value,10))">`;
+  }
+  if (b.type === 'entrenamiento') {
+    const months = trainingData.months;
+    const mo = months.find(x => x.id === b.monthId) || months[0];
+    const monthSel = `<select class="rep-cfg" onchange="reportSet('${b.id}','monthId',this.value)"><option value="">Mes…</option>${months.map(m => `<option value="${m.id}" ${(mo && mo.id) === m.id ? 'selected' : ''}>${escHtml(trMonthLabel(m))}</option>`).join('')}</select>`;
+    const sessions = mo ? (mo.sessions || []) : [];
+    const sesSel = `<select class="rep-cfg" onchange="reportSet('${b.id}','sessionId',this.value)"><option value="">Día…</option>${sessions.map(s => { const dm = /^(\d{4})-(\d{2})-(\d{2})$/.exec(s.date); const lbl = (dm ? dm[3] + '/' + dm[2] : 'día') + (s.name ? ' ' + s.name : ''); return `<option value="${s.id}" ${b.sessionId === s.id ? 'selected' : ''}>${escHtml(lbl)}</option>`; }).join('')}</select>`;
+    return monthSel + sesSel;
+  }
+  return '';
+}
+
+function renderReport() {
+  const pal = document.getElementById('rep-palette');
+  if (pal) pal.innerHTML = '<span class="rep-pal-lbl">Agregar bloque:</span>' + REP_TYPES.map(t => `<button class="rep-pal-btn" onclick="reportAdd('${t.t}')">${t.label}</button>`).join('');
+  const comp = document.getElementById('rep-composer'); if (!comp) return;
+  const blocks = repBlocks();
+  if (!blocks.length) { comp.innerHTML = '<div class="rep-empty">Tu reporte está vacío.<br><span>Agregá bloques con los botones de arriba, configuralos, ordenalos, y después tocá "Descargar PDF".</span></div>'; return; }
+  comp.innerHTML = blocks.map((b, i) => `
+    <div class="rep-block">
+      <div class="rep-block-head">
+        <span class="rep-block-type">${repTypeLabel(b.type)}</span>
+        <div class="rep-block-tools">
+          <button onclick="reportMove('${b.id}',-1)" ${i === 0 ? 'disabled' : ''} title="Subir">↑</button>
+          <button onclick="reportMove('${b.id}',1)" ${i === blocks.length - 1 ? 'disabled' : ''} title="Bajar">↓</button>
+          <button class="rep-del" onclick="reportRemove('${b.id}')" title="Quitar">✕</button>
+        </div>
+      </div>
+      <div class="rep-block-config">${reportBlockConfig(b)}</div>
+      <div class="rep-block-prev">${reportBlockContent(b)}</div>
+    </div>`).join('');
+  comp.querySelectorAll('.rep-ta').forEach(autoGrow);
+}
+
+function downloadReportPDF() {
+  const area = document.getElementById('report-print'); if (!area) return;
+  if (!repBlocks().length) { alert('El reporte está vacío. Agregá algún bloque primero.'); return; }
+  area.innerHTML = repBlocks().map(b => `<div class="rep-print-block">${reportBlockContent(b)}</div>`).join('');
+  document.body.classList.add('printing-report');
+  window.print();
+  setTimeout(() => document.body.classList.remove('printing-report'), 600);
+}
+
+// ═══════════════════════════════════════════════════════
 //  CALENDARIO — eventos y lapsos de fechas (editable por todos)
 //  Nodo Firebase propio "calendario" + localStorage.
 // ═══════════════════════════════════════════════════════
@@ -4995,9 +5309,9 @@ function goToSection(s) {
   appView = s;
   document.getElementById('home-screen').style.display = 'none';
   document.getElementById('section-bar').style.display = '';
-  const titles = { plan: '📋 Plan de Juego', database: '🗂️ Base de Datos', video: '🎬 Sala de Video', training: '📅 Entrenamientos', players: '🏐 Jugadores', calendar: '🗓️ Calendario', periodization: '📊 Periodización' };
+  const titles = { plan: '📋 Plan de Juego', database: '🗂️ Base de Datos', video: '🎬 Sala de Video', training: '📅 Entrenamientos', players: '🏐 Jugadores', calendar: '🗓️ Calendario', periodization: '📊 Periodización', report: '📄 Reportes PDF' };
   document.getElementById('section-title-txt').textContent = titles[s] || '';
-  ['plan', 'database', 'video', 'training', 'players', 'calendar', 'periodization'].forEach(v => { const el = document.getElementById('section-' + v); if (el) el.style.display = v === s ? '' : 'none'; });
+  ['plan', 'database', 'video', 'training', 'players', 'calendar', 'periodization', 'report'].forEach(v => { const el = document.getElementById('section-' + v); if (el) el.style.display = v === s ? '' : 'none'; });
   ensureSelectionValid();
   if (s === 'database') renderDatabase();
   if (s === 'plan') { renderSelectors(); render(); }
@@ -5006,12 +5320,13 @@ function goToSection(s) {
   if (s === 'players') renderPlayers();
   if (s === 'calendar') renderCalendar();
   if (s === 'periodization') renderPeriodization();
+  if (s === 'report') renderReport();
 }
 function goHome() {
   appView = 'home';
   document.getElementById('home-screen').style.display = '';
   document.getElementById('section-bar').style.display = 'none';
-  ['plan', 'database', 'video', 'training', 'players', 'calendar', 'periodization'].forEach(v => { const el = document.getElementById('section-' + v); if (el) el.style.display = 'none'; });
+  ['plan', 'database', 'video', 'training', 'players', 'calendar', 'periodization', 'report'].forEach(v => { const el = document.getElementById('section-' + v); if (el) el.style.display = 'none'; });
   renderHomeConfig();
 }
 
@@ -5024,6 +5339,7 @@ const SECTIONS = [
   { id: 'training', name: 'Entrenamientos', icon: '📅' },
   { id: 'calendar', name: 'Calendario', icon: '🗓️' },
   { id: 'periodization', name: 'Periodización', icon: '📊' },
+  { id: 'report', name: 'Reportes PDF', icon: '📄' },
 ];
 const DEFAULT_EDITABLE = { training: true, calendar: true, periodization: true };
 function defaultSectionConfig() { const o = {}; SECTIONS.forEach(s => o[s.id] = { visible: true, editable: !!DEFAULT_EDITABLE[s.id] }); return o; }
@@ -6392,6 +6708,7 @@ function buildPlanData(d) {
     databases:       d.databases && d.databases.length ? d.databases : [{ id: 'db_general', name: 'General' }],
     activeDbId:      d.activeDbId || 'db_general',
     sectionConfig:   d.sectionConfig || null,
+    reportBlocks:    d.reportBlocks || [],
     activeTeam:      d.activeTeam,
     filter:          d.filter,
     videoLinks:      d.videoLinks,
@@ -6420,6 +6737,7 @@ function planDataFromSaved(d) {
   pd.databases       = (d.databases && d.databases.length) ? d.databases.map(x => ({ id: x.id, name: x.name })) : [{ id: 'db_general', name: 'General' }];
   pd.activeDbId      = d.activeDbId || (pd.databases[0] ? pd.databases[0].id : 'db_general');
   pd.sectionConfig   = d.sectionConfig || null;
+  pd.reportBlocks    = Array.isArray(d.reportBlocks) ? d.reportBlocks : [];
   pd.activeTeam      = d.activeTeam || null;
   pd.filter          = d.filter || 'quality';
   pd.videoLinks      = d.videoLinks || {};
@@ -7086,7 +7404,8 @@ function openZonePopup(rot, zone) {
   const filtered = details.filter(d =>
     d.rotation == rot &&
     (zone === null || d.zone === zone) &&
-    (state.filter === 'all' || d.in_condition)
+    (state.filter === 'all' || d.in_condition) &&
+    (!state.setterCall || state.setterCall === 'all' || (d.setter_call || null) === state.setterCall)
   );
 
   if (filtered.length === 0) return;
